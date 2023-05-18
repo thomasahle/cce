@@ -3,11 +3,14 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import argparse
-#import torch.utils.data.datapipes as dp
 import torchdata.datapipes as dp
 from torch.utils.data import DataLoader
 from torch.nn import functional as F
 import pytorch_lightning as pl
+from pytorch_lightning.loggers import WandbLogger
+
+
+torch.set_float32_matmul_precision('medium')
 
 
 def process_data(data):
@@ -40,7 +43,7 @@ class MovieLensDataModule(pl.LightningDataModule):
     def setup(self, stage=None):
         self.train_data, self.val_data = self.datapipe.random_split(
             total_length=25000096,
-            weights={"train": 0.5, "valid": 0.5},
+            weights={"train": 0.9, "valid": 0.1},
             seed=0
         )
         # Add sharding filter
@@ -99,10 +102,20 @@ def main():
     data_module = MovieLensDataModule(args.path, args.batch_size, args.num_workers)
 
     # Model
-    model = MovieLensModel(n_users=164_000, n_movies=210_000, args.dim, lr=args.lr)
+    model = MovieLensModel(n_users=164_000, n_movies=210_000, dim=args.dim, lr=args.lr)
+
+    # Create a wandb logger
+    wandb_logger = WandbLogger(project='movielens', log_model='all')
+
+    # Trainer
+    trainer = pl.Trainer(max_epochs=args.epochs, fast_dev_run=args.fast_dev_run, logger=wandb_logger)
+
+    # Find the maximum batch size
+    tuner = pl.tuner.tuning.Tuner(trainer)
+    tuner.lr_find(model, datamodule=data_module)
+    #tuner.scale_batch_size(model, datamodule=data_module)
 
     # Training
-    trainer = pl.Trainer(max_epochs=args.epochs, fast_dev_run=args.fast_dev_run)
     trainer.fit(model, data_module)
 
 
