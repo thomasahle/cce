@@ -5,6 +5,7 @@ from torch import nn
 from torch.optim import Adam
 from surprise import Dataset
 from torch.utils.data import Dataset as TorchDataset, DataLoader
+import argparse
 
 import cce
 
@@ -43,13 +44,6 @@ def make_embedding(vocab, num_params, dimension, method):
             vocab=vocab, rows=num_embeddings, chunk_size=dimension//n_chunks, n_chunks=n_chunks,
         )
 
-# Load and process the data. We predict whether the user rated something >= 3.
-data = Dataset.load_builtin('ml-100k')
-df = pd.DataFrame(data.raw_ratings, columns=["user", "item", "rate", "id"])
-df["rate"] = df["rate"].apply(lambda x: 1 if float(x) >= 3 else 0)
-df["user"] = df["user"].astype("category").cat.codes.values
-df["item"] = df["item"].astype("category").cat.codes.values
-
 class RatingDataset(TorchDataset):
     def __init__(self, df): self.df = df
     def __len__(self): return len(self.df)
@@ -74,30 +68,45 @@ class RecommenderNet(nn.Module):
         item_emb = self.item_embedding(item)
         return self.mlp(user_emb * item_emb).view(-1)
 
-# Instantiate the model and define the loss function and optimizer
-#num_params = 2**26
-num_params = 300 * 64
-train_loader = DataLoader(RatingDataset(df), batch_size=64)
-n_users = df["user"].nunique()
-n_items = df["item"].nunique()
-print(f'Unique users: {n_users}, Unique items: {n_items}, #params: {num_params}')
-model = RecommenderNet(n_users, n_items, num_params, dim=64, method='cce')
-criterion = nn.BCELoss()
-optimizer = Adam(model.parameters(), lr=0.001)
 
-# Train the model
-for epoch in range(10):
-    model.train()
-    total_loss = 0
-    for user, item, label in train_loader:
-        optimizer.zero_grad()
-        prediction = model(user.long(), item.long())
-        loss = criterion(prediction, label.float())
-        loss.backward()
-        optimizer.step()
-        total_loss += loss.item()
-    print("Epoch: ", epoch, "Loss: ", total_loss/len(train_loader))
-    if model.method == 'cce':
-        model.user_embedding.cluster(verbose=False)
-        model.item_embedding.cluster(verbose=False)
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--method', type=str)
+    args = parser.parse_args()
 
+    # Load and process the data. We predict whether the user rated something >= 3.
+    data = Dataset.load_builtin('ml-100k')
+    df = pd.DataFrame(data.raw_ratings, columns=["user", "item", "rate", "id"])
+    df["rate"] = df["rate"].apply(lambda x: 1 if float(x) >= 3 else 0)
+    df["user"] = df["user"].astype("category").cat.codes.values
+    df["item"] = df["item"].astype("category").cat.codes.values
+
+    # Instantiate the model and define the loss function and optimizer
+    #num_params = 2**26
+    num_params = 300 * 64
+    train_loader = DataLoader(RatingDataset(df), batch_size=64)
+    n_users = df["user"].nunique()
+    n_items = df["item"].nunique()
+    print(f'Unique users: {n_users}, Unique items: {n_items}, #params: {num_params}')
+    model = RecommenderNet(n_users, n_items, num_params, dim=64, method=args.method)
+    criterion = nn.BCELoss()
+    optimizer = Adam(model.parameters(), lr=0.001)
+
+    # Train the model
+    for epoch in range(10):
+        model.train()
+        total_loss = 0
+        for user, item, label in train_loader:
+            optimizer.zero_grad()
+            prediction = model(user.long(), item.long())
+            loss = criterion(prediction, label.float())
+            loss.backward()
+            optimizer.step()
+            total_loss += loss.item()
+        print("Epoch: ", epoch, "Loss: ", total_loss/len(train_loader))
+        if model.method == 'cce':
+            model.user_embedding.cluster(verbose=False)
+            model.item_embedding.cluster(verbose=False)
+
+if __name__ == '__main__':
+    main()
