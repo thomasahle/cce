@@ -1,0 +1,28 @@
+[project]
+name = "cce"
+version = "0.0"
+description = "Clustered Compositional Embeddings"
+authors = [
+    {name="Thomas Dybdahl Ahle", email="lobais@gmail.com"}
+]
+license = {text = "AGPL-3.0-or-later"}
+readme = "README.md"
+keywords = ["cce", "recsys"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+dependencies = [
+   "pytest>=7.2",
+]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project.urls]
+homepage = "https://github.com/thomasahle/cce/"
