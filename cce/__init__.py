@@ -1,2 +1,5 @@
 from .robe import RobeEmbedding
-from .hash import MultiHash
+from .simple import SimpleEmbedding
+from .ce import CompositionalEmbedding
+from .cce import CCEmbedding
+from .hash import MultiHash, SingleHash

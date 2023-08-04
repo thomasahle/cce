@@ -1,148 +1,103 @@
-import tqdm
+import pandas as pd
 import torch
-import torch.nn as nn
-import torch.optim as optim
-import argparse
-import torchdata.datapipes as dp
-from torch.utils.data import DataLoader
-from torch.nn import functional as F
-import pytorch_lightning as pl
-import random
-from pytorch_lightning.loggers import WandbLogger
-from functools import partial
+import math
+from torch import nn
+from torch.optim import Adam
+from surprise import Dataset
+from torch.utils.data import Dataset as TorchDataset, DataLoader
+
+import cce
 
 
-torch.set_float32_matmul_precision('medium')
-
-
-def negative_sample(_, n_users, n_movies):
-    return (
-        torch.tensor(random.randrange(n_users), dtype=torch.int64),
-        torch.tensor(random.randrange(n_users), dtype=torch.int64),
-        torch.tensor(0, dtype=torch.float32)
-    )
-
-
-def process_data(data):
-    user, movie, rating, _ = data
-    return (
-        torch.tensor(int(user) - 1, dtype=torch.int64),
-        torch.tensor(int(movie) - 1, dtype=torch.int64),
-        torch.tensor(float(float(rating) >= 3), dtype=torch.float32)
-    )
-
-
-class MovieLensDataModule(pl.LightningDataModule):
-    def __init__(self, file_path, n_users, n_movies,
-                 batch_size=128, num_workers=1, negative_sampling=True):
-        super().__init__()
-        self.file_path = file_path
-        self.batch_size = batch_size
-        self.num_workers = num_workers
-        self.n_users = n_users
-        self.n_movies = n_movies
-        self.negative_sampling = negative_sampling
-
-    def prepare_data(self):
-        self.datapipe = (
-            dp.iter.FileOpener([self.file_path], mode='rt')
-            .parse_csv(delimiter=',', skip_lines=1)
-            .map(process_data)
-            # mix in negative samples
-            .mux_longest(
-                dp.iter.IterableWrapper(range(25_000_000))
-                .map(partial(negative_sample, n_users=self.n_users, n_movies=self.n_movies))
-            )
-            .shuffle(buffer_size=1_000_000)
+def make_embedding(vocab, num_params, dimension, method):
+    n_chunks = 4
+    if method != 'simple':
+        chunk_dim = dimension // n_chunks
+        assert n_chunks * chunk_dim == dimension, f"Dimension not divisible by {n_chunks}"
+    if method == 'robe':
+        log_size = int(math.log2(num_params))
+        return cce.RobeEmbedding(
+            size=num_params,
+            chunk_size=chunk_dim,
+            multi_hash=cce.MultiHash(num_hashes=n_chunks, output_bits=log_size),
+        )
+    if method == 'ce':
+        rows = num_params // dimension
+        return cce.CompositionalEmbedding(
+            rows=rows,
+            chunk_size=chunk_dim,
+            hash=cce.MultiHash(num_hashes=n_chunks, output_bits=int(math.log2(rows))),
+        )
+    elif method == 'simple':
+        num_embeddings = num_params // dimension
+        return cce.SimpleEmbedding(
+            num_embeddings, dimension,
+            hash=cce.SingleHash(output_bits=int(math.log2(num_embeddings))),
+        )
+    elif method == 'cce':
+        n_chunks = 4
+        num_embeddings = num_params // dimension // n_chunks
+        # TODO: The CCEmbedding should take a hash function so we don't have
+        # to give the exact vocab size.
+        return cce.CCEmbedding(
+            vocab=vocab, rows=num_embeddings, chunk_size=dimension//n_chunks, n_chunks=n_chunks,
         )
 
-    def setup(self, stage=None):
-        self.train_data, self.val_data = self.datapipe.random_split(
-            total_length=25000096,
-            # The right way to do this split is to take the last movie watched
-            # by each user (according to the timestamps) and put that in validation.
-            weights={"train": 0.9, "valid": 0.1},
-            seed=0
-        )
-        # Add sharding filter
-        self.train_data = self.train_data.sharding_filter(self.num_workers)
-        self.val_data = self.val_data.sharding_filter(self.num_workers)
+# Load and process the data. We predict whether the user rated something >= 3.
+data = Dataset.load_builtin('ml-100k')
+df = pd.DataFrame(data.raw_ratings, columns=["user", "item", "rate", "id"])
+df["rate"] = df["rate"].apply(lambda x: 1 if float(x) >= 3 else 0)
+df["user"] = df["user"].astype("category").cat.codes.values
+df["item"] = df["item"].astype("category").cat.codes.values
 
-    def train_dataloader(self):
-        return DataLoader(self.train_data, batch_size=self.batch_size, num_workers=self.num_workers)
+class RatingDataset(TorchDataset):
+    def __init__(self, df): self.df = df
+    def __len__(self): return len(self.df)
+    def __getitem__(self, idx):
+        return self.df.iloc[idx, 0], self.df.iloc[idx, 1], self.df.iloc[idx, 2]
 
-    def val_dataloader(self):
-        return DataLoader(self.val_data, batch_size=self.batch_size, num_workers=self.num_workers)
-
-
-class MovieLensModel(pl.LightningModule):
-    def __init__(self, n_users, n_movies, dim=50, lr=0.01):
+class RecommenderNet(nn.Module):
+    def __init__(self, n_users, n_items, num_params, dim, method):
         super().__init__()
-        self.user_embedding = nn.Embedding(n_users, dim)
-        self.movie_embedding = nn.Embedding(n_movies, dim)
-        self.cos = nn.CosineSimilarity(dim=1, eps=1e-6)
-        self.lr = lr
+        self.method = method
+        self.user_embedding = make_embedding(n_users, num_params, dim, method)
+        self.item_embedding = make_embedding(n_items, num_params, dim, method)
+        self.mlp = nn.Sequential(
+            nn.Linear(dim, 20),
+            nn.ReLU(),
+            nn.Linear(20, 1),
+            nn.Sigmoid(),
+        )
 
-    def forward(self, user, movie):
-        user_embed = self.user_embedding(user)
-        movie_embed = self.movie_embedding(movie)
-        return (user_embed * movie_embed).mean(axis=1)
-        # return self.cos(user_embed, movie_embed)
+    def forward(self, user, item):
+        user_emb = self.user_embedding(user)
+        item_emb = self.item_embedding(item)
+        return self.mlp(user_emb * item_emb).view(-1)
 
-    def training_step(self, batch, batch_idx):
-        user, movie, rating = batch
-        prediction = self(user, movie)
-        loss = F.binary_cross_entropy_with_logits(prediction, rating)
-        # loss = F.mse_loss(prediction, rating)
-        self.log('train_loss', loss, prog_bar=True)
-        return loss
+# Instantiate the model and define the loss function and optimizer
+#num_params = 2**26
+num_params = 300 * 64
+train_loader = DataLoader(RatingDataset(df), batch_size=64)
+n_users = df["user"].nunique()
+n_items = df["item"].nunique()
+print(f'Unique users: {n_users}, Unique items: {n_items}, #params: {num_params}')
+model = RecommenderNet(n_users, n_items, num_params, dim=64, method='cce')
+criterion = nn.BCELoss()
+optimizer = Adam(model.parameters(), lr=0.001)
 
-    def validation_step(self, batch, batch_idx):
-        user, movie, rating = batch
-        prediction = self(user, movie)
-        # loss = F.mse_loss(prediction, rating)
-        loss = F.binary_cross_entropy_with_logits(prediction, rating)
-        self.log('val_loss', loss, prog_bar=True)
-
-    def configure_optimizers(self):
-        return torch.optim.Adam(self.parameters(), lr=self.lr)
-
-
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('path', type=str)
-    parser.add_argument('--batch-size', type=int, default=128)
-    parser.add_argument('--dim', type=int, default=32)
-    parser.add_argument('--lr', type=float, default=0.1)
-    parser.add_argument('--epochs', type=int, default=1)
-    parser.add_argument('--num-workers', type=int, default=1)
-    parser.add_argument("--fast-dev-run", action='store_true')
-    args = parser.parse_args()
-
-    # Data
-    data_module = MovieLensDataModule(args.path, args.batch_size, args.num_workers)
-
-    # Model
-    model = MovieLensModel(n_users=164_000, n_movies=210_000, dim=args.dim, lr=args.lr)
-
-    # Create a wandb logger
-    try:
-        logger = WandbLogger(project='movielens', log_model='all')
-    except ModuleNotFoundError:
-        logger = None
-
-    # Trainer
-    trainer = pl.Trainer(max_epochs=args.epochs, fast_dev_run=args.fast_dev_run, logger=logger)
-
-    # Find the maximum batch size
-    tuner = pl.tuner.tuning.Tuner(trainer)
-    tuner.lr_find(model, datamodule=data_module)
-    #tuner.scale_batch_size(model, datamodule=data_module)
-
-    # Training
-    trainer.fit(model, data_module)
-
-
-if __name__ == '__main__':
-    main()
+# Train the model
+for epoch in range(10):
+    model.train()
+    total_loss = 0
+    for user, item, label in train_loader:
+        optimizer.zero_grad()
+        prediction = model(user.long(), item.long())
+        loss = criterion(prediction, label.float())
+        loss.backward()
+        optimizer.step()
+        total_loss += loss.item()
+    print("Epoch: ", epoch, "Loss: ", total_loss/len(train_loader))
+    if model.method == 'cce':
+        model.user_embedding.cluster(verbose=False)
+        model.item_embedding.cluster(verbose=False)
 
