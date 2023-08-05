@@ -20,7 +20,7 @@ def make_embedding(vocab, num_params, dimension, method):
         return cce.RobeEmbedding(
             size=num_params,
             chunk_size=chunk_dim,
-            multi_hash=cce.MultiHash(num_hashes=n_chunks, output_bits=log_size),
+            hash=cce.MultiHash(num_hashes=n_chunks, output_bits=log_size),
         )
     if method == 'ce':
         rows = num_params // dimension
@@ -37,11 +37,10 @@ def make_embedding(vocab, num_params, dimension, method):
         )
     elif method == 'cce':
         n_chunks = 4
-        num_embeddings = num_params // dimension // n_chunks
-        # TODO: The CCEmbedding should take a hash function so we don't have
-        # to give the exact vocab size.
+        # Divide by two, since the CCE embedding will use two tables with each `row` rows.
+        rows = num_params // dimension // 2
         return cce.CCEmbedding(
-            vocab=vocab, rows=num_embeddings, chunk_size=dimension//n_chunks, n_chunks=n_chunks,
+            vocab=vocab, rows=rows, chunk_size=dimension//n_chunks, n_chunks=n_chunks,
         )
 
 class RatingDataset(TorchDataset):
@@ -51,6 +50,7 @@ class RatingDataset(TorchDataset):
         return self.df.iloc[idx, 0], self.df.iloc[idx, 1], self.df.iloc[idx, 2]
 
 class RecommenderNet(nn.Module):
+    """ A simple DLRM style model """
     def __init__(self, n_users, n_items, num_params, dim, method):
         super().__init__()
         self.method = method
@@ -71,7 +71,9 @@ class RecommenderNet(nn.Module):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--method', type=str)
+    parser.add_argument('--method', type=str, required=True)
+    parser.add_argument('--epochs', type=int, default=10)
+    parser.add_argument('--last-cluster', type=int, default=7)
     args = parser.parse_args()
 
     # Load and process the data. We predict whether the user rated something >= 3.
@@ -82,18 +84,25 @@ def main():
     df["item"] = df["item"].astype("category").cat.codes.values
 
     # Instantiate the model and define the loss function and optimizer
-    #num_params = 2**26
-    num_params = 300 * 64
-    train_loader = DataLoader(RatingDataset(df), batch_size=64)
+    dim = 64
+    num_params = 100 * dim
     n_users = df["user"].nunique()
     n_items = df["item"].nunique()
     print(f'Unique users: {n_users}, Unique items: {n_items}, #params: {num_params}')
-    model = RecommenderNet(n_users, n_items, num_params, dim=64, method=args.method)
+    model = RecommenderNet(n_users, n_items, num_params, dim=dim, method=args.method)
     criterion = nn.BCELoss()
     optimizer = Adam(model.parameters(), lr=0.001)
 
+    # Create DataLoader
+    train = df.sample(frac=0.8, random_state=0)
+    valid = df.drop(train.index)
+    train_tensor = RatingDataset(train)
+    valid_tensor = RatingDataset(valid)
+    train_loader = DataLoader(train_tensor, batch_size=64, shuffle=True)
+    valid_loader = DataLoader(valid_tensor, batch_size=64, shuffle=False)
+
     # Train the model
-    for epoch in range(10):
+    for epoch in range(args.epochs):
         model.train()
         total_loss = 0
         for user, item, label in train_loader:
@@ -103,8 +112,23 @@ def main():
             loss.backward()
             optimizer.step()
             total_loss += loss.item()
-        print("Epoch: ", epoch, "Loss: ", total_loss/len(train_loader))
-        if model.method == 'cce':
+        train_loss = total_loss/len(train_loader)
+
+        # Validate the model
+        model.eval()
+        total_loss = 0
+        with torch.no_grad():
+            for user, item, label in valid_loader:
+                user, item, label = user.long(), item.long(), label.float()
+                prediction = model(user, item)
+                loss = criterion(prediction, label)
+                total_loss += loss.item()
+            valid_loss = total_loss/len(valid_loader)
+
+        print(f"Epoch: {epoch}, Train Loss: {train_loss:.3}, Validation Loss: {valid_loss:.3}")
+
+        if model.method == 'cce' and epoch < args.last_cluster:
+            print('Clustering...')
             model.user_embedding.cluster(verbose=False)
             model.item_embedding.cluster(verbose=False)
 
