@@ -18,17 +18,13 @@ class RobeEmbedding(nn.Module):
 
     def reset_parameters(self):
         dim = self.chunk_size * self.hash.hash_coeffs.shape[0]
-        nn.init.uniform_(self.table, -dim**-.5, dim**-.5)
+        nn.init.uniform_(self.table, -(dim**-0.5), dim**-0.5)
 
     def forward(self, input_tensor):
         batch_size = input_tensor.shape
         hash_values = self.hash(input_tensor)  # (batch_size, num_hashes)
         slices = self.table[
             hash_values[..., None]
-            + torch.arange(
-                self.chunk_size,
-                device=hash_values.device
-            ) % len(self.table)
+            + torch.arange(self.chunk_size, device=hash_values.device) % len(self.table)
         ]  # (batch_size, num_hashes, chunk_size)
         return slices.reshape(*batch_size, -1)
-

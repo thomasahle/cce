@@ -8,6 +8,7 @@ if use_sklearn:
 else:
     import faiss
 
+
 class CCEmbedding(nn.Module):
     def __init__(
         self,
@@ -26,10 +27,14 @@ class CCEmbedding(nn.Module):
         rows, n_chunks, chunk_size = self.table0.shape
         dim = chunk_size * n_chunks
         # Initializing match dlrm
-        nn.init.uniform_(self.table0, -dim**-.5, dim**-.5)
-        nn.init.uniform_(self.table1, -dim**-.5, dim**-.5)
-        self.h0 = nn.Parameter(torch.randint(rows, size=(self.vocab, n_chunks)), requires_grad=False)
-        self.h1 = nn.Parameter(torch.randint(rows, size=(self.vocab, n_chunks)), requires_grad=False)
+        nn.init.uniform_(self.table0, -(dim**-0.5), dim**-0.5)
+        nn.init.uniform_(self.table1, -(dim**-0.5), dim**-0.5)
+        self.h0 = nn.Parameter(
+            torch.randint(rows, size=(self.vocab, n_chunks)), requires_grad=False
+        )
+        self.h1 = nn.Parameter(
+            torch.randint(rows, size=(self.vocab, n_chunks)), requires_grad=False
+        )
 
     def forward(self, x):
         rows, n_chunks, chunk_size = self.table0.shape
@@ -45,14 +50,20 @@ class CCEmbedding(nn.Module):
 
         with torch.no_grad():
             if use_sklearn:
-                kmeans = sklearn.cluster.KMeans(rows, max_iter=niter, verbose=verbose, n_init=redo)
+                kmeans = sklearn.cluster.KMeans(
+                    rows, max_iter=niter, verbose=verbose, n_init=redo
+                )
             else:
-                kmeans = faiss.Kmeans(chunk_size, rows, niter=niter, nredo=redo, verbose=verbose)
+                kmeans = faiss.Kmeans(
+                    chunk_size, rows, niter=niter, nredo=redo, verbose=verbose
+                )
 
             for i in range(n_chunks):
                 # We might as well do iid sampling for each column
                 if n_samples < vocab:
-                    x = torch.from_numpy(np.random.choice(vocab, n_samples, replace=False))
+                    x = torch.from_numpy(
+                        np.random.choice(vocab, n_samples, replace=False)
+                    )
                 else:
                     x = torch.arange(vocab)
 
@@ -73,7 +84,10 @@ class CCEmbedding(nn.Module):
                     ids = torch.arange(j, min(j + n_samples, vocab))
 
                     # Compute pre-clustering representation of batch
-                    bvecs = self.table0[self.h0[ids, i], i] + self.table1[self.h1[ids, i], i]
+                    bvecs = (
+                        self.table0[self.h0[ids, i], i]
+                        + self.table1[self.h1[ids, i], i]
+                    )
 
                     # Set the new h0 based on decoding he batch in the centroids
                     if use_sklearn:
@@ -97,6 +111,4 @@ class CCEmbedding(nn.Module):
                 # Initialize table 1 using residuals. This is a arguably a tiny bit better
                 # than 0 initialization.
                 self.table1[:, i, :] = sums / counts.unsqueeze(-1)
-                #self.table1[:, i, :] = 0
-
-
+                # self.table1[:, i, :] = 0

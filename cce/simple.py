@@ -17,4 +17,3 @@ class SimpleEmbedding(nn.Module):
     def forward(self, input_tensor):
         hash_values = self.hash(input_tensor) % self.emb.num_embeddings
         return self.emb(hash_values)
-
