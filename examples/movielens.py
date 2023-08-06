@@ -2,19 +2,19 @@ import pandas as pd
 import torch
 import math
 from torch import nn
-from torch.optim import Adam
 from surprise import Dataset
 from torch.utils.data import Dataset as TorchDataset, DataLoader
 import argparse
 
 import cce
+torch.manual_seed(0xcce)
 
 
 def make_embedding(vocab, num_params, dimension, method):
     n_chunks = 4
-    if method != 'simple':
-        chunk_dim = dimension // n_chunks
-        assert n_chunks * chunk_dim == dimension, f"Dimension not divisible by {n_chunks}"
+    chunk_dim = dimension // n_chunks
+    assert n_chunks * chunk_dim == dimension, f"Dimension not divisible by {n_chunks}"
+
     if method == 'robe':
         log_size = int(math.log2(num_params))
         return cce.RobeEmbedding(
@@ -36,12 +36,15 @@ def make_embedding(vocab, num_params, dimension, method):
             hash=cce.SingleHash(output_bits=int(math.log2(num_embeddings))),
         )
     elif method == 'cce':
-        n_chunks = 4
         # Divide by two, since the CCE embedding will use two tables with each `row` rows.
         rows = num_params // dimension // 2
         return cce.CCEmbedding(
             vocab=vocab, rows=rows, chunk_size=dimension//n_chunks, n_chunks=n_chunks,
         )
+    elif method == 'full':
+        emb = nn.Embedding(vocab, dimension)
+        nn.init.uniform_(emb.weight, -(dimension**-0.5), dimension**-0.5)
+        return emb
 
 class RatingDataset(TorchDataset):
     def __init__(self, df): self.df = df
@@ -66,6 +69,7 @@ class RecommenderNet(nn.Module):
     def forward(self, user, item):
         user_emb = self.user_embedding(user)
         item_emb = self.item_embedding(item)
+        bs, dim = user_emb.shape
         return self.mlp(user_emb * item_emb).view(-1)
 
 
@@ -73,7 +77,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--method', type=str, required=True)
     parser.add_argument('--epochs', type=int, default=10)
-    parser.add_argument('--last-cluster', type=int, default=7)
+    parser.add_argument('--last-cluster', type=int, default=7, help='Stop reclusering after this many epochs.')
+    parser.add_argument('--dim', type=int, default=32, help='Dimension of embeddings')
     args = parser.parse_args()
 
     # Load and process the data. We predict whether the user rated something >= 3.
@@ -84,14 +89,14 @@ def main():
     df["item"] = df["item"].astype("category").cat.codes.values
 
     # Instantiate the model and define the loss function and optimizer
-    dim = 64
-    num_params = 100 * dim
+    dim = args.dim
+    num_params = 200 * dim
     n_users = df["user"].nunique()
     n_items = df["item"].nunique()
     print(f'Unique users: {n_users}, Unique items: {n_items}, #params: {num_params}')
     model = RecommenderNet(n_users, n_items, num_params, dim=dim, method=args.method)
     criterion = nn.BCELoss()
-    optimizer = Adam(model.parameters(), lr=0.001)
+    optimizer = torch.optim.AdamW(model.parameters())
 
     # Create DataLoader
     train = df.sample(frac=0.8, random_state=0)

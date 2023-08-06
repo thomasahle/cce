@@ -42,7 +42,7 @@ class CCEmbedding(nn.Module):
         part1 = self.table1[self.h1[x], range(n_chunks)]
         return (part0 + part1).flatten(1, 2)
 
-    def cluster(self, niter=100, sample_factor=200, redo=3, verbose=False):
+    def cluster(self, niter=100, sample_factor=200, redo=1, verbose=False):
         rows, n_chunks, chunk_size = self.table0.shape
         vocab, _ = self.h0.shape
         # The Faiss manual suggests you never need more than 200 samples per centroid

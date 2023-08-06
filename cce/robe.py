@@ -17,7 +17,7 @@ class RobeEmbedding(nn.Module):
         self.reset_parameters()
 
     def reset_parameters(self):
-        dim = self.chunk_size * self.hash.hash_coeffs.shape[0]
+        dim = self.chunk_size * self.hash.num_hashes
         nn.init.uniform_(self.table, -(dim**-0.5), dim**-0.5)
 
     def forward(self, input_tensor):
@@ -30,4 +30,5 @@ class RobeEmbedding(nn.Module):
             )
             % len(self.table)
         ]  # (batch_size, num_hashes, chunk_size)
-        return slices.reshape(*batch_size, -1)
+        dim = self.chunk_size * self.hash.num_hashes
+        return slices.reshape(*batch_size, dim)
