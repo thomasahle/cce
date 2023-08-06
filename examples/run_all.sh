@@ -11,13 +11,15 @@ fi
 
 METHOD="cce" # default method
 EPOCHS=""    # default is not setting epochs (let the python script use its own default)
+DATASET="ml-100k"
 
 # Process command-line options
-while getopts "m:e:" opt; do
+while getopts "m:e:d:" opt; do
     case $opt in
         m) METHOD="$OPTARG";;
         e) EPOCHS="$OPTARG";;
-        *) echo "Usage: $0 [--method METHOD] [--epochs EPOCHS]"; exit 1;;
+        d) DATASET="$OPTARG";;
+        *) echo "Usage: $0 [--method METHOD] [--epochs EPOCHS] [--dataset DATASET]"; exit 1;;
     esac
 done
 
@@ -54,10 +56,11 @@ hi_pow=12
 print_progress_bar 0
 
 for run in $(seq 1 $runs); do
-    seed=$((RANDOM % 10000))
+    #seed=$((RANDOM % 10000))
+    seed=$run
     for i in $(seq $lo_pow $hi_pow); do
         ppd=$((2**$i))
-         output=$($python_version "$script_dir/movielens.py" --method $METHOD --ppd $ppd --seed $seed ${EPOCHS:+--epochs $EPOCHS})
+         output=$($python_version "$script_dir/movielens.py" --method $METHOD --ppd $ppd --seed $seed --dataset $DATASET ${EPOCHS:+--epochs $EPOCHS})
         smallest_loss=$(extract_smallest_loss "$output")
         ppds[$i]=$ppd
         index=$(( (run - 1) * 10 + i ))
@@ -76,7 +79,7 @@ echo
 # Print results
 header="ppd"
 for run in $(seq 1 $runs); do
-    header+="\tsmallest_loss_$run"
+    header+="\tseed_$run"
 done
 echo -e "$header"
 for i in $(seq $lo_pow $hi_pow); do
