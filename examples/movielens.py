@@ -106,6 +106,7 @@ def main():
     train_loader = DataLoader(train_tensor, batch_size=64, shuffle=True)
     valid_loader = DataLoader(valid_tensor, batch_size=64, shuffle=False)
 
+
     # Train the model
     for epoch in range(args.epochs):
         model.train()
@@ -136,6 +137,7 @@ def main():
             print('Clustering...')
             model.user_embedding.cluster(verbose=False)
             model.item_embedding.cluster(verbose=False)
+
 
 if __name__ == '__main__':
     main()
