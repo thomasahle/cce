@@ -47,8 +47,8 @@ print_progress_bar() {
     printf 'Progress: [%-*s] %d%%\r' $bar_length $(printf '#%.0s' $(seq 1 $filled)) $percent
 }
 
-lo_pow = 5
-hi_pow = 12
+lo_pow=5
+hi_pow=12
 
 # Print an initial empty progress bar
 print_progress_bar 0
