@@ -47,12 +47,15 @@ print_progress_bar() {
     printf 'Progress: [%-*s] %d%%\r' $bar_length $(printf '#%.0s' $(seq 1 $filled)) $percent
 }
 
+lo_pow = 5
+hi_pow = 12
+
 # Print an initial empty progress bar
 print_progress_bar 0
 
 for run in $(seq 1 $runs); do
     seed=$((RANDOM % 10000))
-    for i in $(seq 5 12); do
+    for i in $(seq $lo_pow $hi_pow); do
         ppd=$((2**$i))
          output=$($python_version "$script_dir/movielens.py" --method $METHOD --ppd $ppd --seed $seed ${EPOCHS:+--epochs $EPOCHS})
         smallest_loss=$(extract_smallest_loss "$output")
@@ -76,7 +79,7 @@ for run in $(seq 1 $runs); do
     header+="\tsmallest_loss_$run"
 done
 echo -e "$header"
-for i in $(seq 1 10); do
+for i in $(seq $lo_pow $hi_pow); do
     line="${ppds[$i]}"
     for run in $(seq 1 $runs); do
         index=$(( (run - 1) * 10 + i ))
