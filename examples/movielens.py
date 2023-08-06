@@ -9,6 +9,7 @@ import argparse
 import cce
 torch.manual_seed(0xcce)
 
+methods = ['robe', 'ce', 'simple', 'cce', 'full']
 
 def make_embedding(vocab, num_params, dimension, method):
     n_chunks = 4
@@ -75,14 +76,16 @@ class RecommenderNet(nn.Module):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--method', type=str, required=True)
+    parser.add_argument('--method', type=str, required=True, choices=methods)
     parser.add_argument('--epochs', type=int, default=10)
     parser.add_argument('--last-cluster', type=int, default=7, help='Stop reclusering after this many epochs.')
     parser.add_argument('--dim', type=int, default=32, help='Dimension of embeddings')
+    parser.add_argument('--ppd', type=int, default=200, help='Parameters per dimension')
+    parser.add_argument('--dataset', type=str, default='ml-100k', choices=['ml-100k', 'ml-1m'])
     args = parser.parse_args()
 
     # Load and process the data. We predict whether the user rated something >= 3.
-    data = Dataset.load_builtin('ml-100k')
+    data = Dataset.load_builtin(args.dataset)
     df = pd.DataFrame(data.raw_ratings, columns=["user", "item", "rate", "id"])
     df["rate"] = df["rate"].apply(lambda x: 1 if float(x) >= 3 else 0)
     df["user"] = df["user"].astype("category").cat.codes.values
@@ -90,10 +93,11 @@ def main():
 
     # Instantiate the model and define the loss function and optimizer
     dim = args.dim
-    num_params = 200 * dim
+    num_params = args.ppd * dim
     n_users = df["user"].nunique()
     n_items = df["item"].nunique()
     print(f'Unique users: {n_users}, Unique items: {n_items}, #params: {num_params}')
+
     model = RecommenderNet(n_users, n_items, num_params, dim=dim, method=args.method)
     criterion = nn.BCELoss()
     optimizer = torch.optim.AdamW(model.parameters())
