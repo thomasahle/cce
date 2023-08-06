@@ -7,7 +7,6 @@ from torch.utils.data import Dataset as TorchDataset, DataLoader
 import argparse
 
 import cce
-torch.manual_seed(0xcce)
 
 methods = ['robe', 'ce', 'simple', 'cce', 'full']
 
@@ -82,7 +81,11 @@ def main():
     parser.add_argument('--dim', type=int, default=32, help='Dimension of embeddings')
     parser.add_argument('--ppd', type=int, default=200, help='Parameters per dimension')
     parser.add_argument('--dataset', type=str, default='ml-100k', choices=['ml-100k', 'ml-1m'])
+    parser.add_argument('--seed', type=int, default=0xcce)
     args = parser.parse_args()
+
+    # Seed for reproducability
+    torch.manual_seed(args.seed)
 
     # Load and process the data. We predict whether the user rated something >= 3.
     data = Dataset.load_builtin(args.dataset)
