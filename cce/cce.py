@@ -48,6 +48,8 @@ class CCEmbedding(nn.Module):
         # The Faiss manual suggests you never need more than 200 samples per centroid
         n_samples = sample_factor * rows
 
+        # TODO: What if n_samples > rows?
+
         with torch.no_grad():
             if use_sklearn:
                 kmeans = sklearn.cluster.KMeans(
