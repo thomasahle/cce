@@ -108,7 +108,7 @@ def main():
     optimizer = torch.optim.AdamW(model.parameters())
 
     # Create DataLoader
-    train = df.sample(frac=0.8, random_state=0)
+    train = df.sample(frac=0.8, random_state=args.seed)
     valid = df.drop(train.index)
     train_tensor = RatingDataset(train)
     valid_tensor = RatingDataset(valid)
