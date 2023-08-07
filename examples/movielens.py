@@ -86,6 +86,7 @@ def main():
 
     # Seed for reproducability
     torch.manual_seed(args.seed)
+    np.random.seed(args.seed)
 
     # Load and process the data. We predict whether the user rated something >= 3.
     data = Dataset.load_builtin(args.dataset)
