@@ -2,6 +2,7 @@ import pandas as pd
 import torch
 import math
 from torch import nn
+import numpy as np
 from surprise import Dataset
 from torch.utils.data import Dataset as TorchDataset, DataLoader
 import argparse
