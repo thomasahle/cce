@@ -60,8 +60,10 @@ class TensorTrainEmbedding(nn.Module):
         super().__init__()
         self.hash = hash
         n_chunks, = hash.hash_coeffs.shape
+        self.n_chunks = n_chunks
         assert n_chunks >= 2
         assert hash.output_bits >= 1
+        self.rank = rank
         hrange = 2 ** hash.output_bits
 
         # The reference implementation of TT doesn't just split the input space,
@@ -79,10 +81,21 @@ class TensorTrainEmbedding(nn.Module):
         self.reset_parameters()
 
     def reset_parameters(self):
-        _, _, dim, rank, _ = self.cores.shape
-        nn.init.uniform_(self.cores, -rank**-0.5, rank**-0.5)
-        nn.init.uniform_(self.end_core, -(rank**-0.5), rank**-0.5)
-        nn.init.uniform_(self.start_core, -(dim**-0.5), dim**-0.5)
+        # To get unit-norm output vectors, as we generally want for DLRM type
+        # systems, we need to scale each core by 1/sqrt(rank * dim), except for
+        # start, which is only scaled by 1/sqrt(dim). This is assuming we split-dim.
+        # Otherwise we just scale all cores by 1/sqrt(rank) and one by 1/sqrt(dim).
+        _, dim, rank = self.start_core.shape
+        if self.split_dim:
+            scale = (dim * rank) ** -.5
+            nn.init.uniform_(self.cores, -scale, scale)
+            nn.init.uniform_(self.end_core, -scale, scale)
+            nn.init.uniform_(self.start_core, -dim**-.5, dim**-.5)
+        else:
+            scale = rank ** -.5
+            nn.init.uniform_(self.cores, -scale, scale)
+            nn.init.uniform_(self.end_core, -scale, scale)
+            nn.init.uniform_(self.start_core, -dim**-.5, dim**-.5)
 
     def size(self):
         return self.start_core.numel() + self.end_core.numel() + self.cores.numel()
