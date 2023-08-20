@@ -9,7 +9,7 @@ import argparse
 
 import cce
 
-methods = ['robe', 'ce', 'simple', 'cce', 'full']
+methods = ['robe', 'ce', 'simple', 'cce', 'full', 'tt']
 
 def make_embedding(vocab, num_params, dimension, method):
     n_chunks = 4
@@ -46,6 +46,21 @@ def make_embedding(vocab, num_params, dimension, method):
         emb = nn.Embedding(vocab, dimension)
         nn.init.uniform_(emb.weight, -(dimension**-0.5), dimension**-0.5)
         return emb
+    elif method == 'tt':
+        # num_params = chunks * hrange * dim * rank^2
+        # I can really set hrange as I want...
+        # What if we set hrange = rank?
+        # then we have
+        # num_params = chunks * dim * rank^(3)
+        rank = int((num_params / (dimension * n_chunks)) ** (1/3)) + 1
+        output_bits = int(math.log2(rank)) + 1
+        print(num_params, 'vs', n_chunks * 2**output_bits * dimension * rank**2)
+        #output_bits = int((np.log2(vocab)+1) / n_chunks)
+        #rank = num_params / (n_chunks * 2**(output_bits) * dimension)
+        #rank = int(rank ** .5)
+        print(f'{rank=}, {output_bits=}')
+        return cce.TensorTrainEmbedding(rank, dimension,
+            hash=cce.MultiHash(num_hashes=n_chunks, output_bits=output_bits))
 
 class RatingDataset(TorchDataset):
     def __init__(self, df): self.df = df

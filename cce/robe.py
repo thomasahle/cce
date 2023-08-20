@@ -30,5 +30,4 @@ class RobeEmbedding(nn.Module):
             )
             % len(self.table)
         ]  # (batch_size, num_hashes, chunk_size)
-        dim = self.chunk_size * self.hash.num_hashes
-        return slices.reshape(*batch_size, dim)
+        return slices.flatten(start_dim=-2)
