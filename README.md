@@ -158,3 +158,10 @@ Epoch: 9, Train Loss: 0.309, Validation Loss: 0.484
   year={2022}
 }
 ```
+
+## TODO
+
+Some algorithms we'd like to add to this repository in the future:
+- [Hash Embeddings](https://arxiv.org/abs/1709.03933)
+- [Tensor Train (TT-Rec)](https://arxiv.org/abs/2101.11714)
+- [DHE](https://arxiv.org/abs/2010.10784)
