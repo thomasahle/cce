@@ -75,6 +75,29 @@ Epoch: 8, Train Loss: 0.335, Validation Loss: 0.436
 Epoch: 9, Train Loss: 0.324, Validation Loss: 0.446
 </pre>
 
+Hybrid CCE and Robe:
+<pre>
+$ py examples/movielens.py --method cce_robe
+Unique users: 943, Unique items: 1682, #params: 6400
+Epoch: 0, Train Loss: 0.484, Validation Loss: 0.464
+Clustering...
+Epoch: 1, Train Loss: 0.421, Validation Loss: 0.406
+Clustering...
+Epoch: 2, Train Loss: 0.37, Validation Loss: <b>0.397</b>
+Clustering...
+Epoch: 3, Train Loss: 0.356, Validation Loss: 0.4
+Clustering...
+Epoch: 4, Train Loss: 0.348, Validation Loss: 0.401
+Clustering...
+Epoch: 5, Train Loss: 0.343, Validation Loss: 0.405
+Clustering...
+Epoch: 6, Train Loss: 0.339, Validation Loss: 0.406
+Clustering...
+Epoch: 7, Train Loss: 0.335, Validation Loss: 0.411
+Epoch: 8, Train Loss: 0.323, Validation Loss: 0.416
+Epoch: 9, Train Loss: 0.313, Validation Loss: 0.425
+</pre>
+
 Hashing method:
 <pre>
 $ py examples/movielens.py --method simple --epochs 10
