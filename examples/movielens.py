@@ -9,6 +9,15 @@ import argparse
 
 import cce
 
+device = "cpu"
+# MPS has some bugs related to broadcasting scatter_add
+# if torch.backends.mps.is_available():
+#     device = torch.device("mps")
+if torch.cuda.is_available():
+    device = "cuda:0"
+print(f'Device: {device}')
+
+
 methods = ['robe', 'ce', 'simple', 'cce', 'full', 'tt', 'cce_robe']
 
 def make_embedding(vocab, num_params, dimension, method):
@@ -125,7 +134,7 @@ def main():
     n_items = df["item"].nunique()
     print(f'Unique users: {n_users}, Unique items: {n_items}, #params: {num_params}')
 
-    model = RecommenderNet(n_users, n_items, num_params, dim=dim, method=args.method)
+    model = RecommenderNet(n_users, n_items, num_params, dim=dim, method=args.method).to(device)
     criterion = nn.BCELoss()
     optimizer = torch.optim.AdamW(model.parameters())
 
@@ -143,6 +152,7 @@ def main():
         model.train()
         total_loss = 0
         for user, item, label in train_loader:
+            user, item, label = user.to(device), item.to(device), label.to(device)
             optimizer.zero_grad()
             prediction = model(user.long(), item.long())
             loss = criterion(prediction, label.float())
@@ -156,7 +166,7 @@ def main():
         total_loss = 0
         with torch.no_grad():
             for user, item, label in valid_loader:
-                user, item, label = user.long(), item.long(), label.float()
+                user, item, label = user.to(device).long(), item.to(device).long(), label.to(device).float()
                 prediction = model(user, item)
                 loss = criterion(prediction, label)
                 total_loss += loss.item()

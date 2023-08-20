@@ -21,21 +21,20 @@ class KMeans:
             )
 
     def fit(self, vecs):
-        vecs = vecs.detach().numpy()
         if use_sklearn:
-            self.kmeans.fit(vecs)
-            return torch.from_numpy(self.kmeans.cluster_centers_)
+            self.kmeans.fit(vecs.detach().cpu().numpy())
+            return torch.from_numpy(self.kmeans.cluster_centers_).to(vecs.device)
         else:
-            self.kmeans.train(vecs)
-            return torch.from_numpy(self.kmeans.centroids)
+            self.kmeans.train(vecs.detach().cpu().numpy())
+            return torch.from_numpy(self.kmeans.centroids).to(vecs.device)
 
     def find_nearest(self, bvecs):
         if use_sklearn:
-            I = self.kmeans.predict(bvecs.detach().numpy().astype(np.float32))
-            return torch.from_numpy(I).to(torch.long)
+            I = self.kmeans.predict(bvecs.detach().cpu().numpy().astype(np.float32))
+            return torch.from_numpy(I).to(torch.long).to(bvecs.device)
         else:
-            _D, I = self.kmeans.index.search(bvecs.detach().numpy(), 1)
-            return torch.from_numpy(I[:, 0])
+            _D, I = self.kmeans.index.search(bvecs.detach().cpu().numpy(), 1)
+            return torch.from_numpy(I[:, 0]).to(bvecs.device)
 
 
 class CCEmbedding(nn.Module):
@@ -95,8 +94,8 @@ class CCEmbedding(nn.Module):
                 centroids = kmeans.fit(vecs)
 
                 # In the case where the vocab is really big, we decode it in batches.
-                sums = torch.zeros(rows, chunk_size)
-                counts = torch.zeros(rows)
+                sums = torch.zeros(rows, chunk_size, device=self.table1.device)
+                counts = torch.zeros(rows, device=self.table1.device)
                 for j in range(0, vocab, n_samples):
                     ids = torch.arange(j, min(j + n_samples, vocab))
 
@@ -114,7 +113,7 @@ class CCEmbedding(nn.Module):
 
                     # Compute residuals
                     resids = bvecs - centroids[self.h0[ids, i]]
-                    sums.scatter_add_(0, self.h1[ids, i].unsqueeze(-1), resids)
+                    sums.scatter_add_(0, self.h1[ids, i, None], resids)
                     counts += torch.bincount(self.h1[ids, i], minlength=rows).float()
 
                 # Initialize the parameters from the centroids, to stabalize convergence
