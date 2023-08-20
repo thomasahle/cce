@@ -12,14 +12,16 @@ fi
 METHOD="cce" # default method
 EPOCHS=""    # default is not setting epochs (let the python script use its own default)
 DATASET="ml-100k"
+WORKERS=""
 
 # Process command-line options
-while getopts "m:e:d:" opt; do
+while getopts "m:e:d:w:" opt; do
     case $opt in
         m) METHOD="$OPTARG";;
         e) EPOCHS="$OPTARG";;
         d) DATASET="$OPTARG";;
-        *) echo "Usage: $0 [--method METHOD] [--epochs EPOCHS] [--dataset DATASET]"; exit 1;;
+        w) WORKERS="$OPTARG";;
+        *) echo "Usage: $0 [-m METHOD] [-e EPOCHS] [-d DATASET] [-w WORKERS] [-"; exit 1;;
     esac
 done
 
@@ -40,9 +42,10 @@ runs=3
 # ppd = 2^i where i in [lo_pow, hi_pow]
 lo_pow=5
 hi_pow=12
+n_pow=$((hi_pow-low_pow+1))
 
 # Progress bar variables
-total=$(((hi_pow - lo_pow + 1) * runs))
+total=$((n_pow * runs))
 current=0
 bar_length=50 # 50 characters long
 
@@ -61,10 +64,10 @@ for run in $(seq 1 $runs); do
     seed=$run
     for i in $(seq $lo_pow $hi_pow); do
         ppd=$((2**$i))
-         output=$($python_version "$script_dir/movielens.py" --method $METHOD --ppd $ppd --seed $seed --dataset $DATASET ${EPOCHS:+--epochs $EPOCHS})
+         output=$($python_version "$script_dir/movielens.py" --method $METHOD --ppd $ppd --seed $seed --dataset $DATASET ${EPOCHS:+--epochs $EPOCHS} ${WORKERS:+--num-workers $WORKERS})
         smallest_loss=$(extract_smallest_loss "$output")
         ppds[$i]=$ppd
-        index=$(( (run - 1) * 10 + i ))
+        index=$(( (run - 1) * n_pow + i ))
         losses[$index]=$smallest_loss
 
         # Update the progress bar
@@ -86,7 +89,7 @@ echo -e "$header"
 for i in $(seq $lo_pow $hi_pow); do
     line="${ppds[$i]}"
     for run in $(seq 1 $runs); do
-        index=$(( (run - 1) * 10 + i ))
+        index=$(( (run - 1) * n_pow + i ))
         line+="\t${losses[$index]}"
     done
     echo -e "$line"
