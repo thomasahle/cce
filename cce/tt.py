@@ -48,14 +48,6 @@ import torch
 import torch.nn as nn
 from cce import hash
 
-# To save the most, we should make c ~ output_bits.
-# But maybe not a good idea in for quality.
-# log(c) + log(hrange)/c
-# 1/c = log(hrange)/c^2
-# 1 = log(hrange)/c
-# c = log(hrange)
-
-
 class TensorTrainEmbedding(nn.Module):
     # total params: chunks * hrange^(1/chunks) * dim * rank^2
     def __init__(
@@ -63,6 +55,7 @@ class TensorTrainEmbedding(nn.Module):
         rank: int,
         dim: int,
         hash: hash.MultiHash,
+        split_dim=True,
     ):
         super().__init__()
         self.hash = hash
@@ -70,7 +63,16 @@ class TensorTrainEmbedding(nn.Module):
         assert n_chunks >= 2
         assert hash.output_bits >= 1
         hrange = 2 ** hash.output_bits
-        print(f'{hrange=}')
+
+        # The reference implementation of TT doesn't just split the input space,
+        # but also the output space. We do the same if split_dim=True. However,
+        # we may sometimes overshoot, if dim^(1/n_chunks) is not an interger.
+        # In this case we just crop the output dimension at the end, in forward().
+        self.dim = dim
+        self.split_dim = split_dim
+        if split_dim:
+            dim = int(1 + dim ** (1 / n_chunks))
+
         self.start_core = nn.Parameter(torch.empty(hrange, dim, rank))
         self.end_core = nn.Parameter(torch.empty(hrange, dim, rank))
         self.cores = nn.Parameter(torch.empty(n_chunks - 2, hrange, dim, rank, rank))
@@ -82,11 +84,23 @@ class TensorTrainEmbedding(nn.Module):
         nn.init.uniform_(self.end_core, -(rank**-0.5), rank**-0.5)
         nn.init.uniform_(self.start_core, -(dim**-0.5), dim**-0.5)
 
+    def size(self):
+        return self.start_core.numel() + self.end_core.numel() + self.cores.numel()
+
     def forward(self, x):
         hs = self.hash(x)
-        #print(x, hs)
         v = self.end_core[hs[:, -1]] # (batch, dim, rank)
-        for i in range(hs.shape[1]-2):
-            hi = hs[:, i+1]
-            v = torch.einsum('bdrs,bdr->bds', self.cores[i, hi], v)
-        return torch.einsum('bdr,bdr->bd', self.start_core[hs[:, 0]], v)
+        if not self.split_dim:
+            for i in range(hs.shape[1]-2):
+                hi = hs[:, i+1]
+                v = torch.einsum('bdrs,bdr->bds', self.cores[i, hi], v)
+            v = torch.einsum('bdr,bdr->bd', self.start_core[hs[:, 0]], v)
+        else:
+            for i in range(hs.shape[1]-2):
+                hi = hs[:, i+1]
+                v = torch.einsum('bdrs,ber->bdes', self.cores[i, hi], v)
+                v = v.flatten(1, 2)
+            v = torch.einsum('bdr,ber->bde', self.start_core[hs[:, 0]], v)
+            v = v.flatten(1, 2)
+            v = v[:, :self.dim]
+        return v

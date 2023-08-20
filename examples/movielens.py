@@ -54,21 +54,22 @@ def make_embedding(vocab, num_params, dimension, method):
         nn.init.uniform_(emb.weight, -(dimension**-0.5), dimension**-0.5)
         return emb
     elif method == 'tt':
-        # num_params = chunks * hrange * dim * rank^2
-        # I can really set hrange as I want...
-        # What if we set hrange = rank?
-        # then we have
-        # num_params = chunks * dim * rank^(3)
-        rank = int((num_params / (dimension * n_chunks)) ** (1/3)) + 1
-        output_bits = int(math.log2(rank)) + 1
-        print(num_params, 'vs', n_chunks * 2**output_bits * dimension * rank**2)
-        #output_bits = int((np.log2(vocab)+1) / n_chunks)
-        #rank = num_params / (n_chunks * 2**(output_bits) * dimension)
-        #rank = int(rank ** .5)
-        print(f'{rank=}, {output_bits=}')
-        return cce.TensorTrainEmbedding(rank, dimension,
-            hash=cce.MultiHash(num_hashes=n_chunks, output_bits=output_bits))
-    raise Error(f'{method=} not supported.')
+        # If we set `hrange^nchunks = vocab^2` we should not have any collisions.
+        # In other words, we want `hrange ~ vocab^(2/nchunks)`.
+        output_bits = int(math.log2(vocab) / n_chunks) + 1
+        # Find largest allowable rank
+        tt, rank = None, 1
+        while True:
+            tt_new = cce.TensorTrainEmbedding(rank, dimension,
+                hash=cce.MultiHash(num_hashes=n_chunks, output_bits=output_bits),
+                split_dim=True)
+            if tt_new.size() > num_params:
+                break
+            tt = tt_new
+            rank += 1
+        print(f"Notice: Using {tt.size()} params, rather than {num_params}. {rank=}, {output_bits=}")
+        return tt
+    raise Exception(f'{method=} not supported.')
 
 
 class RatingDataset(TorchDataset):
