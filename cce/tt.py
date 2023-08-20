@@ -46,8 +46,8 @@
 
 import torch
 import torch.nn as nn
-from cce import hash
 import math
+from cce import hash
 
 class TensorTrainEmbedding(nn.Module):
     # total params: chunks * hrange^(1/chunks) * dim * rank^2
@@ -55,18 +55,17 @@ class TensorTrainEmbedding(nn.Module):
         self,
         rank: int,
         dim: int,
-        vocab: int,
-        n_chunks: int,
+        hash: hash.MultiHash,
         split_dim=True,
     ):
         super().__init__()
         self.hash = hash
-        self.n_chunks = n_chunks
+        self.n_chunks = n_chunks = hash.num_hashes
         assert n_chunks >= 2
         self.rank = rank
 
-        hrange = int(math.ceil(vocab ** (1 / n_chunks)))
-        self.hrange = hrange
+        hrange = hash.range
+        assert hrange >= 1
 
         # The reference implementation of TT doesn't just split the input space,
         # but also the output space. We do the same if split_dim=True. However,
@@ -85,8 +84,7 @@ class TensorTrainEmbedding(nn.Module):
     def reset_parameters(self):
         # To get unit-norm output vectors, as we generally want for DLRM type
         # systems, we need to scale each core by 1/sqrt(rank * dim), except for
-        # start, which is only scaled by 1/sqrt(dim). This is assuming we split-dim.
-        # Otherwise we just scale all cores by 1/sqrt(rank) and one by 1/sqrt(dim).
+        # start, which is only scaled by 1/sqrt(dim).
         _, dim, rank = self.start_core.shape
         if self.split_dim:
             scale = (dim * rank) ** -.5
@@ -103,22 +101,19 @@ class TensorTrainEmbedding(nn.Module):
         return self.start_core.numel() + self.end_core.numel() + self.cores.numel()
 
     def forward(self, x):
-        # Perform QR-decomposition of x
-        hs = []
-        for _ in range(self.n_chunks):
-            hs.append(x % self.hrange)
-            x = x // self.hrange
-
-        v = self.end_core[hs[-1]] # (batch, dim, rank)
+        hs = self.hash(x)
+        v = self.end_core[hs[:, -1]] # (batch, dim, rank)
         if not self.split_dim:
-            for core, indices in zip(self.cores, hs[1:-1]):
-                v = torch.einsum('bdrs,bdr->bds', core[indices], v)
-            v = torch.einsum('bdr,bdr->bd', self.start_core[hs[0]], v)
+            for i in range(hs.shape[1]-2):
+                hi = hs[:, i+1]
+                v = torch.einsum('bdrs,bdr->bds', self.cores[i, hi], v)
+            v = torch.einsum('bdr,bdr->bd', self.start_core[hs[:, 0]], v)
         else:
-            for core, indices in zip(self.cores, hs[1:-1]):
-                v = torch.einsum('bdrs,ber->bdes', core[indices], v)
+            for i in range(hs.shape[1]-2):
+                hi = hs[:, i+1]
+                v = torch.einsum('bdrs,ber->bdes', self.cores[i, hi], v)
                 v = v.flatten(1, 2)
-            v = torch.einsum('bdr,ber->bde', self.start_core[hs[0]], v)
+            v = torch.einsum('bdr,ber->bde', self.start_core[hs[:, 0]], v)
             v = v.flatten(1, 2)
             v = v[:, :self.dim]
         return v
