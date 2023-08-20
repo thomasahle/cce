@@ -146,7 +146,24 @@ Epoch: 8, Train Loss: 0.313, Validation Loss: 0.476
 Epoch: 9, Train Loss: 0.309, Validation Loss: 0.484
 </pre>
 
-## Paper
+[Tensor Train (TT-Rec)](https://arxiv.org/abs/2101.11714):
+Clustered Compositional Embeddings without clustering:
+<pre>
+$ py examples/movielens.py --method tt
+Unique users: 943, Unique items: 1682, #params: 6400
+Notice: Using 6336 params, rather than 6400. rank=12, output_bits=3
+Notice: Using 6336 params, rather than 6400. rank=12, output_bits=3
+Epoch: 0, Time: 6.55s, Train Loss: 0.488, Validation Loss: 0.447
+Epoch: 1, Time: 4.03s, Train Loss: 0.425, Validation Loss: 0.426
+Epoch: 2, Time: 4.02s, Train Loss: 0.406, Validation Loss: 0.421
+Epoch: 3, Time: 4.04s, Train Loss: 0.395, Validation Loss: 0.418
+Epoch: 4, Time: 4.01s, Train Loss: 0.385, Validation Loss: 0.416
+Epoch: 5, Time: 3.98s, Train Loss: 0.377, Validation Loss: 0.419
+Epoch: 6, Time: 4.02s, Train Loss: 0.37, Validation Loss: 0.418
+Epoch: 7, Time: 4.08s, Train Loss: 0.363, Validation Loss: 0.417
+Epoch: 8, Time: 3.95s, Train Loss: 0.357, Validation Loss: 0.422
+Epoch: 9, Time: 3.97s, Train Loss: 0.351, Validation Loss: 0.422
+</pre>
 
 ## Citation
 
@@ -163,6 +180,5 @@ Epoch: 9, Train Loss: 0.309, Validation Loss: 0.484
 
 Some algorithms we'd like to add to this repository in the future:
 - [Hash Embeddings](https://arxiv.org/abs/1709.03933)
-- [Tensor Train (TT-Rec)](https://arxiv.org/abs/2101.11714)
 - [DHE](https://arxiv.org/abs/2010.10784)
 - [HashedNet](https://arxiv.org/abs/1504.04788)
