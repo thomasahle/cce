@@ -54,20 +54,15 @@ def make_embedding(vocab, num_params, dimension, method):
         nn.init.uniform_(emb.weight, -(dimension**-0.5), dimension**-0.5)
         return emb
     elif method == 'tt':
-        # If we set `hrange^nchunks = vocab^2` we should not have any collisions.
-        # In other words, we want `hrange ~ vocab^(2/nchunks)`.
-        output_bits = int(math.log2(vocab) / n_chunks) + 1
         # Find largest allowable rank
         tt, rank = None, 1
         while True:
-            tt_new = cce.TensorTrainEmbedding(rank, dimension,
-                hash=cce.MultiHash(num_hashes=n_chunks, output_bits=output_bits),
-                split_dim=True)
+            tt_new = cce.TensorTrainEmbedding(rank, dimension, vocab, n_chunks, split_dim=True)
             if tt_new.size() > num_params:
                 break
             tt = tt_new
             rank += 1
-        print(f"Notice: Using {tt.size()} params, rather than {num_params}. {rank=}, {output_bits=}")
+        print(f"Notice: Using {tt.size()} params, rather than {num_params}. {rank=}")
         return tt
     raise Exception(f'{method=} not supported.')
 

@@ -47,6 +47,7 @@
 import torch
 import torch.nn as nn
 from cce import hash
+import math
 
 class TensorTrainEmbedding(nn.Module):
     # total params: chunks * hrange^(1/chunks) * dim * rank^2
@@ -54,17 +55,18 @@ class TensorTrainEmbedding(nn.Module):
         self,
         rank: int,
         dim: int,
-        hash: hash.MultiHash,
+        vocab: int,
+        n_chunks: int,
         split_dim=True,
     ):
         super().__init__()
         self.hash = hash
-        n_chunks, = hash.hash_coeffs.shape
         self.n_chunks = n_chunks
         assert n_chunks >= 2
-        assert hash.output_bits >= 1
         self.rank = rank
-        hrange = 2 ** hash.output_bits
+
+        hrange = int(math.ceil(vocab ** (1 / n_chunks)))
+        self.hrange = hrange
 
         # The reference implementation of TT doesn't just split the input space,
         # but also the output space. We do the same if split_dim=True. However,
@@ -73,7 +75,7 @@ class TensorTrainEmbedding(nn.Module):
         self.dim = dim
         self.split_dim = split_dim
         if split_dim:
-            dim = int(1 + dim ** (1 / n_chunks))
+            dim = int(math.ceil(dim ** (1 / n_chunks)))
 
         self.start_core = nn.Parameter(torch.empty(hrange, dim, rank))
         self.end_core = nn.Parameter(torch.empty(hrange, dim, rank))
@@ -101,19 +103,22 @@ class TensorTrainEmbedding(nn.Module):
         return self.start_core.numel() + self.end_core.numel() + self.cores.numel()
 
     def forward(self, x):
-        hs = self.hash(x)
-        v = self.end_core[hs[:, -1]] # (batch, dim, rank)
+        # Perform QR-decomposition of x
+        hs = []
+        for _ in range(self.n_chunks):
+            hs.append(x % self.hrange)
+            x = x // self.hrange
+
+        v = self.end_core[hs[-1]] # (batch, dim, rank)
         if not self.split_dim:
-            for i in range(hs.shape[1]-2):
-                hi = hs[:, i+1]
-                v = torch.einsum('bdrs,bdr->bds', self.cores[i, hi], v)
-            v = torch.einsum('bdr,bdr->bd', self.start_core[hs[:, 0]], v)
+            for core, indices in zip(self.cores, hs[1:-1]):
+                v = torch.einsum('bdrs,bdr->bds', core[indices], v)
+            v = torch.einsum('bdr,bdr->bd', self.start_core[hs[0]], v)
         else:
-            for i in range(hs.shape[1]-2):
-                hi = hs[:, i+1]
-                v = torch.einsum('bdrs,ber->bdes', self.cores[i, hi], v)
+            for core, indices in zip(self.cores, hs[1:-1]):
+                v = torch.einsum('bdrs,ber->bdes', core[indices], v)
                 v = v.flatten(1, 2)
-            v = torch.einsum('bdr,ber->bde', self.start_core[hs[:, 0]], v)
+            v = torch.einsum('bdr,ber->bde', self.start_core[hs[0]], v)
             v = v.flatten(1, 2)
             v = v[:, :self.dim]
         return v
