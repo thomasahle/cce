@@ -95,7 +95,7 @@ class CCERobembedding(nn.Module):
 
             # We might as well do iid sampling for each column
             x = (
-                torch.from_numpy(np.random.choice(self.size, n_samples, replace=False))
+                torch.from_numpy(np.random.choice(self.vocab, n_samples, replace=False))
                 if n_samples < self.vocab
                 else torch.arange(self.vocab)
             )

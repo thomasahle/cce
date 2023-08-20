@@ -37,8 +37,12 @@ script_dir=$(dirname "$0") # Directory where the script is located
 # Number of times to run the program
 runs=3
 
+# ppd = 2^i where i in [lo_pow, hi_pow]
+lo_pow=5
+hi_pow=12
+
 # Progress bar variables
-total=$((10 * runs))
+total=$(((hi_pow - lo_pow + 1) * runs))
 current=0
 bar_length=50 # 50 characters long
 
@@ -48,9 +52,6 @@ print_progress_bar() {
     local empty=$((bar_length - filled))
     printf 'Progress: [%-*s] %d%%\r' $bar_length $(printf '#%.0s' $(seq 1 $filled)) $percent
 }
-
-lo_pow=5
-hi_pow=12
 
 # Print an initial empty progress bar
 print_progress_bar 0

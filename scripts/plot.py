@@ -20,8 +20,8 @@ with open(sys.argv[1]) as f:
 
 plt.figure()
 for method, values in data.items():
-    if method == 'robe':
-        continue
+    # if method == 'robe':
+    #     continue
     x, y = zip(*values)
     y_median = [np.median(triple) for triple in y]
     y_lower = [min(triple) for triple in y]

@@ -6,16 +6,9 @@ import numpy as np
 from surprise import Dataset
 from torch.utils.data import Dataset as TorchDataset, DataLoader
 import argparse
+import time
 
 import cce
-
-device = "cpu"
-# MPS has some bugs related to broadcasting scatter_add
-# if torch.backends.mps.is_available():
-#     device = torch.device("mps")
-if torch.cuda.is_available():
-    device = "cuda:0"
-print(f'Device: {device}')
 
 
 methods = ['robe', 'ce', 'simple', 'cce', 'full', 'tt', 'cce_robe']
@@ -114,6 +107,7 @@ def main():
     parser.add_argument('--ppd', type=int, default=200, help='Parameters per dimension')
     parser.add_argument('--dataset', type=str, default='ml-100k', choices=['ml-100k', 'ml-1m'])
     parser.add_argument('--seed', type=int, default=0xcce)
+    parser.add_argument('--num-workers', type=int, default=1)
     args = parser.parse_args()
 
     # Seed for reproducability
@@ -134,6 +128,14 @@ def main():
     n_items = df["item"].nunique()
     print(f'Unique users: {n_users}, Unique items: {n_items}, #params: {num_params}')
 
+    device = "cpu"
+    # MPS has some bugs related to broadcasting scatter_add
+    # if torch.backends.mps.is_available():
+    #     device = torch.device("mps")
+    if torch.cuda.is_available():
+        device = "cuda:0"
+    print(f'Device: {device}')
+
     model = RecommenderNet(n_users, n_items, num_params, dim=dim, method=args.method).to(device)
     criterion = nn.BCELoss()
     optimizer = torch.optim.AdamW(model.parameters())
@@ -143,12 +145,13 @@ def main():
     valid = df.drop(train.index)
     train_tensor = RatingDataset(train)
     valid_tensor = RatingDataset(valid)
-    train_loader = DataLoader(train_tensor, batch_size=64, shuffle=True)
-    valid_loader = DataLoader(valid_tensor, batch_size=64, shuffle=False)
+    train_loader = DataLoader(train_tensor, batch_size=64, shuffle=True, num_workers=args.num_workers, persistent_workers=True)
+    valid_loader = DataLoader(valid_tensor, batch_size=64, shuffle=False, num_workers=args.num_workers, persistent_workers=True)
 
 
     # Train the model
     for epoch in range(args.epochs):
+        start = time.time()
         model.train()
         total_loss = 0
         for user, item, label in train_loader:
@@ -172,12 +175,13 @@ def main():
                 total_loss += loss.item()
             valid_loss = total_loss/len(valid_loader)
 
-        print(f"Epoch: {epoch}, Train Loss: {train_loss:.3}, Validation Loss: {valid_loss:.3}")
+        print(f"Epoch: {epoch}, Time: {time.time() - start:.3}s, Train Loss: {train_loss:.3}, Validation Loss: {valid_loss:.3}")
 
         if model.method in ('cce', 'cce_robe') and epoch < args.last_cluster:
-            print('Clustering...')
+            start = time.time()
             model.user_embedding.cluster(verbose=False)
             model.item_embedding.cluster(verbose=False)
+            print(f'Clustering. Time: {time.time() - start:.3}s')
 
 
 if __name__ == '__main__':
