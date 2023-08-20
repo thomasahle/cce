@@ -9,6 +9,35 @@ else:
     import faiss
 
 
+class KMeans:
+    def __init__(self, n, dim, n_iter, n_init=1, verbose=False):
+        if use_sklearn:
+            self.kmeans = sklearn.cluster.KMeans(
+                n, max_iter=n_iter, n_init=n_init, verbose=verbose
+            )
+        else:
+            self.kmeans = faiss.Kmeans(
+                dim, n, niter=n_iter, nredo=n_init, verbose=verbose
+            )
+
+    def fit(self, vecs):
+        vecs = vecs.detach().numpy()
+        if use_sklearn:
+            self.kmeans.fit(vecs)
+            return torch.from_numpy(self.kmeans.cluster_centers_)
+        else:
+            self.kmeans.train(vecs)
+            return torch.from_numpy(self.kmeans.centroids)
+
+    def find_nearest(self, bvecs):
+        if use_sklearn:
+            I = self.kmeans.predict(bvecs.detach().numpy().astype(np.float32))
+            return torch.from_numpy(I).to(torch.long)
+        else:
+            _D, I = self.kmeans.index.search(bvecs.detach().numpy(), 1)
+            return torch.from_numpy(I[:, 0])
+
+
 class CCEmbedding(nn.Module):
     def __init__(
         self,
@@ -20,7 +49,7 @@ class CCEmbedding(nn.Module):
         super().__init__()
         self.vocab = vocab
         self.table0 = nn.Parameter(torch.empty(rows, n_chunks, chunk_size))
-        self.table1 = nn.Parameter(torch.zeros(rows, n_chunks, chunk_size))
+        self.table1 = nn.Parameter(torch.empty(rows, n_chunks, chunk_size))
         self.reset_parameters()
 
     def reset_parameters(self):
@@ -51,33 +80,19 @@ class CCEmbedding(nn.Module):
         # TODO: What if n_samples > rows?
 
         with torch.no_grad():
-            if use_sklearn:
-                kmeans = sklearn.cluster.KMeans(
-                    rows, max_iter=niter, verbose=verbose, n_init=redo
-                )
-            else:
-                kmeans = faiss.Kmeans(
-                    chunk_size, rows, niter=niter, nredo=redo, verbose=verbose
-                )
+            kmeans = KMeans(rows, chunk_size, n_iter=niter, n_init=redo, verbose=verbose)
 
             for i in range(n_chunks):
                 # We might as well do iid sampling for each column
-                if n_samples < vocab:
-                    x = torch.from_numpy(
-                        np.random.choice(vocab, n_samples, replace=False)
-                    )
-                else:
-                    x = torch.arange(vocab)
+                x = (
+                    torch.from_numpy(np.random.choice(vocab, n_samples, replace=False))
+                    if n_samples < vocab
+                    else torch.arange(vocab)
+                )
 
                 # Compute current representations in the column and cluster them
                 vecs = self.table0[self.h0[x, i], i] + self.table1[self.h1[x, i], i]
-                vecs = vecs.detach().numpy()
-                if use_sklearn:
-                    kmeans.fit(vecs)
-                    centroids = torch.from_numpy(kmeans.cluster_centers_)
-                else:
-                    kmeans.train(vecs)
-                    centroids = torch.from_numpy(kmeans.centroids)
+                centroids = kmeans.fit(vecs)
 
                 # In the case where the vocab is really big, we decode it in batches.
                 sums = torch.zeros(rows, chunk_size)
@@ -92,12 +107,7 @@ class CCEmbedding(nn.Module):
                     )
 
                     # Set the new h0 based on decoding he batch in the centroids
-                    if use_sklearn:
-                        I = kmeans.predict(bvecs.detach().numpy().astype(np.float32))
-                        self.h0[ids, i] = torch.from_numpy(I).to(torch.long)
-                    else:
-                        _D, I = kmeans.index.search(bvecs.detach().numpy(), 1)
-                        self.h0[ids, i] = torch.from_numpy(I[:, 0])
+                    self.h0[ids, i] = kmeans.find_nearest(bvecs)
 
                     # Second table is initialized at random
                     self.h1[:, i] = torch.randint(rows, size=(vocab,))
@@ -113,4 +123,3 @@ class CCEmbedding(nn.Module):
                 # Initialize table 1 using residuals. This is a arguably a tiny bit better
                 # than 0 initialization.
                 self.table1[:, i, :] = sums / counts.unsqueeze(-1)
-                # self.table1[:, i, :] = 0

@@ -9,7 +9,7 @@ import argparse
 
 import cce
 
-methods = ['robe', 'ce', 'simple', 'cce', 'full', 'tt']
+methods = ['robe', 'ce', 'simple', 'cce', 'full', 'tt', 'cce_robe']
 
 def make_embedding(vocab, num_params, dimension, method):
     n_chunks = 4
@@ -42,6 +42,11 @@ def make_embedding(vocab, num_params, dimension, method):
         return cce.CCEmbedding(
             vocab=vocab, rows=rows, chunk_size=dimension//n_chunks, n_chunks=n_chunks,
         )
+    elif method == 'cce_robe':
+        size = num_params // 2
+        return cce.CCERobembedding(
+            vocab=vocab, size=size, chunk_size=dimension//n_chunks, n_chunks=n_chunks,
+        )
     elif method == 'full':
         emb = nn.Embedding(vocab, dimension)
         nn.init.uniform_(emb.weight, -(dimension**-0.5), dimension**-0.5)
@@ -61,6 +66,8 @@ def make_embedding(vocab, num_params, dimension, method):
         print(f'{rank=}, {output_bits=}')
         return cce.TensorTrainEmbedding(rank, dimension,
             hash=cce.MultiHash(num_hashes=n_chunks, output_bits=output_bits))
+    raise Error(f'{method=} not supported.')
+
 
 class RatingDataset(TorchDataset):
     def __init__(self, df): self.df = df
@@ -157,7 +164,7 @@ def main():
 
         print(f"Epoch: {epoch}, Train Loss: {train_loss:.3}, Validation Loss: {valid_loss:.3}")
 
-        if model.method == 'cce' and epoch < args.last_cluster:
+        if model.method in ('cce', 'cce_robe') and epoch < args.last_cluster:
             print('Clustering...')
             model.user_embedding.cluster(verbose=False)
             model.item_embedding.cluster(verbose=False)
