@@ -157,7 +157,7 @@ Epoch: 0, Time: 6.55s, Train Loss: 0.488, Validation Loss: 0.447
 Epoch: 1, Time: 4.03s, Train Loss: 0.425, Validation Loss: 0.426
 Epoch: 2, Time: 4.02s, Train Loss: 0.406, Validation Loss: 0.421
 Epoch: 3, Time: 4.04s, Train Loss: 0.395, Validation Loss: 0.418
-Epoch: 4, Time: 4.01s, Train Loss: 0.385, Validation Loss: 0.416
+Epoch: 4, Time: 4.01s, Train Loss: 0.385, Validation Loss: <b>0.416</b>
 Epoch: 5, Time: 3.98s, Train Loss: 0.377, Validation Loss: 0.419
 Epoch: 6, Time: 4.02s, Train Loss: 0.37, Validation Loss: 0.418
 Epoch: 7, Time: 4.08s, Train Loss: 0.363, Validation Loss: 0.417
