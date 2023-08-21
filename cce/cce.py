@@ -79,7 +79,9 @@ class CCEmbedding(nn.Module):
         # TODO: What if n_samples > rows?
 
         with torch.no_grad():
-            kmeans = KMeans(rows, chunk_size, n_iter=niter, n_init=redo, verbose=verbose)
+            kmeans = KMeans(
+                rows, chunk_size, n_iter=niter, n_init=redo, verbose=verbose
+            )
 
             for i in range(n_chunks):
                 # We might as well do iid sampling for each column

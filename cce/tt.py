@@ -1,12 +1,12 @@
 # [ ] - [ ] - [ ]
 #  |     |     |
-# 
+#
 #  The simple case is just low-rank matrix
 # [ ] - [ ]
 #  |     |
-# 
+#
 #  (UV)_{ij} = e_i U V e_j = <U_i, V_j>
-# 
+#
 #  So it's  more like I have a bunch of stacks of matrices, and I pick one from each.
 #  And from the ends I just pick a vector.
 
@@ -49,6 +49,7 @@ import torch.nn as nn
 import math
 from cce import hash
 
+
 class TensorTrainEmbedding(nn.Module):
     # total params: chunks * hrange^(1/chunks) * dim * rank^2
     def __init__(
@@ -87,33 +88,33 @@ class TensorTrainEmbedding(nn.Module):
         # start, which is only scaled by 1/sqrt(dim).
         _, dim, rank = self.start_core.shape
         if self.split_dim:
-            scale = (dim * rank) ** -.5
+            scale = (dim * rank) ** -0.5
             nn.init.uniform_(self.cores, -scale, scale)
             nn.init.uniform_(self.end_core, -scale, scale)
-            nn.init.uniform_(self.start_core, -dim**-.5, dim**-.5)
+            nn.init.uniform_(self.start_core, -(dim**-0.5), dim**-0.5)
         else:
-            scale = rank ** -.5
+            scale = rank**-0.5
             nn.init.uniform_(self.cores, -scale, scale)
             nn.init.uniform_(self.end_core, -scale, scale)
-            nn.init.uniform_(self.start_core, -dim**-.5, dim**-.5)
+            nn.init.uniform_(self.start_core, -(dim**-0.5), dim**-0.5)
 
     def size(self):
         return self.start_core.numel() + self.end_core.numel() + self.cores.numel()
 
     def forward(self, x):
         hs = self.hash(x)
-        v = self.end_core[hs[:, -1]] # (batch, dim, rank)
+        v = self.end_core[hs[:, -1]]  # (batch, dim, rank)
         if not self.split_dim:
-            for i in range(hs.shape[1]-2):
-                hi = hs[:, i+1]
-                v = torch.einsum('bdrs,bdr->bds', self.cores[i, hi], v)
-            v = torch.einsum('bdr,bdr->bd', self.start_core[hs[:, 0]], v)
+            for i in range(hs.shape[1] - 2):
+                hi = hs[:, i + 1]
+                v = torch.einsum("bdrs,bdr->bds", self.cores[i, hi], v)
+            v = torch.einsum("bdr,bdr->bd", self.start_core[hs[:, 0]], v)
         else:
-            for i in range(hs.shape[1]-2):
-                hi = hs[:, i+1]
-                v = torch.einsum('bdrs,ber->bdes', self.cores[i, hi], v)
+            for i in range(hs.shape[1] - 2):
+                hi = hs[:, i + 1]
+                v = torch.einsum("bdrs,ber->bdes", self.cores[i, hi], v)
                 v = v.flatten(1, 2)
-            v = torch.einsum('bdr,ber->bde', self.start_core[hs[:, 0]], v)
+            v = torch.einsum("bdr,ber->bde", self.start_core[hs[:, 0]], v)
             v = v.flatten(1, 2)
-            v = v[:, :self.dim]
+            v = v[:, : self.dim]
         return v

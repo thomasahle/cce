@@ -15,9 +15,10 @@ class MultiHash(nn.Module):
 
     def forward(self, input_tensor):
         """[x1, x2, x3, ...] -> [[h1(x1), h2(x1)], [h2(x1), h2(x2)], ...]"""
-        return ((
-            (input_tensor[..., None] * self.hash_coeffs) & (2**62 - 1)
-        ) >> 62 - self.output_bits) % self.range
+        return (
+            ((input_tensor[..., None] * self.hash_coeffs) & (2**62 - 1))
+            >> 62 - self.output_bits
+        ) % self.range
 
 
 class QRHash(nn.Module):
@@ -46,11 +47,12 @@ class PolyHash(nn.Module):
         self.num_hashes = num_hashes
         self.range = output_range
         assert output_range <= 2**31 - 1, "Must be less than the Mersenne 2^31-1"
-        self.cs = nn.Parameter(torch.randint(1, 1 << 31 - 1, size=(num_hashes,)), requires_grad=False)
+        self.cs = nn.Parameter(
+            torch.randint(1, 1 << 31 - 1, size=(num_hashes,)), requires_grad=False
+        )
 
     def forward(self, input_tensor):
         """[x1, x2, x3, ...] -> [[h1(x1), h2(x1)], [h2(x1), h2(x2)], ...]"""
         x = input_tensor[..., None] * self.cs
         # Could speed this up a bit using fancy Mersenne output tricks
-        return x % (2 ** 31 - 1) % self.range
-
+        return x % (2**31 - 1) % self.range

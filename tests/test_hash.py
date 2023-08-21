@@ -1,13 +1,14 @@
 import pytest
 import torch
 from itertools import product
+import math
 
 from cce import hash
 
 
 @pytest.mark.parametrize("num_hashes, output_bits", product([100], range(5, 7)))
 def test_multi(num_hashes, output_bits):
-    h = hash.MultiHash(num_hashes, output_bits)
+    h = hash.MultiHash(num_hashes, 2**output_bits)
     n = 10000
     x = torch.randint(2**62, size=(n,))
     hs = h(x)

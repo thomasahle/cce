@@ -13,7 +13,7 @@ from sklearn.metrics import roc_auc_score
 import cce
 
 
-methods = ['robe', 'ce', 'simple', 'cce', 'full', 'tt', 'cce_robe']
+methods = ['robe', 'ce', 'simple', 'cce', 'full', 'tt', 'cce_robe', 'dhe']
 
 def make_embedding(vocab, num_params, dimension, method):
     n_chunks = 4
@@ -67,6 +67,18 @@ def make_embedding(vocab, num_params, dimension, method):
             rank += 1
         print(f"Notice: Using {tt.size()} params, rather than {num_params}. {rank=}, {hash.range=}")
         return tt
+    elif method == 'dhe':
+        # Find largest allowable rank
+        emb, rank = None, 1
+        while True:
+            hash = cce.MultiHash(num_hashes=rank, output_range=2**62)
+            n_hidden = int(math.ceil(rank**(1/n_chunks)))
+            emb_new = cce.DeepHashEmbedding(rank, dimension, n_hidden, hash)
+            if emb_new.size() > num_params:
+                break
+            emb, rank = emb_new, rank+1
+        print(f"Notice: Using {emb.size()} params, rather than {num_params}. {rank=}, {n_hidden=}")
+        return emb
     raise Exception(f'{method=} not supported.')
 
 
@@ -94,8 +106,8 @@ class RecommenderNet(nn.Module):
         user_emb = self.user_embedding(user)
         item_emb = self.item_embedding(item)
         bs, dim = user_emb.shape
-        mix = torch.relu(user_emb + item_emb)
-        # mix = user_emb * item_emb
+        # mix = torch.relu(user_emb + item_emb)
+        mix = user_emb * item_emb
         return self.mlp(mix).view(-1)
 
 

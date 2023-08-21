@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from cce import hash
 
+
 def get_slices(table, indices, chunk_size):
     """
     This function fetches multiple slices from a tensor, `table`. Each slice is determined
@@ -25,7 +26,11 @@ def get_slices(table, indices, chunk_size):
     If table = [0, 1, 2, 3, 4] and indices = [[0, 3], [2, 1]], and chunk_size = 2:
     Result will be [[[0, 1], [3, 4]], [[2, 3], [1, 2]]]
     """
-    return table[(indices[..., None] + torch.arange(chunk_size, device=indices.device)) % len(table)]
+    return table[
+        (indices[..., None] + torch.arange(chunk_size, device=indices.device))
+        % len(table)
+    ]
+
 
 class RobeEmbedding(nn.Module):
     def __init__(
@@ -47,5 +52,7 @@ class RobeEmbedding(nn.Module):
     def forward(self, input_tensor):
         batch_size = input_tensor.shape
         hash_values = self.hash(input_tensor)  # (batch_size, num_hashes)
-        slices = get_slices(self.table, hash_values, self.chunk_size) # (batch_size, num_hashes, chunk_size)
+        slices = get_slices(
+            self.table, hash_values, self.chunk_size
+        )  # (batch_size, num_hashes, chunk_size)
         return slices.flatten(start_dim=-2)
