@@ -183,3 +183,5 @@ Some algorithms we'd like to add to this repository in the future:
 - [Hash Embeddings](https://arxiv.org/abs/1709.03933)
 - [DHE](https://arxiv.org/abs/2010.10784)
 - [HashedNet](https://arxiv.org/abs/1504.04788)
+
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/clustering-embedding-tables-without-first/click-through-rate-prediction-on-criteo)](https://paperswithcode.com/sota/click-through-rate-prediction-on-criteo?p=clustering-embedding-tables-without-first)
