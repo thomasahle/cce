@@ -7,6 +7,8 @@ from surprise import Dataset
 from torch.utils.data import Dataset as TorchDataset, DataLoader
 import argparse
 import time
+from sklearn.metrics import roc_auc_score
+
 
 import cce
 
@@ -92,7 +94,9 @@ class RecommenderNet(nn.Module):
         user_emb = self.user_embedding(user)
         item_emb = self.item_embedding(item)
         bs, dim = user_emb.shape
-        return self.mlp(user_emb * item_emb).view(-1)
+        mix = torch.relu(user_emb + item_emb)
+        # mix = user_emb * item_emb
+        return self.mlp(mix).view(-1)
 
 
 def main():
@@ -164,15 +168,20 @@ def main():
         # Validate the model
         model.eval()
         total_loss = 0
+        y_true, y_pred = [], []  # To collect the true labels and the predicted scores
         with torch.no_grad():
             for user, item, label in valid_loader:
                 user, item, label = user.to(device).long(), item.to(device).long(), label.to(device).float()
                 prediction = model(user, item)
                 loss = criterion(prediction, label)
                 total_loss += loss.item()
-            valid_loss = total_loss/len(valid_loader)
 
-        print(f"Epoch: {epoch}, Time: {time.time() - start:.3}s, Train Loss: {train_loss:.3}, Validation Loss: {valid_loss:.3}")
+                y_true.extend(label.cpu().numpy().tolist())
+                y_pred.extend(prediction.cpu().numpy().tolist())
+            valid_loss = total_loss/len(valid_loader)
+            valid_auc = roc_auc_score(y_true, y_pred)
+
+        print(f"Epoch: {epoch}, Time: {time.time() - start:.3}s, Train Loss: {train_loss:.3}, Validation Loss: {valid_loss:.3}, AUC: {valid_auc:.3}")
 
         if model.method in ('cce', 'cce_robe') and epoch < args.last_cluster:
             start = time.time()
