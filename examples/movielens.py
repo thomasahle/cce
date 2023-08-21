@@ -19,25 +19,20 @@ def make_embedding(vocab, num_params, dimension, method):
     assert n_chunks * chunk_dim == dimension, f"Dimension not divisible by {n_chunks}"
 
     if method == 'robe':
-        log_size = int(math.log2(num_params))
+        hash = cce.PolyHash(num_hashes=n_chunks, output_range=num_params)
         return cce.RobeEmbedding(
             size=num_params,
             chunk_size=chunk_dim,
-            hash=cce.MultiHash(num_hashes=n_chunks, output_bits=log_size),
+            hash=hash
         )
     if method == 'ce':
         rows = num_params // dimension
-        return cce.CompositionalEmbedding(
-            rows=rows,
-            chunk_size=chunk_dim,
-            hash=cce.MultiHash(num_hashes=n_chunks, output_bits=int(math.log2(rows))),
-        )
+        hash = cce.PolyHash(num_hashes=n_chunks, output_range=rows)
+        return cce.CompositionalEmbedding(rows=rows, chunk_size=chunk_dim, hash=hash)
     elif method == 'simple':
-        num_embeddings = num_params // dimension
-        return cce.SimpleEmbedding(
-            num_embeddings, dimension,
-            hash=cce.SingleHash(output_bits=int(math.log2(num_embeddings))),
-        )
+        rows = num_params // dimension
+        hash = cce.PolyHash(num_hashes=1, output_range=rows)
+        return cce.CompositionalEmbedding(rows=rows, chunk_size=dimension, hash=hash)
     elif method == 'cce':
         # Divide by two, since the CCE embedding will use two tables with each `row` rows.
         rows = num_params // dimension // 2
@@ -54,16 +49,11 @@ def make_embedding(vocab, num_params, dimension, method):
         nn.init.uniform_(emb.weight, -(dimension**-0.5), dimension**-0.5)
         return emb
     elif method == 'tt':
-        # If we set `hrange^nchunks = vocab^2` we should not have any collisions.
-        # In other words, we want `hrange ~ vocab^(2/nchunks)`.
-        output_bits = max(int(math.log2(vocab) * 2 / n_chunks), 1)
-        hash = cce.MultiHash(num_hashes=n_chunks, output_bits=output_bits)
-
-        # If we use use QRHash there are no collisions, so we can just use
-        # output_range = vocab ^ 1/n_chunks. This is another of those tricks
-        # that work well on "example data", but not really on large data.
-        # output_range = int(math.ceil(vocab ** (1 / n_chunks)))
-        # hash = cce.QRHash(num_hashes=n_chunks, output_range=output_range)
+        # For TT we use a QR "Hash" which doesn't have collisions.
+        # This hash makes sense for TT-Rec more than the other methods, since
+        # TT-Rec tends to have much smaller ranges than the other methods.
+        output_range = int(math.ceil(vocab ** (1 / n_chunks)))
+        hash = cce.QRHash(num_hashes=n_chunks, output_range=output_range)
 
         # Find largest allowable rank
         tt, rank = None, 1

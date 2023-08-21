@@ -12,7 +12,7 @@ class CompositionalEmbedding(nn.Module):
     ):
         super().__init__()
         self.hash = hash
-        (n_chunks,) = hash.hash_coeffs.shape
+        n_chunks = hash.num_hashes
         self.table = nn.Parameter(torch.empty(rows, n_chunks, chunk_size))
         self.reset_parameters()
 

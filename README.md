@@ -151,18 +151,19 @@ Clustered Compositional Embeddings without clustering:
 <pre>
 $ py examples/movielens.py --method tt
 Unique users: 943, Unique items: 1682, #params: 6400
-Notice: Using 6336 params, rather than 6400. rank=12, output_bits=3
-Notice: Using 6336 params, rather than 6400. rank=12, output_bits=3
-Epoch: 0, Time: 6.55s, Train Loss: 0.488, Validation Loss: 0.447
-Epoch: 1, Time: 4.03s, Train Loss: 0.425, Validation Loss: 0.426
-Epoch: 2, Time: 4.02s, Train Loss: 0.406, Validation Loss: 0.421
-Epoch: 3, Time: 4.04s, Train Loss: 0.395, Validation Loss: 0.418
-Epoch: 4, Time: 4.01s, Train Loss: 0.385, Validation Loss: <b>0.416</b>
-Epoch: 5, Time: 3.98s, Train Loss: 0.377, Validation Loss: 0.419
-Epoch: 6, Time: 4.02s, Train Loss: 0.37, Validation Loss: 0.418
-Epoch: 7, Time: 4.08s, Train Loss: 0.363, Validation Loss: 0.417
-Epoch: 8, Time: 3.95s, Train Loss: 0.357, Validation Loss: 0.422
-Epoch: 9, Time: 3.97s, Train Loss: 0.351, Validation Loss: 0.422
+Device: cpu
+Notice: Using 5616 params, rather than 6400. rank=13, hash.range=6
+Notice: Using 5544 params, rather than 6400. rank=12, hash.range=7
+Epoch: 0, Time: 7.32s, Train Loss: 0.486, Validation Loss: 0.444
+Epoch: 1, Time: 4.68s, Train Loss: 0.415, Validation Loss: 0.406
+Epoch: 2, Time: 4.33s, Train Loss: 0.392, Validation Loss: 0.393
+Epoch: 3, Time: 4.32s, Train Loss: 0.38, Validation Loss: 0.391
+Epoch: 4, Time: 4.09s, Train Loss: 0.372, Validation Loss: <b>0.388</b>
+Epoch: 5, Time: 5.01s, Train Loss: 0.367, Validation Loss: 0.388
+Epoch: 6, Time: 4.57s, Train Loss: 0.361, Validation Loss: 0.388
+Epoch: 7, Time: 4.4s, Train Loss: 0.357, Validation Loss: 0.389
+Epoch: 8, Time: 4.21s, Train Loss: 0.352, Validation Loss: 0.39
+Epoch: 9, Time: 4.22s, Train Loss: 0.348, Validation Loss: 0.391
 </pre>
 
 ## Citation
