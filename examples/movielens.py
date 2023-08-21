@@ -33,6 +33,8 @@ def make_embedding(vocab, num_params, dimension, method):
         return cce.CompositionalEmbedding(rows=rows, chunk_size=chunk_dim, hash=hash)
     elif method == 'hash':
         rows = num_params // dimension
+        # TODO: When we index multiple (k) pointers into the same space, do we need to use
+        # k-independent hashing instead of 2 independent hashing?
         hash = cce.PolyHash(num_hashes=n_chunks, output_range=rows)
         return cce.HashEmbedding(rows, dimension, hash)
     elif method == 'simple':

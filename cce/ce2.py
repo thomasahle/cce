@@ -21,5 +21,7 @@ class HashEmbedding(nn.Module):
         nn.init.uniform_(self.table, -(dim**-0.5), dim**-0.5)
 
     def forward(self, x):
-        # Shape will be (batch_size, num_hashes, dim)
+        hs = self.hash(x)
+        _, num_hashes = hs.shape
+        # table[hs].shape will be (batch_size, num_hashes, dim)
         return self.table[self.hash(x)].mean(dim=1)
