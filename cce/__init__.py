@@ -1,6 +1,7 @@
 from .robe import RobeEmbedding
 from .ce import CompositionalEmbedding
 from .ce2 import HashEmbedding
+from .hashnet import HashNetEmbedding
 from .tt import TensorTrainEmbedding
 from .cce import CCEmbedding
 from .cce_robe import CCERobembedding

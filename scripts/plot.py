@@ -1,10 +1,15 @@
 import sys
-import matplotlib.pyplot as plt
 import numpy as np
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('file')
+parser.add_argument('--plotly', action='store_true')
+args = parser.parse_args()
 
 main_title = None
 data = {}
-with open(sys.argv[1]) as f:
+with open(args.file) as f:
     for line in f:
         if line.startswith('# '):
             main_title = line.strip('#').strip()
@@ -18,21 +23,72 @@ with open(sys.argv[1]) as f:
                 #continue
             data[method].append((ppd, seeds))
 
-plt.figure()
-for method, values in data.items():
-    # if method == 'robe':
-    #     continue
-    x, y = zip(*values)
-    y_median = [np.median(triple) for triple in y]
-    y_lower = [min(triple) for triple in y]
-    y_upper = [max(triple) for triple in y]
+backend = 'pyplot'
+if args.plotly:
+    backend = 'plotly'
 
-    plt.plot(x, y_median, label=method)
-    plt.fill_between(x, y_lower, y_upper, alpha=0.2)
+if backend == 'pyplot':
+    import matplotlib.pyplot as plt
+    plt.figure()
+    for method, values in data.items():
+        x, y = zip(*values)
+        # y_median = [np.median(triple) for triple in y]
+        y_median = [np.mean(triple) for triple in y]
+        y_lower = [min(triple) for triple in y]
+        y_upper = [max(triple) for triple in y]
 
-plt.legend()
-plt.xlabel('Params/dim')
-plt.xscale('log')
-plt.ylabel('BCE')
-plt.title(main_title)
-plt.show()
+        plt.plot(x, y_median, label=method)
+        plt.fill_between(x, y_lower, y_upper, alpha=0.2)
+
+    plt.legend()
+    plt.xlabel('Params/dim')
+    plt.xscale('log')
+    plt.ylabel('BCE')
+    plt.title(main_title)
+    plt.show()
+
+if backend == 'plotly':
+    import plotly.graph_objects as go
+    fig = go.Figure()
+
+    # This will retrieve plotly's default color cycle
+    colorway = fig.layout.template.layout.colorway
+
+    # Determine the fixed y-axis range
+    all_y_values = [np.mean(triple) for values in data.values() for _, triple in values]
+    min_y = min(all_y_values)
+    max_y = max(all_y_values)
+
+    for index, (method, values) in enumerate(data.items()):
+        x, y = zip(*values)
+        y_median = [np.mean(triple) for triple in y]
+        y_lower = [min(triple) for triple in y]
+        y_upper = [max(triple) for triple in y]
+        color = colorway[index % len(colorway)]
+
+        # Adding the fill with a similar color but with transparency
+        fig.add_trace(go.Scatter(x=x+x[::-1], y=y_upper+y_lower[::-1],
+                                 fill='toself', fillcolor=f'rgba({int(color[1:3], 16)}, {int(color[3:5], 16)}, {int(color[5:7], 16)}, 0.2)',
+                                 line=dict(color='rgba(255,255,255,0)'),
+                                 legendgroup=method,
+                                 showlegend=False))
+
+        # Adding the main line
+        fig.add_trace(go.Scatter(x=x, y=y_median, mode='lines', name=method, legendgroup=method, line=dict(color=color)))
+
+
+    fig.update_layout(
+        title=main_title,
+        xaxis=dict(
+            type='log',
+            title='Params/dim'
+        ),
+        yaxis=dict(
+            title='BCE',
+            range=[min_y*0.99, max_y*1.01]  # Set the fixed y-axis range
+        ),
+        showlegend=True
+    )
+
+    # Saving the figure to an HTML file
+    fig.write_html("output_plot.html")

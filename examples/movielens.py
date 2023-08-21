@@ -13,7 +13,7 @@ from sklearn.metrics import roc_auc_score
 import cce
 
 
-methods = ['robe', 'ce', 'simple', 'cce', 'full', 'tt', 'cce_robe', 'dhe', 'hash']
+methods = ['robe', 'ce', 'simple', 'cce', 'full', 'tt', 'cce_robe', 'dhe', 'hash', 'hnet']
 
 def make_embedding(vocab, num_params, dimension, method):
     n_chunks = 4
@@ -37,6 +37,9 @@ def make_embedding(vocab, num_params, dimension, method):
         # k-independent hashing instead of 2 independent hashing?
         hash = cce.PolyHash(num_hashes=n_chunks, output_range=rows)
         return cce.HashEmbedding(rows, dimension, hash)
+    elif method == 'hnet':
+        hash = cce.PolyHash(num_hashes=dimension, output_range=num_params)
+        return cce.HashNetEmbedding(num_params, hash)
     elif method == 'simple':
         rows = num_params // dimension
         hash = cce.PolyHash(num_hashes=1, output_range=rows)

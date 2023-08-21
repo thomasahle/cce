@@ -2,3 +2,5 @@
 *.swp
 *.egg-info
 __pycache__/*
+scripts/results*
+scripts/*.html

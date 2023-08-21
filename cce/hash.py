@@ -56,3 +56,4 @@ class PolyHash(nn.Module):
         x = input_tensor[..., None] * self.cs
         # Could speed this up a bit using fancy Mersenne output tricks
         return x % (2**31 - 1) % self.range
+

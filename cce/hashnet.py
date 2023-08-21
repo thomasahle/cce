@@ -3,23 +3,22 @@ import torch.nn as nn
 from cce import hash
 
 
-class HashEmbedding(nn.Module):
+class HashNetEmbedding(nn.Module):
     def __init__(
         self,
-        rows: int,
-        dim: int,
+        size: int,
         hash: hash.MultiHash,
     ):
         super().__init__()
         self.hash = hash
-        assert hash.range <= rows
-        self.table = nn.Parameter(torch.empty(rows, dim))
+        assert hash.range <= size
+        self.table = nn.Parameter(torch.empty(size))
         self.reset_parameters()
 
     def reset_parameters(self):
-        rows, dim = self.table.shape
+        dim = self.hash.num_hashes
         nn.init.uniform_(self.table, -(dim**-0.5), dim**-0.5)
 
     def forward(self, x):
-        # table[hs].shape will be (batch_size, num_hashes, dim)
-        return self.table[self.hash(x)].mean(dim=1)
+        # table[hs].shape will be (batch_size, num_hashes)
+        return self.table[self.hash(x)]

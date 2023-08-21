@@ -40,7 +40,7 @@ script_dir=$(dirname "$0") # Directory where the script is located
 runs=3
 
 # ppd = 2^i where i in [lo_pow, hi_pow]
-lo_pow=5
+lo_pow=1
 hi_pow=12
 n_pow=$((hi_pow-low_pow+1))
 
