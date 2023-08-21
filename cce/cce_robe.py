@@ -5,6 +5,17 @@ from . import robe
 from .cce import KMeans
 
 
+def batch_nn(X, Y, bs=None):
+    if bs is None:
+        bs = max(10**6 // len(Y), 1)
+    nns = torch.zeros(len(X), dtype=torch.long)
+    for i in range(0, len(X), bs):
+        batch_x = X[i:i+bs]
+        dists = torch.cdist(batch_x, Y)
+        nns[i:i+bs] = torch.argmin(dists, axis=1)
+    return nns
+
+
 class RotaryKMeans:
     def __init__(self, dim, n_iter, verbose=False):
         self.dim = dim
@@ -25,11 +36,7 @@ class RotaryKMeans:
             # We just use the previous table as initialization for kmeans.
             # Is that weird/bad?
             centroids = self.__rolling_window(table)
-            distances = torch.cdist(vecs, centroids)
-            labels = torch.argmin(distances, dim=1)
-            if self.verbose:
-                mse = torch.mean(distances[range(len(vecs)), labels])
-                print(f"Clustering {i}, MSE: {mse:.3}")
+            labels = batch_nn(vecs, centroids)
 
             flat_labels = (
                 labels[..., None] + torch.arange(self.dim, device=labels.device)
@@ -46,8 +53,7 @@ class RotaryKMeans:
         return table
 
     def find_nearest(self, bvecs):
-        distances = torch.cdist(bvecs, self.centroids)
-        return torch.argmin(distances, dim=1)
+        return batch_nn(bvecs, self.centroids)
 
 
 class CCERobembedding(nn.Module):
