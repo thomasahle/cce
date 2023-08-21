@@ -12,7 +12,7 @@ else:
 def batch_nn(X, Y, bs=None):
     if bs is None:
         bs = max(10**8 // len(Y), 1)
-    nns = torch.zeros(len(X), dtype=torch.long)
+    nns = torch.zeros(len(X), dtype=torch.long, device=X.device)
     for i in range(0, len(X), bs):
         dists = torch.cdist(X[i : i + bs], Y)
         nns[i : i + bs] = torch.argmin(dists, axis=1)
@@ -30,8 +30,8 @@ class KMeans:
         _, dim = vecs.shape
         if len(vecs) <= self.n_clusters:
             self.centroids = (
-                torch.randn(self.n_clusters, vecs.shape[1]) / vecs.shape[1] ** 0.5
-            )
+                torch.randn(self.n_clusters, vecs.shape[1]) / vecs.shape[1] ** 0.5,
+            ).to(vecs.device)
             self.centroids[: len(vecs)] = vecs
         if use_sklearn:
             kmeans = sklearn.cluster.KMeans(
