@@ -13,7 +13,7 @@ from sklearn.metrics import roc_auc_score
 import cce
 
 
-methods = ['robe', 'ce', 'simple', 'cce', 'full', 'tt', 'cce_robe', 'dhe']
+methods = ['robe', 'ce', 'simple', 'cce', 'full', 'tt', 'cce_robe', 'dhe', 'hash']
 
 def make_embedding(vocab, num_params, dimension, method):
     n_chunks = 4
@@ -31,6 +31,10 @@ def make_embedding(vocab, num_params, dimension, method):
         rows = num_params // dimension
         hash = cce.PolyHash(num_hashes=n_chunks, output_range=rows)
         return cce.CompositionalEmbedding(rows=rows, chunk_size=chunk_dim, hash=hash)
+    elif method == 'hash':
+        rows = num_params // dimension
+        hash = cce.PolyHash(num_hashes=n_chunks, output_range=rows)
+        return cce.HashEmbedding(rows, dimension, hash)
     elif method == 'simple':
         rows = num_params // dimension
         hash = cce.PolyHash(num_hashes=1, output_range=rows)
