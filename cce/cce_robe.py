@@ -2,18 +2,7 @@ import torch
 import torch.nn as nn
 import numpy as np
 from . import robe
-from .cce import KMeans
-
-
-def batch_nn(X, Y, bs=None):
-    if bs is None:
-        bs = max(10**6 // len(Y), 1)
-    nns = torch.zeros(len(X), dtype=torch.long)
-    for i in range(0, len(X), bs):
-        batch_x = X[i:i+bs]
-        dists = torch.cdist(batch_x, Y)
-        nns[i:i+bs] = torch.argmin(dists, axis=1)
-    return nns
+from .cce import batch_nn
 
 
 class RotaryKMeans:
@@ -30,6 +19,10 @@ class RotaryKMeans:
         return extended_x.as_strided(size=(len(x), self.dim), stride=(1, 1))
 
     def fit(self, table, vecs):
+        if len(table) >= len(vecs):
+            self.centroids = self.__rolling_window(table)
+            return table
+
         flat_vecs = vecs.flatten(-2, -1)
 
         for i in range(self.n_iter):

@@ -9,32 +9,53 @@ else:
     import faiss
 
 
+def batch_nn(X, Y, bs=None):
+    if bs is None:
+        bs = max(10**8 // len(Y), 1)
+    nns = torch.zeros(len(X), dtype=torch.long)
+    for i in range(0, len(X), bs):
+        dists = torch.cdist(X[i : i + bs], Y)
+        nns[i : i + bs] = torch.argmin(dists, axis=1)
+    return nns
+
+
 class KMeans:
-    def __init__(self, n, dim, n_iter, n_init=1, verbose=False):
-        if use_sklearn:
-            self.kmeans = sklearn.cluster.KMeans(
-                n, max_iter=n_iter, n_init=n_init, verbose=verbose
-            )
-        else:
-            self.kmeans = faiss.Kmeans(
-                dim, n, niter=n_iter, nredo=n_init, verbose=verbose
-            )
+    def __init__(self, n_clusters, n_iter, n_init, verbose=False):
+        self.n_clusters = n_clusters
+        self.n_iter = n_iter
+        self.n_init = n_init
+        self.verbose = verbose
 
     def fit(self, vecs):
+        _, dim = vecs.shape
+        if len(vecs) <= self.n_clusters:
+            self.centroids = (
+                torch.randn(self.n_clusters, vecs.shape[1]) / vecs.shape[1] ** 0.5
+            )
+            self.centroids[: len(vecs)] = vecs
         if use_sklearn:
-            self.kmeans.fit(vecs.detach().cpu().numpy())
-            return torch.from_numpy(self.kmeans.cluster_centers_).to(vecs.device)
+            kmeans = sklearn.cluster.KMeans(
+                self.n_clusters,
+                max_iter=self.n_iter,
+                n_init=self.n_init,
+                verbose=self.verbose,
+            )
+            kmeans.fit(vecs.detach().cpu().numpy())
+            self.centroids = torch.from_numpy(kmeans.cluster_centers_).to(vecs.device)
         else:
-            self.kmeans.train(vecs.detach().cpu().numpy())
-            return torch.from_numpy(self.kmeans.centroids).to(vecs.device)
+            kmeans = faiss.Kmeans(
+                dim,
+                self.n_clusters,
+                niter=self.n_iter,
+                nredo=self.n_init,
+                verbose=self.verbose,
+            )
+            kmeans.train(vecs.detach().cpu().numpy())
+            self.centroids = torch.from_numpy(kmeans.centroids).to(vecs.device)
+        return self.centroids
 
     def find_nearest(self, bvecs):
-        if use_sklearn:
-            I = self.kmeans.predict(bvecs.detach().cpu().numpy().astype(np.float32))
-            return torch.from_numpy(I).to(torch.long).to(bvecs.device)
-        else:
-            _D, I = self.kmeans.index.search(bvecs.detach().cpu().numpy(), 1)
-            return torch.from_numpy(I[:, 0]).to(bvecs.device)
+        return batch_nn(bvecs, self.centroids)
 
 
 class CCEmbedding(nn.Module):
@@ -73,15 +94,12 @@ class CCEmbedding(nn.Module):
     def cluster(self, niter=100, sample_factor=200, redo=1, verbose=False):
         rows, n_chunks, chunk_size = self.table0.shape
         vocab, _ = self.h0.shape
+
         # The Faiss manual suggests you never need more than 200 samples per centroid
         n_samples = sample_factor * rows
 
-        # TODO: What if n_samples > rows?
-
         with torch.no_grad():
-            kmeans = KMeans(
-                rows, chunk_size, n_iter=niter, n_init=redo, verbose=verbose
-            )
+            kmeans = KMeans(rows, n_iter=niter, n_init=redo, verbose=verbose)
 
             for i in range(n_chunks):
                 # We might as well do iid sampling for each column
@@ -96,6 +114,7 @@ class CCEmbedding(nn.Module):
                 centroids = kmeans.fit(vecs)
 
                 # In the case where the vocab is really big, we decode it in batches.
+                # We just use n_samples as the batch_size.
                 sums = torch.zeros(rows, chunk_size, device=self.table1.device)
                 counts = torch.zeros(rows, device=self.table1.device)
                 for j in range(0, vocab, n_samples):
