@@ -52,15 +52,26 @@ if __name__ == '__main__':
         ppds.append(ppd)
         losses.append(smallest_loss)
 
-    # Print results
-    header = "ppd"
-    for seed in range(1, runs + 1):
-        header += f"\tseed_{seed}"
-    print(header)
-    
-    for i in range(lo_pow, hi_pow + 1):
-        line = str(ppds[i - lo_pow])
+    # Print & write results
+    # Print to file and output at the same time
+    def write_to_file_and_print(file, text):
+        print(text, file=file)
+        print(text)
+
+    file_name = f'results.{args.dataset}.{args.method}'
+    print('Writing results to', file_name)
+    with open(file_name, 'a') as file:
+        write_to_file_and_print(file, f"## {args.method}")
+
+        header = "ppd"
         for run in range(1, runs + 1):
-            index = (run - 1) * (hi_pow - lo_pow + 1) + (i - lo_pow)
-            line += f"\t{losses[index]}"
-        print(line)
+            header += f"\tseed_{run}"
+        write_to_file_and_print(file, header)
+
+        for i in range(lo_pow, hi_pow + 1):
+            line = str(ppds[i - lo_pow])
+            for run in range(1, runs + 1):
+                index = (run - 1) * n_pow + (i - lo_pow)
+                line += f"\t{losses[index]}"
+            write_to_file_and_print(file, line)
+        file.flush()

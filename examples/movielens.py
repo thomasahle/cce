@@ -181,6 +181,10 @@ def main():
     # valid_loader = DataLoader(valid_tensor, batch_size=64, shuffle=False, num_workers=args.num_workers, persistent_workers=True)
 
 
+    # For early stopping
+    old_valid_loss = 10**10
+    old_auc = 0
+
     # Train the model
     for epoch in tqdm.tqdm(range(args.epochs)):
         start = time.time()
@@ -213,6 +217,12 @@ def main():
             valid_auc = roc_auc_score(y_true, y_pred)
 
         print(f"Epoch: {epoch}, Time: {time.time() - start:.3}s, Train Loss: {train_loss:.3}, Validation Loss: {valid_loss:.3}, AUC: {valid_auc:.3}")
+
+        if valid_loss > old_valid_loss and valid_auc <= old_auc:
+            print('Early stopping')
+            break
+        old_valid_loss = valid_loss
+        old_auc = valid_auc
 
         if model.method in ('cce', 'cce_robe') and epoch < args.last_cluster:
             start = time.time()

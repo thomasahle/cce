@@ -30,10 +30,10 @@ class KMeans:
         _, dim = vecs.shape
         if len(vecs) <= self.n_clusters:
             self.centroids = (
-                torch.randn(self.n_clusters, vecs.shape[1]) / vecs.shape[1] ** 0.5,
+                torch.randn(self.n_clusters, vecs.shape[1]) / vecs.shape[1] ** 0.5
             ).to(vecs.device)
             self.centroids[: len(vecs)] = vecs
-        if use_sklearn:
+        elif use_sklearn:
             kmeans = sklearn.cluster.KMeans(
                 self.n_clusters,
                 max_iter=self.n_iter,
