@@ -71,7 +71,7 @@ if __name__ == '__main__':
         for i in range(lo_pow, hi_pow + 1):
             line = str(ppds[i - lo_pow])
             for run in range(1, runs + 1):
-                index = (run - 1) * n_pow + (i - lo_pow)
+                index = (run - 1) * (hi_pow - lo_pow + 1) + (i - lo_pow)
                 line += f"\t{losses[index]}"
             write_to_file_and_print(file, line)
         file.flush()
