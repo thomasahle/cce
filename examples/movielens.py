@@ -154,13 +154,6 @@ def main():
     print(f'Device: {device}')
 
     # Load and process the data. We predict whether the user rated something >= 3.
-    # data = Dataset.load_builtin(args.dataset)
-    # df = pd.DataFrame(data.raw_ratings, columns=["user", "item", "rate", "id"])
-    # df["rate"] = df["rate"].apply(lambda x: 1 if float(x) >= 3 else 0)
-    # df["user"] = df["user"].astype("category").cat.codes.values
-    # df["item"] = df["item"].astype("category").cat.codes.values
-    #train = torch.load('data/ml-1m.train')
-    #valid = torch.load('data/ml-1m.val')
     train, valid = data.prepare_movielens(args.dataset)
     train[:, 2] = (train[:, 2] >= 3).to(torch.int)
     valid[:, 2] = (valid[:, 2] >= 3).to(torch.int)
@@ -170,22 +163,11 @@ def main():
     num_params = args.ppd * dim
     n_users = max(train[:, 0].max(), valid[:, 0].max()) + 1
     n_items = max(train[:, 1].max(), valid[:, 1].max()) + 1
-    # n_users = df["user"].nunique()
-    # n_items = df["item"].nunique()
     print(f'Unique users: {n_users}, Unique items: {n_items}, #params: {num_params}')
 
     model = RecommenderNet(n_users, n_items, num_params, dim=dim, method=args.method).to(device)
     criterion = nn.BCELoss()
     optimizer = torch.optim.AdamW(model.parameters())
-
-    # Create DataLoader
-    # train = df.sample(frac=0.8, random_state=args.seed)
-    # valid = df.drop(train.index)
-    # train_tensor = RatingDataset(train)
-    # valid_tensor = RatingDataset(valid)
-    # train_loader = DataLoader(train_tensor, batch_size=64, shuffle=True, num_workers=args.num_workers, persistent_workers=True)
-    # valid_loader = DataLoader(valid_tensor, batch_size=64, shuffle=False, num_workers=args.num_workers, persistent_workers=True)
-
 
     # For early stopping
     old_valid_loss = 10**10

@@ -7,6 +7,19 @@ parser.add_argument('file')
 parser.add_argument('--plotly', action='store_true')
 args = parser.parse_args()
 
+names = {
+    'cce': 'CCE',
+    'ce': 'CE/QR',
+    'tt': 'TT-Rec',
+    'dhe': 'DHE',
+    'simple': 'Hash Trick',
+    'hnet': 'Hash Net',
+    'hash': 'Hash Emb',
+    'robe': 'Robe',
+    'cce_robe': 'CCE Robe Hybrid',
+    'full': 'Baseline',
+}
+
 main_title = None
 data = {}
 with open(args.file) as f:
@@ -23,6 +36,12 @@ with open(args.file) as f:
                 #continue
             data[method].append((ppd, seeds))
 
+
+# Determine the fixed y-axis range
+all_y_values = [y for values in data.values() for _, triple in values for y in triple if y < 0.99]
+min_y = min(all_y_values)
+max_y = max(all_y_values)
+
 backend = 'pyplot'
 if args.plotly:
     backend = 'plotly'
@@ -37,13 +56,14 @@ if backend == 'pyplot':
         y_lower = [min(triple) for triple in y]
         y_upper = [max(triple) for triple in y]
 
-        plt.plot(x, y_median, label=method)
+        plt.plot(x, y_median, label=names[method])
         plt.fill_between(x, y_lower, y_upper, alpha=0.2)
 
     plt.legend()
     plt.xlabel('Params/dim')
     plt.xscale('log')
     plt.ylabel('BCE')
+    plt.ylim(min_y*0.99, max_y*1.01)
     plt.title(main_title)
     plt.show()
 
@@ -53,11 +73,6 @@ if backend == 'plotly':
 
     # This will retrieve plotly's default color cycle
     colorway = fig.layout.template.layout.colorway
-
-    # Determine the fixed y-axis range
-    all_y_values = [np.mean(triple) for values in data.values() for _, triple in values]
-    min_y = min(all_y_values)
-    max_y = max(all_y_values)
 
     for index, (method, values) in enumerate(data.items()):
         x, y = zip(*values)
