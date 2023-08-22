@@ -196,6 +196,7 @@ def main():
         start = time.time()
         model.train()
         total_loss = 0
+        train = train[torch.randperm(train.shape[0])]  # Shuffle
         for batch in tqdm.tqdm(train.split(args.batch_size), leave=False):
             user, item, label = batch.T.to(device)
             optimizer.zero_grad()
