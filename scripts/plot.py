@@ -61,7 +61,7 @@ if backend == 'plotly':
 
     for index, (method, values) in enumerate(data.items()):
         x, y = zip(*values)
-        y_median = [np.mean(triple) for triple in y]
+        y_median = [np.median(triple) for triple in y]
         y_lower = [min(triple) for triple in y]
         y_upper = [max(triple) for triple in y]
         color = colorway[index % len(colorway)]

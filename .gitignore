@@ -4,3 +4,4 @@
 __pycache__/*
 scripts/results*
 scripts/*.html
+data/*

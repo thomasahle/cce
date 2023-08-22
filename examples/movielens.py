@@ -3,12 +3,14 @@ import torch
 import math
 from torch import nn
 import numpy as np
-from surprise import Dataset
+# from surprise import Dataset
 from torch.utils.data import Dataset as TorchDataset, DataLoader
 import argparse
 import time
 from sklearn.metrics import roc_auc_score
+import tqdm
 
+import data
 
 import cce
 
@@ -105,9 +107,9 @@ class RecommenderNet(nn.Module):
         self.user_embedding = make_embedding(n_users, num_params, dim, method)
         self.item_embedding = make_embedding(n_items, num_params, dim, method)
         self.mlp = nn.Sequential(
-            nn.Linear(dim, 20),
+            nn.Linear(dim, 4 * dim),
             nn.ReLU(),
-            nn.Linear(20, 1),
+            nn.Linear(4 * dim, 1),
             nn.Sigmoid(),
         )
 
@@ -115,7 +117,7 @@ class RecommenderNet(nn.Module):
         user_emb = self.user_embedding(user)
         item_emb = self.item_embedding(item)
         bs, dim = user_emb.shape
-        # mix = torch.relu(user_emb + item_emb)
+        #mix = torch.relu(user_emb + item_emb)
         mix = user_emb * item_emb
         return self.mlp(mix).view(-1)
 
@@ -127,28 +129,15 @@ def main():
     parser.add_argument('--last-cluster', type=int, default=7, help='Stop reclusering after this many epochs.')
     parser.add_argument('--dim', type=int, default=32, help='Dimension of embeddings')
     parser.add_argument('--ppd', type=int, default=200, help='Parameters per dimension')
-    parser.add_argument('--dataset', type=str, default='ml-100k', choices=['ml-100k', 'ml-1m'])
+    parser.add_argument('--dataset', type=str, default='ml-100k', choices=['ml-100k', 'ml-1m', 'ml-20m', 'ml-25m'])
     parser.add_argument('--seed', type=int, default=0xcce)
     parser.add_argument('--num-workers', type=int, default=1)
+    parser.add_argument('--batch-size', type=int, default=64)
     args = parser.parse_args()
 
     # Seed for reproducability
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
-
-    # Load and process the data. We predict whether the user rated something >= 3.
-    data = Dataset.load_builtin(args.dataset)
-    df = pd.DataFrame(data.raw_ratings, columns=["user", "item", "rate", "id"])
-    df["rate"] = df["rate"].apply(lambda x: 1 if float(x) >= 3 else 0)
-    df["user"] = df["user"].astype("category").cat.codes.values
-    df["item"] = df["item"].astype("category").cat.codes.values
-
-    # Instantiate the model and define the loss function and optimizer
-    dim = args.dim
-    num_params = args.ppd * dim
-    n_users = df["user"].nunique()
-    n_items = df["item"].nunique()
-    print(f'Unique users: {n_users}, Unique items: {n_items}, #params: {num_params}')
 
     device = "cpu"
     # MPS has some bugs related to broadcasting scatter_add
@@ -158,17 +147,38 @@ def main():
         device = "cuda:0"
     print(f'Device: {device}')
 
+    # Load and process the data. We predict whether the user rated something >= 3.
+    # data = Dataset.load_builtin(args.dataset)
+    # df = pd.DataFrame(data.raw_ratings, columns=["user", "item", "rate", "id"])
+    # df["rate"] = df["rate"].apply(lambda x: 1 if float(x) >= 3 else 0)
+    # df["user"] = df["user"].astype("category").cat.codes.values
+    # df["item"] = df["item"].astype("category").cat.codes.values
+    #train = torch.load('data/ml-1m.train')
+    #valid = torch.load('data/ml-1m.val')
+    train, valid = data.prepare_movielens(args.dataset)
+    train[:, 2] = (train[:, 2] >= 3).to(torch.int)
+    valid[:, 2] = (valid[:, 2] >= 3).to(torch.int)
+
+    # Instantiate the model and define the loss function and optimizer
+    dim = args.dim
+    num_params = args.ppd * dim
+    n_users = max(train[:, 0].max(), valid[:, 0].max()) + 1
+    n_items = max(train[:, 1].max(), valid[:, 1].max()) + 1
+    # n_users = df["user"].nunique()
+    # n_items = df["item"].nunique()
+    print(f'Unique users: {n_users}, Unique items: {n_items}, #params: {num_params}')
+
     model = RecommenderNet(n_users, n_items, num_params, dim=dim, method=args.method).to(device)
     criterion = nn.BCELoss()
     optimizer = torch.optim.AdamW(model.parameters())
 
     # Create DataLoader
-    train = df.sample(frac=0.8, random_state=args.seed)
-    valid = df.drop(train.index)
-    train_tensor = RatingDataset(train)
-    valid_tensor = RatingDataset(valid)
-    train_loader = DataLoader(train_tensor, batch_size=64, shuffle=True, num_workers=args.num_workers, persistent_workers=True)
-    valid_loader = DataLoader(valid_tensor, batch_size=64, shuffle=False, num_workers=args.num_workers, persistent_workers=True)
+    # train = df.sample(frac=0.8, random_state=args.seed)
+    # valid = df.drop(train.index)
+    # train_tensor = RatingDataset(train)
+    # valid_tensor = RatingDataset(valid)
+    # train_loader = DataLoader(train_tensor, batch_size=64, shuffle=True, num_workers=args.num_workers, persistent_workers=True)
+    # valid_loader = DataLoader(valid_tensor, batch_size=64, shuffle=False, num_workers=args.num_workers, persistent_workers=True)
 
 
     # Train the model
@@ -176,30 +186,30 @@ def main():
         start = time.time()
         model.train()
         total_loss = 0
-        for user, item, label in train_loader:
-            user, item, label = user.to(device), item.to(device), label.to(device)
+        for batch in tqdm.tqdm(train.split(args.batch_size)):
+            user, item, label = batch.T.to(device)
             optimizer.zero_grad()
-            prediction = model(user.long(), item.long())
+            prediction = model(user, item)
             loss = criterion(prediction, label.float())
             loss.backward()
             optimizer.step()
             total_loss += loss.item()
-        train_loss = total_loss/len(train_loader)
+        train_loss = total_loss * args.batch_size / len(train)
 
         # Validate the model
         model.eval()
         total_loss = 0
         y_true, y_pred = [], []  # To collect the true labels and the predicted scores
         with torch.no_grad():
-            for user, item, label in valid_loader:
-                user, item, label = user.to(device).long(), item.to(device).long(), label.to(device).float()
+            for batch in tqdm.tqdm(valid.split(args.batch_size)):
+                user, item, label = batch.T.to(device)
                 prediction = model(user, item)
-                loss = criterion(prediction, label)
+                loss = criterion(prediction, label.float())
                 total_loss += loss.item()
-
-                y_true.extend(label.cpu().numpy().tolist())
-                y_pred.extend(prediction.cpu().numpy().tolist())
-            valid_loss = total_loss/len(valid_loader)
+                # Save values for AUC computation
+                y_true += label.cpu().numpy().tolist()
+                y_pred += prediction.cpu().numpy().tolist()
+            valid_loss = total_loss * args.batch_size / len(valid)
             valid_auc = roc_auc_score(y_true, y_pred)
 
         print(f"Epoch: {epoch}, Time: {time.time() - start:.3}s, Train Loss: {train_loss:.3}, Validation Loss: {valid_loss:.3}, AUC: {valid_auc:.3}")

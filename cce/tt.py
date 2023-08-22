@@ -111,8 +111,8 @@ class TensorTrainEmbedding(nn.Module):
             v = torch.einsum("bdr,bdr->bd", self.start_core[hs[:, 0]], v)
         else:
             for i in range(hs.shape[1] - 2):
-                hi = hs[:, i + 1]
-                v = torch.einsum("bdrs,ber->bdes", self.cores[i, hi], v)
+                core = self.cores[i, hs[:, i + 1]]
+                v = torch.einsum("bdsr,ber->bdes", core, v)
                 v = v.flatten(1, 2)
             v = torch.einsum("bdr,ber->bde", self.start_core[hs[:, 0]], v)
             v = v.flatten(1, 2)
