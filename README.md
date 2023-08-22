@@ -31,13 +31,13 @@ You can also use `--method robe` to use the Robe method, or `ce` for composition
 
 ## Other implemented algorithms
 
-- [Hash Embeddings](https://arxiv.org/abs/1709.03933)
-- [DHE](https://arxiv.org/abs/2010.10784)
-- [HashedNet](https://arxiv.org/abs/1504.04788)
-- [Tensor Train (TT-Rec)](https://arxiv.org/abs/2101.11714)
-- [Hashing Trick](https://arxiv.org/abs/0902.2206)
-- [Robe Embeddings](https://proceedings.mlsys.org/paper_files/paper/2022/file/1eb34d662b67a14e3511d0dfd78669be-Paper.pdf)
-- [Compositional Embeddings](https://arxiv.org/abs/1909.02107)
+- [Hash Embeddings [NeurIPS '17]](https://arxiv.org/abs/1709.03933)
+- [Deep Hash Embedding (DHE) [KDD '21]](https://arxiv.org/abs/2010.10784)
+- [HashedNets [ICML '15]](https://arxiv.org/abs/1504.04788)
+- [Tensor Train (TT-Rec) [MLSys '21]](https://arxiv.org/abs/2101.11714)
+- [Hashing Trick [ICML '09]](https://arxiv.org/abs/0902.2206)
+- [Random Offset Block Embedding (ROBE) [MLSys '22]](https://proceedings.mlsys.org/paper_files/paper/2022/file/1eb34d662b67a14e3511d0dfd78669be-Paper.pdf)
+- [Compositional Embeddings (QR) [KDD '20]](https://arxiv.org/abs/1909.02107)
 
 ## Example results
 
