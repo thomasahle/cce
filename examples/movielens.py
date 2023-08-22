@@ -3,12 +3,12 @@ import torch
 import math
 from torch import nn
 import numpy as np
-# from surprise import Dataset
 from torch.utils.data import Dataset as TorchDataset, DataLoader
 import argparse
 import time
 from sklearn.metrics import roc_auc_score
 import tqdm
+import sys
 
 import data
 
@@ -69,15 +69,18 @@ def make_embedding(vocab, num_params, dimension, method):
         hash = cce.QRHash(num_hashes=n_chunks, output_range=output_range)
 
         # Find largest allowable rank
-        tt, rank = None, 1
+        emb, rank = None, 1
         while True:
-            tt_new = cce.TensorTrainEmbedding(rank, dimension, hash=hash, split_dim=True)
-            if tt_new.size() > num_params:
+            emb_new = cce.TensorTrainEmbedding(rank, dimension, hash=hash, split_dim=True)
+            if emb_new.size() > num_params:
                 break
-            tt = tt_new
+            emb = emb_new
             rank += 1
-        print(f"Notice: Using {tt.size()} params, rather than {num_params}. {rank=}, {hash.range=}")
-        return tt
+        if not emb:
+            print(r'Too few parameters to initialize model. Validation Loss: 1.0.')
+            sys.exit()
+        print(f"Notice: Using {emb.size()} params, rather than {num_params}. {rank=}, {hash.range=}")
+        return emb
     elif method == 'dhe':
         # Find largest allowable rank
         emb, rank = None, 1
@@ -88,6 +91,9 @@ def make_embedding(vocab, num_params, dimension, method):
             if emb_new.size() > num_params:
                 break
             emb, rank = emb_new, rank+1
+        if not emb:
+            print(r'Too few parameters to initialize model. Validation Loss: 1.0.')
+            sys.exit()
         print(f"Notice: Using {emb.size()} params, rather than {num_params}. {rank=}, {n_hidden=}")
         return emb
     raise Exception(f'{method=} not supported.')
