@@ -13,15 +13,17 @@ METHOD="cce" # default method
 EPOCHS=""    # default is not setting epochs (let the python script use its own default)
 DATASET="ml-100k"
 WORKERS=""
+BATCH_SIZE="256"
 
 # Process command-line options
-while getopts "m:e:d:w:" opt; do
+while getopts "m:e:d:w:b:" opt; do
     case $opt in
         m) METHOD="$OPTARG";;
         e) EPOCHS="$OPTARG";;
         d) DATASET="$OPTARG";;
         w) WORKERS="$OPTARG";;
-        *) echo "Usage: $0 [-m METHOD] [-e EPOCHS] [-d DATASET] [-w WORKERS] [-"; exit 1;;
+        b) BATCH_SIZE="$OPTARG";;
+        *) echo "Usage: $0 [-m METHOD] [-e EPOCHS] [-d DATASET] [-w WORKERS] [-b BATCH_SIZE] [-"; exit 1;;
     esac
 done
 
@@ -54,6 +56,7 @@ print_progress_bar() {
     local filled=$((bar_length * current / total))
     local empty=$((bar_length - filled))
     printf 'Progress: [%-*s] %d%%\r' $bar_length $(printf '#%.0s' $(seq 1 $filled)) $percent
+    echo
 }
 
 # Print an initial empty progress bar
@@ -64,7 +67,7 @@ for run in $(seq 1 $runs); do
     seed=$run
     for i in $(seq $lo_pow $hi_pow); do
         ppd=$((2**$i))
-         output=$($python_version "$script_dir/movielens.py" --method $METHOD --ppd $ppd --seed $seed --dataset $DATASET ${EPOCHS:+--epochs $EPOCHS} ${WORKERS:+--num-workers $WORKERS})
+         output=$($python_version "$script_dir/movielens.py" --method $METHOD --ppd $ppd --seed $seed --dataset $DATASET --batch-size $BATCH_SIZE ${EPOCHS:+--epochs $EPOCHS} ${WORKERS:+--num-workers $WORKERS})
         smallest_loss=$(extract_smallest_loss "$output")
         ppds[$i]=$ppd
         index=$(( (run - 1) * n_pow + i ))

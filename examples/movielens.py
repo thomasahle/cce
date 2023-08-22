@@ -182,11 +182,11 @@ def main():
 
 
     # Train the model
-    for epoch in range(args.epochs):
+    for epoch in tqdm.tqdm(range(args.epochs)):
         start = time.time()
         model.train()
         total_loss = 0
-        for batch in tqdm.tqdm(train.split(args.batch_size)):
+        for batch in tqdm.tqdm(train.split(args.batch_size), leave=False):
             user, item, label = batch.T.to(device)
             optimizer.zero_grad()
             prediction = model(user, item)
@@ -201,7 +201,7 @@ def main():
         total_loss = 0
         y_true, y_pred = [], []  # To collect the true labels and the predicted scores
         with torch.no_grad():
-            for batch in tqdm.tqdm(valid.split(args.batch_size)):
+            for batch in tqdm.tqdm(valid.split(args.batch_size), leave=False):
                 user, item, label = batch.T.to(device)
                 prediction = model(user, item)
                 loss = criterion(prediction, label.float())
