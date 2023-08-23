@@ -10,7 +10,7 @@ def extract_smallest_loss(output):
     val_losses = list(map(float, re.findall(r'Validation Loss: ([0-9]+\.[0-9]+)', output)))
     aucs = list(map(float, re.findall(r'AUC: ([0-9]+\.[0-9]+)', output)))
     print('Losses:', val_losses, 'AUCs:', aucs)
-    return min(val_losses), max(aucs)
+    return min(val_losses, default=1), max(aucs, default=0)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
