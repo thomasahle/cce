@@ -18,6 +18,7 @@ names = {
     'robe': 'Robe',
     'cce_robe': 'CCE Robe Hybrid',
     'full': 'Baseline',
+    'baseline': 'Baseline',
 }
 
 main_title = None
