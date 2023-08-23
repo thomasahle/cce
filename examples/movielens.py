@@ -24,19 +24,13 @@ def make_embedding(vocab, num_params, dimension, method):
 
     if method == 'robe':
         hash = cce.PolyHash(num_hashes=n_chunks, output_range=num_params)
-        return cce.RobeEmbedding(
-            size=num_params,
-            chunk_size=chunk_dim,
-            hash=hash
-        )
+        return cce.RobeEmbedding(size=num_params, chunk_size=chunk_dim, hash=hash)
     if method == 'ce':
         rows = num_params // dimension
         hash = cce.PolyHash(num_hashes=n_chunks, output_range=rows)
         return cce.CompositionalEmbedding(rows=rows, chunk_size=chunk_dim, hash=hash)
     elif method == 'hash':
         rows = num_params // dimension
-        # TODO: When we index multiple (k) pointers into the same space, do we need to use
-        # k-independent hashing instead of 2 independent hashing?
         hash = cce.PolyHash(num_hashes=n_chunks, output_range=rows)
         return cce.HashEmbedding(rows, dimension, hash)
     elif method == 'hnet':
@@ -47,16 +41,10 @@ def make_embedding(vocab, num_params, dimension, method):
         hash = cce.PolyHash(num_hashes=1, output_range=rows)
         return cce.CompositionalEmbedding(rows=rows, chunk_size=dimension, hash=hash)
     elif method == 'cce':
-        # Divide by two, since the CCE embedding will use two tables with each `row` rows.
-        rows = num_params // dimension // 2
-        return cce.CCEmbedding(
-            vocab=vocab, rows=rows, chunk_size=dimension//n_chunks, n_chunks=n_chunks,
-        )
+        # We divide rows by two, since the CCE embedding will use two tables
+        return cce.CCEmbedding(vocab=vocab, rows=num_params // dimension // 2, chunk_size=dimension//n_chunks, n_chunks=n_chunks)
     elif method == 'cce_robe':
-        size = num_params // 2
-        return cce.CCERobembedding(
-            vocab=vocab, size=size, chunk_size=dimension//n_chunks, n_chunks=n_chunks,
-        )
+        return cce.CCERobembedding(vocab=vocab, size=num_params//2, chunk_size=dimension//n_chunks, n_chunks=n_chunks)
     elif method == 'full':
         emb = nn.Embedding(vocab, dimension)
         nn.init.uniform_(emb.weight, -(dimension**-0.5), dimension**-0.5)
@@ -99,12 +87,6 @@ def make_embedding(vocab, num_params, dimension, method):
     raise Exception(f'{method=} not supported.')
 
 
-class RatingDataset(TorchDataset):
-    def __init__(self, df): self.df = df
-    def __len__(self): return len(self.df)
-    def __getitem__(self, idx):
-        return self.df.iloc[idx, 0], self.df.iloc[idx, 1], self.df.iloc[idx, 2]
-
 class RecommenderNet(nn.Module):
     """ A simple DLRM style model """
     def __init__(self, n_users, n_items, num_params, dim, method):
@@ -112,20 +94,37 @@ class RecommenderNet(nn.Module):
         self.method = method
         self.user_embedding = make_embedding(n_users, num_params, dim, method)
         self.item_embedding = make_embedding(n_items, num_params, dim, method)
+        self.dropout = nn.Dropout(.3)
+
         self.mlp = nn.Sequential(
-            nn.Linear(dim, 4 * dim),
+            nn.Linear(dim, 8 * dim),
             nn.ReLU(),
-            nn.Linear(4 * dim, 1),
+            nn.Dropout(.1),
+            nn.Linear(8 * dim, dim),
+        )
+
+        self.final = nn.Sequential(
+            nn.Linear(1 * dim, 1),
             nn.Sigmoid(),
         )
+        self.norm0 = nn.LayerNorm(dim)
+        self.norm1 = nn.LayerNorm(dim)
+
+
 
     def forward(self, user, item):
         user_emb = self.user_embedding(user)
         item_emb = self.item_embedding(item)
-        bs, dim = user_emb.shape
-        #mix = torch.relu(user_emb + item_emb)
-        mix = user_emb * item_emb
-        return self.mlp(mix).view(-1)
+        user_emb = self.norm0(user_emb)
+        item_emb = self.norm1(item_emb)
+
+        #mix = user_emb * item_emb
+        mix = torch.relu(user_emb + item_emb)
+        mix = self.dropout(mix)
+
+        mix = self.mlp(mix) + mix
+
+        return self.final(mix).view(-1)
 
 
 def main():
@@ -147,16 +146,18 @@ def main():
 
     device = "cpu"
     # MPS has some bugs related to broadcasting scatter_add
-    # if torch.backends.mps.is_available():
-    #     device = torch.device("mps")
+    #if torch.backends.mps.is_available():
+    #    device = torch.device("mps")
     if torch.cuda.is_available():
         device = "cuda:0"
     print(f'Device: {device}')
 
     # Load and process the data. We predict whether the user rated something >= 3.
     train, valid = data.prepare_movielens(args.dataset)
-    train[:, 2] = (train[:, 2] >= 3).to(torch.int)
-    valid[:, 2] = (valid[:, 2] >= 3).to(torch.int)
+    train[:, 2] = (train[:, 2] > 3).to(torch.int)
+    valid[:, 2] = (valid[:, 2] > 3).to(torch.int)
+    print((train[:,2]==1).to(float).mean())
+    print((valid[:,2]==1).to(float).mean())
 
     # Instantiate the model and define the loss function and optimizer
     dim = args.dim
