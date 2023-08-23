@@ -94,7 +94,7 @@ class RecommenderNet(nn.Module):
         self.method = method
         self.user_embedding = make_embedding(n_users, num_params, dim, method)
         self.item_embedding = make_embedding(n_items, num_params, dim, method)
-        self.dropout = nn.Dropout(.3)
+        self.dropout = nn.Dropout(.2)
 
         self.mlp = nn.Sequential(
             nn.Linear(dim, 8 * dim),
@@ -104,27 +104,41 @@ class RecommenderNet(nn.Module):
         )
 
         self.final = nn.Sequential(
-            nn.Linear(1 * dim, 1),
-            nn.Sigmoid(),
+            nn.Linear(1 * dim, 6),
+            nn.Softmax(-1),
         )
         self.norm0 = nn.LayerNorm(dim)
         self.norm1 = nn.LayerNorm(dim)
+
+
+        self.drop0 = nn.Dropout(.5)
+        self.drop1 = nn.Dropout(.5)
+        self.lin0 = nn.Linear(dim, dim)
+        self.lin1 = nn.Linear(dim, dim)
 
 
 
     def forward(self, user, item):
         user_emb = self.user_embedding(user)
         item_emb = self.item_embedding(item)
-        user_emb = self.norm0(user_emb)
-        item_emb = self.norm1(item_emb)
 
-        #mix = user_emb * item_emb
-        mix = torch.relu(user_emb + item_emb)
-        mix = self.dropout(mix)
+        #user_emb = self.lin0(self.drop0(user_emb))
+        #item_emb = self.lin1(self.drop1(item_emb))
+        #user_emb = self.lin0(user_emb)
+        #item_emb = self.lin1(item_emb)
 
-        mix = self.mlp(mix) + mix
+        #user_emb = self.norm0(user_emb)
+        #item_emb = self.norm1(item_emb)
 
-        return self.final(mix).view(-1)
+        mix = user_emb * item_emb
+        #mix = torch.relu(user_emb + item_emb)
+        #mix = self.dropout(mix)
+
+        #mix = self.mlp(mix) + mix
+
+        #return self.final(mix)
+        #return self.final(mix).view(-1)
+        return torch.sigmoid(mix.sum(-1))
 
 
 def main():
@@ -154,10 +168,14 @@ def main():
 
     # Load and process the data. We predict whether the user rated something >= 3.
     train, valid = data.prepare_movielens(args.dataset)
-    train[:, 2] = (train[:, 2] > 3).to(torch.int)
-    valid[:, 2] = (valid[:, 2] > 3).to(torch.int)
-    print((train[:,2]==1).to(float).mean())
-    print((valid[:,2]==1).to(float).mean())
+    #train[:, 2] = (train[:, 2] > 3).to(torch.int)
+    #valid[:, 2] = (valid[:, 2] > 3).to(torch.int)
+    #train[:, 2] = (train[:, 2] - 1) / 4
+    #valid[:, 2] = (valid[:, 2] - 1) / 4
+    #train[:, 2] = train[:, 2] / 5
+    #valid[:, 2] = valid[:, 2] / 5
+    #print((train[:,2]==1).to(float).mean())
+    #print((valid[:,2]==1).to(float).mean())
 
     # Instantiate the model and define the loss function and optimizer
     dim = args.dim
@@ -165,9 +183,11 @@ def main():
     n_users = max(train[:, 0].max(), valid[:, 0].max()) + 1
     n_items = max(train[:, 1].max(), valid[:, 1].max()) + 1
     print(f'Unique users: {n_users}, Unique items: {n_items}, #params: {num_params}')
+    print(f'Unique users: {torch.unique(train[:,0]).size()}, Unique items: {torch.unique(train[:,1]).size()}')
 
     model = RecommenderNet(n_users, n_items, num_params, dim=dim, method=args.method).to(device)
     criterion = nn.BCELoss()
+    #criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.AdamW(model.parameters())
 
     # For early stopping
@@ -185,6 +205,7 @@ def main():
             optimizer.zero_grad()
             prediction = model(user, item)
             loss = criterion(prediction, label.float())
+            #loss = criterion(prediction, label.long())
             loss.backward()
             optimizer.step()
             total_loss += loss.item()
@@ -199,10 +220,14 @@ def main():
                 user, item, label = batch.T.to(device)
                 prediction = model(user, item)
                 loss = criterion(prediction, label.float())
+                #loss = criterion(prediction, label.long())
                 total_loss += loss.item()
                 # Save values for AUC computation
                 y_true += label.cpu().numpy().tolist()
                 y_pred += prediction.cpu().numpy().tolist()
+                # y_true += (label >= 3).cpu().numpy().tolist()
+                # prediction = prediction[:,3:].sum(-1)
+                # y_pred += prediction.cpu().numpy().tolist()
             valid_loss = total_loss * args.batch_size / len(valid)
             valid_auc = roc_auc_score(y_true, y_pred)
 
