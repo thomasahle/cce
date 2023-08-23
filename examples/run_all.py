@@ -7,10 +7,10 @@ from tqdm import tqdm
 
 def extract_smallest_loss(output):
     print(output)
-    val_losses = re.findall(r'Validation Loss: ([0-9]+\.[0-9]+)', output)
-    val_losses = [float(loss) for loss in val_losses]
-    print('Losses:', val_losses)
-    return min(val_losses) if val_losses else None
+    val_losses = list(map(float, re.findall(r'Validation Loss: ([0-9]+\.[0-9]+)', output)))
+    aucs = list(map(float, re.findall(r'AUC: ([0-9]+\.[0-9]+)', output)))
+    print('Losses:', val_losses, 'AUCs:', aucs)
+    return min(val_losses), max(aucs)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -29,6 +29,7 @@ if __name__ == '__main__':
 
     ppds = []
     losses = []
+    aucs = []
 
     arg_prod = [(seed, 2**i) for seed in range(1, runs+1) for i in range(lo_pow, hi_pow+1)]
     for seed, ppd in tqdm(arg_prod, desc="Overall Progress"):
@@ -48,9 +49,10 @@ if __name__ == '__main__':
 
         print(f'Running {ppd=} {seed=}')
         output = subprocess.check_output(cmd).decode('utf-8')
-        smallest_loss = extract_smallest_loss(output)
+        smallest_loss, top_auc = extract_smallest_loss(output)
         ppds.append(ppd)
         losses.append(smallest_loss)
+        aucs.append(top_auc)
 
     # Print & write results
     # Print to file and output at the same time
@@ -58,20 +60,21 @@ if __name__ == '__main__':
         print(text, file=file)
         print(text)
 
-    file_name = f'results.{args.dataset}.{args.method}'
-    print('Writing results to', file_name)
-    with open(file_name, 'a') as file:
-        write_to_file_and_print(file, f"## {args.method}")
+    for typ, vals in [('ll', losses), ('auc', aucs)]:
+        file_name = f'results.{args.dataset}.{args.method}.{typ}'
+        print('Writing results to', file_name)
+        with open(file_name, 'a') as file:
+            write_to_file_and_print(file, f"## {args.method}")
 
-        header = "ppd"
-        for run in range(1, runs + 1):
-            header += f"\tseed_{run}"
-        write_to_file_and_print(file, header)
-
-        for i in range(lo_pow, hi_pow + 1):
-            line = str(ppds[i - lo_pow])
+            header = "ppd"
             for run in range(1, runs + 1):
-                index = (run - 1) * (hi_pow - lo_pow + 1) + (i - lo_pow)
-                line += f"\t{losses[index]}"
-            write_to_file_and_print(file, line)
-        file.flush()
+                header += f"\tseed_{run}"
+            write_to_file_and_print(file, header)
+
+            for i in range(lo_pow, hi_pow + 1):
+                line = str(ppds[i - lo_pow])
+                for run in range(1, runs + 1):
+                    index = (run - 1) * (hi_pow - lo_pow + 1) + (i - lo_pow)
+                    line += f"\t{vals[index]}"
+                write_to_file_and_print(file, line)
+            file.flush()

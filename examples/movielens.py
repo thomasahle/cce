@@ -233,7 +233,7 @@ def main():
 
         print(f"Epoch: {epoch}, Time: {time.time() - start:.3}s, Train Loss: {train_loss:.3}, Validation Loss: {valid_loss:.3}, AUC: {valid_auc:.3}")
 
-        if valid_loss > old_valid_loss and valid_auc <= old_auc:
+        if valid_loss > old_valid_loss and valid_auc < old_auc:
             print('Early stopping')
             break
         old_valid_loss = valid_loss
