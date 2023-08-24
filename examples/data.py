@@ -84,10 +84,10 @@ def prepare_movielens(name, data_dir="data"):
 
         data = Dataset.load_builtin("ml-100k")
         df = pd.DataFrame(
-            data.raw_ratings, columns=["user", "item", "rate", "timestamp"]
+            data.raw_ratings, columns=["userId", "movieId", "rating", "timestamp"]
         )
-        df["user"] = df["user"].apply(int)
-        df["item"] = df["item"].apply(int)
+        df["userId"] = df["userId"].apply(int)
+        df["movieId"] = df["movieId"].apply(int)
         df["timestamp"] = df["timestamp"].apply(int)
     else:
         url = f"https://files.grouplens.org/datasets/movielens/{name}.zip"

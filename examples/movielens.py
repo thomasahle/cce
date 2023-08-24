@@ -9,13 +9,14 @@ import time
 from sklearn.metrics import roc_auc_score
 import tqdm
 import sys
+from itertools import takewhile, count
 
 import data
 
 import cce
 
 
-methods = ['robe', 'ce', 'simple', 'cce', 'full', 'tt', 'cce_robe', 'dhe', 'hash', 'hnet']
+methods = ['robe', 'ce', 'simple', 'cce', 'full', 'tt', 'cce_robe', 'dhe', 'hash', 'hnet', 'whemb']
 
 def make_embedding(vocab, num_params, dimension, method):
     n_chunks = 4
@@ -33,6 +34,9 @@ def make_embedding(vocab, num_params, dimension, method):
         rows = num_params // dimension
         hash = cce.PolyHash(num_hashes=n_chunks, output_range=rows)
         return cce.HashEmbedding(rows, dimension, hash)
+    elif method == 'whemb':
+        rows = num_params // dimension // 2
+        return cce.WeightedHashEmbedding(rows, dimension, n_chunks)
     elif method == 'hnet':
         hash = cce.PolyHash(num_hashes=dimension, output_range=num_params)
         return cce.HashNetEmbedding(num_params, hash)
@@ -49,95 +53,40 @@ def make_embedding(vocab, num_params, dimension, method):
         emb = nn.Embedding(vocab, dimension)
         nn.init.uniform_(emb.weight, -(dimension**-0.5), dimension**-0.5)
         return emb
-    elif method == 'tt':
-        # For TT we use a QR "Hash" which doesn't have collisions.
-        # This hash makes sense for TT-Rec more than the other methods, since
-        # TT-Rec tends to have much smaller ranges than the other methods.
-        output_range = int(math.ceil(vocab ** (1 / n_chunks)))
-        hash = cce.QRHash(num_hashes=n_chunks, output_range=output_range)
-
-        # Find largest allowable rank
-        emb, rank = None, 1
-        while True:
-            emb_new = cce.TensorTrainEmbedding(rank, dimension, hash=hash, split_dim=True)
-            if emb_new.size() > num_params:
-                break
-            emb = emb_new
-            rank += 1
-        if not emb:
-            print(r'Too few parameters to initialize model. Validation Loss: 1.0.')
+    # Some methods require some more complicated sizing logic
+    elif method in ['tt', 'dhe']:
+        def make(rank):
+            if method == 'tt':
+                output_range = int(math.ceil(vocab ** (1 / n_chunks)))
+                hash = cce.QRHash(num_hashes=n_chunks, output_range=output_range)
+                return cce.TensorTrainEmbedding(rank, dimension, hash)
+            if method == 'dhe':
+                hash = cce.MultiHash(num_hashes=rank, output_range=2**62)
+                n_hidden = int(math.ceil(rank**(1/n_chunks)))
+                return cce.DeepHashEmbedding(rank, dimension, n_hidden, hash)
+        # It might be that even the lowest rank uses too many parameters.
+        if make(1).size() > num_params:
+            print(f"Error: Too few parameters ({num_params=}) to initialize model.")
             sys.exit()
-        print(f"Notice: Using {emb.size()} params, rather than {num_params}. {rank=}, {hash.range=}")
-        return emb
-    elif method == 'dhe':
-        # Find largest allowable rank
-        emb, rank = None, 1
-        while True:
-            hash = cce.MultiHash(num_hashes=rank, output_range=2**62)
-            n_hidden = int(math.ceil(rank**(1/n_chunks)))
-            emb_new = cce.DeepHashEmbedding(rank, dimension, n_hidden, hash)
-            if emb_new.size() > num_params:
-                break
-            emb, rank = emb_new, rank+1
-        if not emb:
-            print(r'Too few parameters to initialize model. Validation Loss: 1.0.')
-            sys.exit()
-        print(f"Notice: Using {emb.size()} params, rather than {num_params}. {rank=}, {n_hidden=}")
+        rank = max(takewhile((lambda r: make(r).size() < num_params), count(1)))
+        emb = make(rank)
+        print(f"Notice: Using {emb.size()} params, rather than {num_params}. {rank=}, {emb.hash.range=}")
         return emb
     raise Exception(f'{method=} not supported.')
 
 
-class RecommenderNet(nn.Module):
-    """ A simple DLRM style model """
+class GMF(nn.Module):
+    """ A simple Generalized Matrix Factorization model """
     def __init__(self, n_users, n_items, num_params, dim, method):
         super().__init__()
         self.method = method
         self.user_embedding = make_embedding(n_users, num_params, dim, method)
         self.item_embedding = make_embedding(n_items, num_params, dim, method)
-        self.dropout = nn.Dropout(.2)
-
-        self.mlp = nn.Sequential(
-            nn.Linear(dim, 8 * dim),
-            nn.ReLU(),
-            nn.Dropout(.1),
-            nn.Linear(8 * dim, dim),
-        )
-
-        self.final = nn.Sequential(
-            nn.Linear(1 * dim, 6),
-            nn.Softmax(-1),
-        )
-        self.norm0 = nn.LayerNorm(dim)
-        self.norm1 = nn.LayerNorm(dim)
-
-
-        self.drop0 = nn.Dropout(.5)
-        self.drop1 = nn.Dropout(.5)
-        self.lin0 = nn.Linear(dim, dim)
-        self.lin1 = nn.Linear(dim, dim)
-
-
 
     def forward(self, user, item):
         user_emb = self.user_embedding(user)
         item_emb = self.item_embedding(item)
-
-        #user_emb = self.lin0(self.drop0(user_emb))
-        #item_emb = self.lin1(self.drop1(item_emb))
-        #user_emb = self.lin0(user_emb)
-        #item_emb = self.lin1(item_emb)
-
-        #user_emb = self.norm0(user_emb)
-        #item_emb = self.norm1(item_emb)
-
         mix = user_emb * item_emb
-        #mix = torch.relu(user_emb + item_emb)
-        #mix = self.dropout(mix)
-
-        #mix = self.mlp(mix) + mix
-
-        #return self.final(mix)
-        #return self.final(mix).view(-1)
         return torch.sigmoid(mix.sum(-1))
 
 
@@ -168,14 +117,6 @@ def main():
 
     # Load and process the data. We predict whether the user rated something >= 3.
     train, valid = data.prepare_movielens(args.dataset)
-    #train[:, 2] = (train[:, 2] > 3).to(torch.int)
-    #valid[:, 2] = (valid[:, 2] > 3).to(torch.int)
-    #train[:, 2] = (train[:, 2] - 1) / 4
-    #valid[:, 2] = (valid[:, 2] - 1) / 4
-    #train[:, 2] = train[:, 2] / 5
-    #valid[:, 2] = valid[:, 2] / 5
-    #print((train[:,2]==1).to(float).mean())
-    #print((valid[:,2]==1).to(float).mean())
 
     # Instantiate the model and define the loss function and optimizer
     dim = args.dim
@@ -185,9 +126,8 @@ def main():
     print(f'Unique users: {n_users}, Unique items: {n_items}, #params: {num_params}')
     print(f'Unique users: {torch.unique(train[:,0]).size()}, Unique items: {torch.unique(train[:,1]).size()}')
 
-    model = RecommenderNet(n_users, n_items, num_params, dim=dim, method=args.method).to(device)
+    model = GMF(n_users, n_items, num_params, dim=dim, method=args.method).to(device)
     criterion = nn.BCELoss()
-    #criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.AdamW(model.parameters())
 
     # For early stopping
@@ -205,7 +145,6 @@ def main():
             optimizer.zero_grad()
             prediction = model(user, item)
             loss = criterion(prediction, label.float())
-            #loss = criterion(prediction, label.long())
             loss.backward()
             optimizer.step()
             total_loss += loss.item()
@@ -220,14 +159,10 @@ def main():
                 user, item, label = batch.T.to(device)
                 prediction = model(user, item)
                 loss = criterion(prediction, label.float())
-                #loss = criterion(prediction, label.long())
                 total_loss += loss.item()
                 # Save values for AUC computation
                 y_true += label.cpu().numpy().tolist()
                 y_pred += prediction.cpu().numpy().tolist()
-                # y_true += (label >= 3).cpu().numpy().tolist()
-                # prediction = prediction[:,3:].sum(-1)
-                # y_pred += prediction.cpu().numpy().tolist()
             valid_loss = total_loss * args.batch_size / len(valid)
             valid_auc = roc_auc_score(y_true, y_pred)
 

@@ -60,6 +60,9 @@ class TensorTrainEmbedding(nn.Module):
         split_dim=True,
     ):
         super().__init__()
+        # For TT we use a QR "Hash" which doesn't have collisions.
+        # This hash makes sense for TT-Rec more than the other methods, since
+        # TT-Rec tends to have much smaller ranges than the other methods.
         self.hash = hash
         self.n_chunks = n_chunks = hash.num_hashes
         assert n_chunks >= 2

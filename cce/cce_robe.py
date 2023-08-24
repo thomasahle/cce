@@ -5,6 +5,12 @@ from . import robe
 from .cce import batch_nn
 
 
+def rolling_window(x, dim):
+    # Extend x to handle the wrap-around effect
+    extended_x = torch.cat((x, x))
+    # Create the rolling window view using stride tricks
+    return extended_x.as_strided(size=(len(x), dim), stride=(1, 1))
+
 class RotaryKMeans:
     def __init__(self, dim, n_iter, verbose=False):
         self.dim = dim
@@ -12,15 +18,9 @@ class RotaryKMeans:
         self.verbose = verbose
         self.centroids = None
 
-    def __rolling_window(self, x):
-        # Extend x to handle the wrap-around effect
-        extended_x = torch.cat((x, x))
-        # Create the rolling window view using stride tricks
-        return extended_x.as_strided(size=(len(x), self.dim), stride=(1, 1))
-
     def fit(self, table, vecs):
         if len(table) >= len(vecs):
-            self.centroids = self.__rolling_window(table)
+            self.centroids = rolling_window(table, self.dim)
             return table
 
         flat_vecs = vecs.flatten(-2, -1)
@@ -28,7 +28,7 @@ class RotaryKMeans:
         for i in range(self.n_iter):
             # We just use the previous table as initialization for kmeans.
             # Is that weird/bad?
-            centroids = self.__rolling_window(table)
+            centroids = rolling_window(table, self.dim)
             labels = batch_nn(vecs, centroids)
 
             flat_labels = (
@@ -42,7 +42,7 @@ class RotaryKMeans:
                 print(f"Count std: {counts.float().std():.3}")
             table /= torch.clamp(counts, min=1).float()  # Avoid division by zero
 
-        self.centroids = self.__rolling_window(table)
+        self.centroids = rolling_window(table, self.dim)
         return table
 
     def find_nearest(self, bvecs):
