@@ -26,11 +26,11 @@ def get_slices(table, indices, chunk_size, sparse=False):
     If table = [0, 1, 2, 3, 4] and indices = [[0, 3], [2, 1]], and chunk_size = 2:
     Result will be [[[0, 1], [3, 4]], [[2, 3], [1, 2]]]
     """
-    rot_indices = (indices[..., None] + torch.arange(chunk_size)) % len(table)
+    rot_indices = (indices[..., None] + torch.arange(chunk_size, device=indices.device)) % len(table)
     old_shape = rot_indices.shape
     rot_indices = rot_indices.flatten()
     gathered = torch.gather(
-        table, -1, rot_indices.to(indices.device), sparse_grad=sparse
+        table, -1, rot_indices, sparse_grad=sparse
     )
     return gathered.reshape(old_shape)
 
