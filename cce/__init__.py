@@ -7,4 +7,5 @@ from .tt import TensorTrainEmbedding
 from .cce import CCEmbedding
 from .cce_robe import CCERobembedding
 from .dhe import DeepHashEmbedding
+from .low_dimensional import LowDimensionalEmbedding
 from .hash import MultiHash, QRHash, PolyHash

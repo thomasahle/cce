@@ -11,50 +11,50 @@ import tqdm
 import sys
 from itertools import takewhile, count
 
-import data
+import dataset
 
 import cce
 
 
-methods = ['robe', 'ce', 'simple', 'cce', 'full', 'tt', 'cce_robe', 'dhe', 'hash', 'hnet', 'whemb']
+methods = ['robe', 'ce', 'simple', 'cce', 'full', 'tt', 'cce_robe', 'dhe', 'hash', 'hnet', 'whemb', 'ldim']
 
-def make_embedding(vocab, num_params, dimension, method):
+def make_embedding(vocab, num_params, dimension, method, sparse):
     n_chunks = 4
     chunk_dim = dimension // n_chunks
     assert n_chunks * chunk_dim == dimension, f"Dimension not divisible by {n_chunks}"
 
     if method == 'robe':
         hash = cce.PolyHash(num_hashes=n_chunks, output_range=num_params)
-        return cce.RobeEmbedding(size=num_params, chunk_size=chunk_dim, hash=hash)
+        return cce.RobeEmbedding(size=num_params, chunk_size=chunk_dim, hash=hash, sparse=sparse)
     if method == 'ce':
         rows = num_params // dimension
         hash = cce.PolyHash(num_hashes=n_chunks, output_range=rows)
-        return cce.CompositionalEmbedding(rows=rows, chunk_size=chunk_dim, hash=hash)
+        return cce.CompositionalEmbedding(rows=rows, chunk_size=chunk_dim, hash=hash, sparse=sparse)
     elif method == 'hash':
         rows = num_params // dimension
         hash = cce.PolyHash(num_hashes=n_chunks, output_range=rows)
         return cce.HashEmbedding(rows, dimension, hash)
     elif method == 'whemb':
-        rows = num_params // dimension // 2
-        return cce.WeightedHashEmbedding(rows, dimension, n_chunks)
+        # WeightedHashEmbedding is making it's own hash functions now
+        return cce.WeightedHashEmbedding(num_params // dimension, dimension, n_chunks, sparse=sparse)
     elif method == 'hnet':
         hash = cce.PolyHash(num_hashes=dimension, output_range=num_params)
-        return cce.HashNetEmbedding(num_params, hash)
+        return cce.HashNetEmbedding(num_params, hash, sparse=sparse)
     elif method == 'simple':
         rows = num_params // dimension
         hash = cce.PolyHash(num_hashes=1, output_range=rows)
-        return cce.CompositionalEmbedding(rows=rows, chunk_size=dimension, hash=hash)
+        return cce.CompositionalEmbedding(rows=rows, chunk_size=dimension, hash=hash, sparse=sparse)
     elif method == 'cce':
         # We divide rows by two, since the CCE embedding will use two tables
         return cce.CCEmbedding(vocab=vocab, rows=num_params // dimension // 2, chunk_size=dimension//n_chunks, n_chunks=n_chunks)
     elif method == 'cce_robe':
         return cce.CCERobembedding(vocab=vocab, size=num_params//2, chunk_size=dimension//n_chunks, n_chunks=n_chunks)
     elif method == 'full':
-        emb = nn.Embedding(vocab, dimension)
+        emb = nn.Embedding(vocab, dimension, sparse=sparse)
         nn.init.uniform_(emb.weight, -(dimension**-0.5), dimension**-0.5)
         return emb
     # Some methods require some more complicated sizing logic
-    elif method in ['tt', 'dhe']:
+    elif method in ['tt', 'dhe', 'ldim']:
         def make(rank):
             if method == 'tt':
                 output_range = int(math.ceil(vocab ** (1 / n_chunks)))
@@ -64,24 +64,26 @@ def make_embedding(vocab, num_params, dimension, method):
                 hash = cce.MultiHash(num_hashes=rank, output_range=2**62)
                 n_hidden = int(math.ceil(rank**(1/n_chunks)))
                 return cce.DeepHashEmbedding(rank, dimension, n_hidden, hash)
+            if method == 'ldim':
+                return cce.LowDimensionalEmbedding(vocab, rank, dimension, sparse)
         # It might be that even the lowest rank uses too many parameters.
         if make(1).size() > num_params:
             print(f"Error: Too few parameters ({num_params=}) to initialize model.")
             sys.exit()
         rank = max(takewhile((lambda r: make(r).size() < num_params), count(1)))
         emb = make(rank)
-        print(f"Notice: Using {emb.size()} params, rather than {num_params}. {rank=}, {emb.hash.range=}")
+        print(f"Notice: Using {emb.size()} params, rather than {num_params}. {rank=}")
         return emb
     raise Exception(f'{method=} not supported.')
 
 
 class GMF(nn.Module):
     """ A simple Generalized Matrix Factorization model """
-    def __init__(self, n_users, n_items, num_params, dim, method):
+    def __init__(self, n_users, n_items, num_params, dim, method, sparse):
         super().__init__()
         self.method = method
-        self.user_embedding = make_embedding(n_users, num_params, dim, method)
-        self.item_embedding = make_embedding(n_items, num_params, dim, method)
+        self.user_embedding = make_embedding(n_users, num_params, dim, method, sparse)
+        self.item_embedding = make_embedding(n_items, num_params, dim, method, sparse)
 
     def forward(self, user, item):
         user_emb = self.user_embedding(user)
@@ -97,10 +99,10 @@ def main():
     parser.add_argument('--last-cluster', type=int, default=7, help='Stop reclusering after this many epochs.')
     parser.add_argument('--dim', type=int, default=32, help='Dimension of embeddings')
     parser.add_argument('--ppd', type=int, default=200, help='Parameters per dimension')
-    parser.add_argument('--dataset', type=str, default='ml-100k', choices=['ml-100k', 'ml-1m', 'ml-20m', 'ml-25m'])
+    parser.add_argument('--dataset', type=str, default='ml-100k')
     parser.add_argument('--seed', type=int, default=0xcce)
-    parser.add_argument('--num-workers', type=int, default=1)
     parser.add_argument('--batch-size', type=int, default=64)
+    parser.add_argument('--sparse', action='store_true')
     args = parser.parse_args()
 
     # Seed for reproducability
@@ -116,19 +118,30 @@ def main():
     print(f'Device: {device}')
 
     # Load and process the data. We predict whether the user rated something >= 3.
-    train, valid = data.prepare_movielens(args.dataset)
+    if args.dataset.startswith('syn'):
+        _, v, n = args.dataset.split('-')
+        train, valid = dataset.make_synthetic(int(n), int(v))
+    else:
+        train, valid = dataset.prepare_movielens(args.dataset)
 
     # Instantiate the model and define the loss function and optimizer
     dim = args.dim
     num_params = args.ppd * dim
-    n_users = max(train[:, 0].max(), valid[:, 0].max()) + 1
-    n_items = max(train[:, 1].max(), valid[:, 1].max()) + 1
-    print(f'Unique users: {n_users}, Unique items: {n_items}, #params: {num_params}')
-    print(f'Unique users: {torch.unique(train[:,0]).size()}, Unique items: {torch.unique(train[:,1]).size()}')
+    max_user = max(train[:, 0].max(), valid[:, 0].max())
+    max_item = max(train[:, 1].max(), valid[:, 1].max())
+    n_users = torch.unique(torch.cat([train[:,0], valid[:,0]])).size()
+    n_items = torch.unique(torch.cat([train[:,1], valid[:,1]])).size()
+    print(f"Max user id: {max_user}, Max item id: {max_item}, #params: {num_params}")
+    print(f"Unique users: {n_users}, Unique items: {n_items}")
+    print("1 ratios:", train[:,2].to(float).mean().numpy(), valid[:,2].to(float).mean().numpy())
 
-    model = GMF(n_users, n_items, num_params, dim=dim, method=args.method).to(device)
+    model = GMF(max_user+1, max_item+1, num_params, dim=dim, method=args.method, sparse=args.sparse).to(device)
     criterion = nn.BCELoss()
-    optimizer = torch.optim.AdamW(model.parameters())
+    if args.sparse:
+        print("Notice: Sparsity is only supported by some embeddings, and is generally only useful for vocabs >= 100_000")
+        optimizer = torch.optim.SparseAdam(model.parameters())
+    else:
+        optimizer = torch.optim.AdamW(model.parameters())
 
     # For early stopping
     old_valid_loss = 10**10

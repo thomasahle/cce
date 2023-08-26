@@ -11,6 +11,7 @@ def rolling_window(x, dim):
     # Create the rolling window view using stride tricks
     return extended_x.as_strided(size=(len(x), dim), stride=(1, 1))
 
+
 class RotaryKMeans:
     def __init__(self, dim, n_iter, verbose=False):
         self.dim = dim

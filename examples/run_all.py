@@ -10,7 +10,7 @@ def extract_smallest_loss(output):
     val_losses = list(map(float, re.findall(r'Validation Loss: ([0-9]+\.[0-9]+)', output)))
     aucs = list(map(float, re.findall(r'AUC: ([0-9]+\.[0-9]+)', output)))
     print('Losses:', val_losses, 'AUCs:', aucs)
-    return min(val_losses, default=1), max(aucs, default=0)
+    return min(val_losses, default=1), max(aucs, default=0.5)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -19,13 +19,15 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--dataset', default='ml-100k', help='Dataset')
     parser.add_argument('-w', '--workers', default='', help='Workers')
     parser.add_argument('-b', '--batch-size', default='256', help='Batch Size')
+    parser.add_argument('-l', '--lo-pow', default=1, type=int)
+    parser.add_argument('-hi', '--hi-pow', default=12, type=int)
 
     args = parser.parse_args()
 
     script_dir = os.path.dirname(os.path.realpath(__file__))
     runs = 3
-    lo_pow = 1
-    hi_pow = 12
+    lo_pow = args.lo_pow
+    hi_pow = args.hi_pow
 
     ppds = []
     losses = []

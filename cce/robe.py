@@ -3,7 +3,7 @@ import torch.nn as nn
 from cce import hash
 
 
-def get_slices(table, indices, chunk_size):
+def get_slices(table, indices, chunk_size, sparse=False):
     """
     This function fetches multiple slices from a tensor, `table`. Each slice is determined
     by the start index from 'indices' and has a length of 'chunk_size'. In case a slice
@@ -26,10 +26,13 @@ def get_slices(table, indices, chunk_size):
     If table = [0, 1, 2, 3, 4] and indices = [[0, 3], [2, 1]], and chunk_size = 2:
     Result will be [[[0, 1], [3, 4]], [[2, 3], [1, 2]]]
     """
-    return table[
-        (indices[..., None] + torch.arange(chunk_size, device=indices.device))
-        % len(table)
-    ]
+    rot_indices = (indices[..., None] + torch.arange(chunk_size)) % len(table)
+    old_shape = rot_indices.shape
+    rot_indices = rot_indices.flatten()
+    gathered = torch.gather(
+        table, -1, rot_indices.to(indices.device), sparse_grad=sparse
+    )
+    return gathered.reshape(old_shape)
 
 
 class RobeEmbedding(nn.Module):
@@ -38,10 +41,12 @@ class RobeEmbedding(nn.Module):
         size: int,
         chunk_size: int,
         hash: hash.MultiHash,
+        sparse=False,
     ):
         super().__init__()
         self.chunk_size = chunk_size
         self.hash = hash
+        self.sparse = sparse
         self.table = nn.Parameter(torch.empty(size))
         self.reset_parameters()
 
@@ -53,6 +58,6 @@ class RobeEmbedding(nn.Module):
         batch_size = input_tensor.shape
         hash_values = self.hash(input_tensor)  # (batch_size, num_hashes)
         slices = get_slices(
-            self.table, hash_values, self.chunk_size
+            self.table, hash_values, self.chunk_size, self.sparse
         )  # (batch_size, num_hashes, chunk_size)
         return slices.flatten(start_dim=-2)

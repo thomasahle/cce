@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-from cce import hash
 
 
 class CompositionalEmbedding(nn.Module):
@@ -8,10 +7,12 @@ class CompositionalEmbedding(nn.Module):
         self,
         rows: int,
         chunk_size: int,
-        hash: hash.MultiHash,
+        hash,
+        sparse=False,
     ):
         super().__init__()
         self.hash = hash
+        self.sparse = sparse
         n_chunks = hash.num_hashes
         self.table = nn.Parameter(torch.empty(rows, n_chunks, chunk_size))
         self.reset_parameters()
@@ -23,4 +24,7 @@ class CompositionalEmbedding(nn.Module):
 
     def forward(self, x):
         rows, n_chunks, chunk_size = self.table.shape
-        return self.table[self.hash(x), range(n_chunks)].flatten(1, 2)
+        hs = self.hash(x)[:, :, None]
+        hs = hs.expand(-1, n_chunks, chunk_size)
+        gathered = torch.gather(self.table, 0, hs, sparse_grad=self.sparse)
+        return gathered.flatten(1, 2)
