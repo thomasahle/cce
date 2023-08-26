@@ -184,6 +184,11 @@ def make_synthetic(n, vocab, data_dir="data"):
     predictions = torch.sigmoid((users[valid[:, 0]] * items[valid[:, 1]]).sum(dim=1))
     auc = roc_auc_score(valid[:, 2], predictions)
     print(f"Max AUC: {auc:.4f}")
+    ll = torch.nn.functional.binary_cross_entropy(predictions, valid[:, 2].to(torch.float))
+    print(f"Smallest log loss: {ll:.4f}")
+    predictions = torch.ones(k_valid * v) * valid[:, 2].to(torch.float).mean()
+    ll = torch.nn.functional.binary_cross_entropy(predictions, valid[:, 2].to(torch.float))
+    print(f"Naive log loss: {ll:.4f}")
 
     if not os.path.isdir(data_dir):
         os.mkdir(data_dir)
