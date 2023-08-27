@@ -16,7 +16,7 @@ import dataset
 import cce
 
 
-methods = ['robe', 'ce', 'simple', 'cce', 'full', 'tt', 'cce_robe', 'dhe', 'hash', 'hnet', 'whemb', 'ldim']
+methods = ['robe', 'ce', 'simple', 'cce', 'full', 'tt', 'cce_robe', 'dhe', 'bloom', 'hemb', 'hnet', 'whemb', 'ldim']
 
 def make_embedding(vocab, num_params, dimension, method, sparse):
     n_chunks = 4
@@ -30,13 +30,14 @@ def make_embedding(vocab, num_params, dimension, method, sparse):
         rows = num_params // dimension
         hash = cce.PolyHash(num_hashes=n_chunks, output_range=rows)
         return cce.CompositionalEmbedding(rows=rows, chunk_size=chunk_dim, hash=hash, sparse=sparse)
-    elif method == 'hash':
+    elif method == 'bloom':
         rows = num_params // dimension
         hash = cce.PolyHash(num_hashes=n_chunks, output_range=rows)
-        return cce.HashEmbedding(rows, dimension, hash)
+        return cce.BloomEmbedding(rows, dimension, hash)
     elif method == 'whemb':
-        # WeightedHashEmbedding is making it's own hash functions now
         return cce.WeightedHashEmbedding(num_params // dimension, dimension, n_chunks, sparse=sparse)
+    elif method == 'hemb':
+        return cce.HashEmbedding(num_params, dimension)
     elif method == 'hnet':
         hash = cce.PolyHash(num_hashes=dimension, output_range=num_params)
         return cce.HashNetEmbedding(num_params, hash, sparse=sparse)

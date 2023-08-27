@@ -2,8 +2,11 @@ import torch
 import torch.nn as nn
 from cce import hash
 
+# This is an unweighted version of Hash Embeddings.
+# Often refereced as "Bloom Embeddings" following https://arxiv.org/abs/1706.03993
+# See also https://thinc.ai/docs/api-layers#hashembed
 
-class HashEmbedding(nn.Module):
+class BloomEmbedding(nn.Module):
     def __init__(
         self,
         rows: int,
