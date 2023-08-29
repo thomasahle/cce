@@ -194,11 +194,9 @@ def main():
             model.item_embedding.cluster(verbose=False)
             cluster_time = time.time() - start
             print(f'Clustering. Time: {cluster_time:.3}s')
-            if cluster_time > train_time:
+            if cluster_time > train_time and cce.cce.use_sklearn:
                 print('Switching to faiss for clustering')
                 cce.cce.use_sklearn = False
-            else:
-                print('Keep using sklearn')
 
 
 if __name__ == '__main__':
