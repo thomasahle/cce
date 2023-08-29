@@ -3,10 +3,6 @@ import torch.nn as nn
 import numpy as np
 
 use_sklearn = True
-if use_sklearn:
-    import sklearn.cluster
-else:
-    import faiss
 
 
 def batch_nn(X, Y, bs=None):
@@ -37,6 +33,7 @@ class KMeans:
             self.centroids = (torch.randn(self.n_clusters, dim) / dim ** 0.5).to(vecs.device)
             self.centroids[: n] = vecs
         elif use_sklearn:
+            import sklearn.cluster
             kmeans = sklearn.cluster.KMeans(
                 self.n_clusters,
                 max_iter=self.n_iter,
@@ -47,6 +44,7 @@ class KMeans:
             kmeans.fit(vecs.detach().cpu().numpy())
             self.centroids = torch.from_numpy(kmeans.cluster_centers_).to(vecs.device)
         else:
+            import faiss
             kmeans = faiss.Kmeans(
                 dim,
                 self.n_clusters,

@@ -196,8 +196,10 @@ def main():
             cluster_time = time.time() - start
             print(f'Clustering. Time: {cluster_time:.3}s')
             if cluster_time > train_time:
-                # Switch to faiss
-                cce.cce.use_sklearns = False
+                print('Switching to faiss for clustering')
+                cce.cce.use_sklearn = False
+            else:
+                print('Keep using sklearn')
 
 
 if __name__ == '__main__':
