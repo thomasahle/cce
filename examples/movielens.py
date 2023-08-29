@@ -62,9 +62,8 @@ def make_embedding(vocab, num_params, dimension, method, sparse, seed):
                 hash = cce.QRHash(num_hashes=n_chunks, output_range=output_range)
                 return cce.TensorTrainEmbedding(rank, dimension, hash)
             if method == 'dhe':
-                hash = cce.MultiHash(num_hashes=rank, output_range=2**62)
                 n_hidden = int(math.ceil(rank**(1/n_chunks)))
-                return cce.DeepHashEmbedding(rank, dimension, n_hidden, hash)
+                return cce.DeepHashEmbedding(rank, dimension, n_hidden)
             if method == 'ldim':
                 return cce.LowDimensionalEmbedding(vocab, rank, dimension, sparse)
         # It might be that even the lowest rank uses too many parameters.
