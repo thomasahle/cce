@@ -31,8 +31,8 @@ with open(args.file) as f:
             main_title = line.strip("#").strip()
         if line.startswith("##"):
             method = line.strip("#").strip()
-            if method not in data:
-                data[method] = defaultdict(list)
+            #if method not in data:
+            data[method] = defaultdict(list)
         elif line[0].isdigit():
             ppd, *vals = map(float, line.split())
             if "auc" in args.file:
@@ -58,8 +58,13 @@ if args.plotly:
 if backend == "pyplot":
     import matplotlib.pyplot as plt
 
-    plt.figure()
+    default_colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
+    linestyles = ['-', '--', '-.', ':']
+    styles = ((color, linestyle) for linestyle in linestyles for color in default_colors)
+
     for method, series in data.items():
+        color, linestyle = next(styles)
+
         x = series.keys()
         y = series.values()
         # y_median = [np.median(triple) for triple in y]
@@ -67,8 +72,8 @@ if backend == "pyplot":
         y_lower = [min(triple) for triple in y]
         y_upper = [max(triple) for triple in y]
 
-        plt.plot(x, y_median, label=names.get(method, method))
-        plt.fill_between(x, y_lower, y_upper, alpha=0.2)
+        plt.plot(x, y_median, label=names.get(method, method), color=color, linestyle=linestyle)
+        plt.fill_between(x, y_lower, y_upper, alpha=0.2, color=color)
 
     plt.legend()
     plt.xlabel("Params/dim")
