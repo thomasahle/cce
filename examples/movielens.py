@@ -18,7 +18,7 @@ import cce
 
 methods = ['robe', 'ce', 'simple', 'cce', 'full', 'tt', 'cce_robe', 'dhe', 'bloom', 'hemb', 'hnet', 'whemb', 'ldim']
 
-def make_embedding(vocab, num_params, dimension, method, sparse):
+def make_embedding(vocab, num_params, dimension, method, sparse, seed):
     n_chunks = 4
     chunk_dim = dimension // n_chunks
     assert n_chunks * chunk_dim == dimension, f"Dimension not divisible by {n_chunks}"
@@ -47,7 +47,7 @@ def make_embedding(vocab, num_params, dimension, method, sparse):
         return cce.CompositionalEmbedding(rows=rows, chunk_size=dimension, hash=hash, sparse=sparse)
     elif method == 'cce':
         # We divide rows by two, since the CCE embedding will use two tables
-        return cce.CCEmbedding(vocab=vocab, rows=num_params // dimension // 2, chunk_size=dimension//n_chunks, n_chunks=n_chunks)
+        return cce.CCEmbedding(vocab=vocab, rows=num_params // dimension // 2, chunk_size=dimension//n_chunks, n_chunks=n_chunks, seed=seed)
     elif method == 'cce_robe':
         return cce.CCERobembedding(vocab=vocab, size=num_params//2, chunk_size=dimension//n_chunks, n_chunks=n_chunks)
     elif method == 'full':
@@ -80,11 +80,11 @@ def make_embedding(vocab, num_params, dimension, method, sparse):
 
 class GMF(nn.Module):
     """ A simple Generalized Matrix Factorization model """
-    def __init__(self, n_users, n_items, num_params, dim, method, sparse):
+    def __init__(self, n_users, n_items, num_params, dim, method, sparse, seed):
         super().__init__()
         self.method = method
-        self.user_embedding = make_embedding(n_users, num_params, dim, method, sparse)
-        self.item_embedding = make_embedding(n_items, num_params, dim, method, sparse)
+        self.user_embedding = make_embedding(n_users, num_params, dim, method, sparse, seed)
+        self.item_embedding = make_embedding(n_items, num_params, dim, method, sparse, seed)
 
     def forward(self, user, item):
         user_emb = self.user_embedding(user)
@@ -136,7 +136,7 @@ def main():
     print(f"Unique users: {n_users}, Unique items: {n_items}")
     print("1 ratios:", train[:,2].to(float).mean().numpy(), valid[:,2].to(float).mean().numpy())
 
-    model = GMF(max_user+1, max_item+1, num_params, dim=dim, method=args.method, sparse=args.sparse).to(device)
+    model = GMF(max_user+1, max_item+1, num_params, dim=dim, method=args.method, sparse=args.sparse, seed=args.seed).to(device)
     criterion = nn.BCELoss()
     if args.sparse:
         print("Notice: Sparsity is only supported by some embeddings, and is generally only useful for vocabs >= 100_000")
@@ -163,6 +163,7 @@ def main():
             optimizer.step()
             total_loss += loss.item()
         train_loss = total_loss * args.batch_size / len(train)
+        train_time = time.time() - start
 
         # Validate the model
         model.eval()
@@ -180,7 +181,7 @@ def main():
             valid_loss = total_loss * args.batch_size / len(valid)
             valid_auc = roc_auc_score(y_true, y_pred)
 
-        print(f"Epoch: {epoch}, Time: {time.time() - start:.3}s, Train Loss: {train_loss:.3}, Validation Loss: {valid_loss:.3}, AUC: {valid_auc:.3}")
+        print(f"Epoch: {epoch}, Time: {train_time:.3}s, Train Loss: {train_loss:.3}, Validation Loss: {valid_loss:.3}, AUC: {valid_auc:.3}")
 
         if valid_loss > old_valid_loss * 1.1 and valid_auc * 1.1 < old_auc:
             print('Early stopping')
@@ -192,7 +193,11 @@ def main():
             start = time.time()
             model.user_embedding.cluster(verbose=False)
             model.item_embedding.cluster(verbose=False)
-            print(f'Clustering. Time: {time.time() - start:.3}s')
+            cluster_time = time.time() - start
+            print(f'Clustering. Time: {cluster_time:.3}s')
+            if cluster_time > train_time:
+                # Switch to faiss
+                cce.cce.use_sklearns = False
 
 
 if __name__ == '__main__':

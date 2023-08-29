@@ -20,25 +20,29 @@ def batch_nn(X, Y, bs=None):
 
 
 class KMeans:
-    def __init__(self, n_clusters, n_iter, n_init, verbose=False):
+    """ Simple wrapper for sklearn and faiss """
+
+    def __init__(self, n_clusters, n_iter, n_init, seed=None, verbose=False):
         self.n_clusters = n_clusters
         self.n_iter = n_iter
         self.n_init = n_init
+        self.seed = seed
         self.verbose = verbose
 
     def fit(self, vecs):
-        _, dim = vecs.shape
-        if len(vecs) <= self.n_clusters:
-            self.centroids = (
-                torch.randn(self.n_clusters, vecs.shape[1]) / vecs.shape[1] ** 0.5
-            ).to(vecs.device)
-            self.centroids[: len(vecs)] = vecs
+        n, dim = vecs.shape
+        if n <= self.n_clusters:
+            # If we have more clusters centers than vectors, we put the vectors in
+            # the first n rows, and put random points in the remaining rows.
+            self.centroids = (torch.randn(self.n_clusters, dim) / dim ** 0.5).to(vecs.device)
+            self.centroids[: n] = vecs
         elif use_sklearn:
             kmeans = sklearn.cluster.KMeans(
                 self.n_clusters,
                 max_iter=self.n_iter,
                 n_init=self.n_init,
                 verbose=self.verbose,
+                random_state=self.seed,
             )
             kmeans.fit(vecs.detach().cpu().numpy())
             self.centroids = torch.from_numpy(kmeans.cluster_centers_).to(vecs.device)
@@ -49,6 +53,7 @@ class KMeans:
                 niter=self.n_iter,
                 nredo=self.n_init,
                 verbose=self.verbose,
+                seed=self.seed,
             )
             kmeans.train(vecs.detach().cpu().numpy())
             self.centroids = torch.from_numpy(kmeans.centroids).to(vecs.device)
@@ -65,8 +70,10 @@ class CCEmbedding(nn.Module):
         rows: int,
         chunk_size: int,
         n_chunks: int,
+        seed: int = None,
     ):
         super().__init__()
+        self.seed = seed
         self.vocab = vocab
         self.table0 = nn.Parameter(torch.empty(rows, n_chunks, chunk_size))
         self.table1 = nn.Parameter(torch.empty(rows, n_chunks, chunk_size))
@@ -99,7 +106,7 @@ class CCEmbedding(nn.Module):
         n_samples = sample_factor * rows
 
         with torch.no_grad():
-            kmeans = KMeans(rows, n_iter=niter, n_init=redo, verbose=verbose)
+            kmeans = KMeans(rows, n_iter=niter, n_init=redo, verbose=verbose, seed=self.seed)
 
             for i in range(n_chunks):
                 # We might as well do iid sampling for each column
