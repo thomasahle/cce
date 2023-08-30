@@ -98,7 +98,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--method', type=str, required=True, choices=methods)
     parser.add_argument('--epochs', type=int, default=10)
-    parser.add_argument('--last-cluster', type=int, default=7, help='Stop reclusering after this many epochs.')
+    parser.add_argument('--last-cluster', type=int, default=-1, help='Stop reclusering after this many epochs.')
     parser.add_argument('--dim', type=int, default=32, help='Dimension of embeddings')
     parser.add_argument('--ppd', type=int, default=200, help='Parameters per dimension')
     parser.add_argument('--dataset', type=str, default='ml-100k')
@@ -107,6 +107,8 @@ def main():
     parser.add_argument('--sparse', action='store_true')
     parser.add_argument('--n-chunks', type=int, default=4)
     args = parser.parse_args()
+
+
 
     # Seed for reproducability
     torch.manual_seed(args.seed)
@@ -191,7 +193,10 @@ def main():
         old_valid_loss = min(old_valid_loss, valid_loss)
         old_auc = max(old_auc, valid_auc)
 
-        if model.method in ('cce', 'cce_robe') and epoch < args.last_cluster:
+        last_cluster = args.last_cluster
+        if last_cluster == -1:
+            last_cluster = int(0.75 * args.epochs)
+        if model.method in ('cce', 'cce_robe') and epoch < last_cluster:
             start = time.time()
             model.user_embedding.cluster(verbose=False)
             model.item_embedding.cluster(verbose=False)

@@ -102,7 +102,9 @@ def prepare_movielens(name, data_dir="data"):
         df["timestamp"] = df["timestamp"].apply(int)
     else:
         url = f"https://files.grouplens.org/datasets/movielens/{name}.zip"
-        if input(f"Download {name} from {url}? [Y/n]") == "n":
+
+        # If a tty, ask the user for permission
+        if sys.__stdout__.isatty() and input(f"Download {name} from {url}? [Y/n]") == "n":
             return
 
         zip_data = fetch_data_from_url(url)
