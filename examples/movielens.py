@@ -18,8 +18,7 @@ import cce
 
 methods = ['robe', 'ce', 'simple', 'cce', 'full', 'tt', 'cce_robe', 'dhe', 'bloom', 'hemb', 'hnet', 'whemb', 'ldim']
 
-def make_embedding(vocab, num_params, dimension, method, sparse, seed):
-    n_chunks = 4
+def make_embedding(vocab, num_params, dimension, method, n_chunks, sparse, seed):
     chunk_dim = dimension // n_chunks
     assert n_chunks * chunk_dim == dimension, f"Dimension not divisible by {n_chunks}"
 
@@ -79,17 +78,20 @@ def make_embedding(vocab, num_params, dimension, method, sparse, seed):
 
 class GMF(nn.Module):
     """ A simple Generalized Matrix Factorization model """
-    def __init__(self, n_users, n_items, num_params, dim, method, sparse, seed):
+    def __init__(self, n_users, n_items, num_params, dim, method, n_chunks, sparse, seed):
         super().__init__()
         self.method = method
-        self.user_embedding = make_embedding(n_users, num_params, dim, method, sparse, seed)
-        self.item_embedding = make_embedding(n_items, num_params, dim, method, sparse, seed)
+        self.user_embedding = make_embedding(n_users, num_params, dim, method, n_chunks, sparse, seed)
+        self.item_embedding = make_embedding(n_items, num_params, dim, method, n_chunks, sparse, seed)
+        #self.bias = nn.Parameter(torch.tensor([0.]))
 
     def forward(self, user, item):
         user_emb = self.user_embedding(user)
         item_emb = self.item_embedding(item)
         mix = user_emb * item_emb
         return torch.sigmoid(mix.sum(-1))
+        #return torch.tensor([1.] * len(user))
+        #return mix.sum(-1) * 0 + self.bias
 
 
 def main():
@@ -103,6 +105,7 @@ def main():
     parser.add_argument('--seed', type=int, default=0xcce)
     parser.add_argument('--batch-size', type=int, default=64)
     parser.add_argument('--sparse', action='store_true')
+    parser.add_argument('--n-chunks', type=int, default=4)
     args = parser.parse_args()
 
     # Seed for reproducability
@@ -135,7 +138,7 @@ def main():
     print(f"Unique users: {n_users}, Unique items: {n_items}")
     print("1 ratios:", train[:,2].to(float).mean().numpy(), valid[:,2].to(float).mean().numpy())
 
-    model = GMF(max_user+1, max_item+1, num_params, dim=dim, method=args.method, sparse=args.sparse, seed=args.seed).to(device)
+    model = GMF(max_user+1, max_item+1, num_params, dim=dim, method=args.method, n_chunks=args.n_chunks, sparse=args.sparse, seed=args.seed).to(device)
     criterion = nn.BCELoss()
     if args.sparse:
         print("Notice: Sparsity is only supported by some embeddings, and is generally only useful for vocabs >= 100_000")
