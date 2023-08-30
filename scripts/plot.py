@@ -12,11 +12,13 @@ names = {
     "cce": "CCE",
     "ce": "CE/QR",
     "tt": "TT-Rec",
-    "dhe": "DHE",
-    "simple": "Hash Trick",
-    "hnet": "Hash Net",
-    "hash": "Hash Emb",
-    "whemb": "Weighted Hash Emb",
+    "dhe": "Deep Hash Embeddings",
+    "simple": "Hashing Trick",
+    "hnet": "Hashed Net",
+    "hash": "Bloom / Sum Pooling",
+    "bloom": "Bloom / Sum Pooling",
+    "whemb": "Hash Embedding v2",
+    "hemb": "Hash Embedding",
     "robe": "Robe",
     "cce_robe": "CCE Robe Hybrid",
     "full": "Baseline",
@@ -31,14 +33,18 @@ with open(args.file) as f:
             main_title = line.strip("#").strip()
         if line.startswith("##"):
             method = line.strip("#").strip()
-            #if method not in data:
-            data[method] = defaultdict(list)
+            if method not in data:
+                data[method] = defaultdict(list)
         elif line[0].isdigit():
             ppd, *vals = map(float, line.split())
             if "auc" in args.file:
                 vals = [max(v, 0.5) for v in vals]
             data[method][ppd] += vals
 
+for method, md in data.items():
+    if 2**18 not in md:
+        print(method, end=" ")
+print()
 
 # Determine the fixed y-axis range
 all_y_values = [
