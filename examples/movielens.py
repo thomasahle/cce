@@ -16,7 +16,7 @@ import dataset
 import cce
 
 
-methods = ['robe', 'ce', 'simple', 'cce', 'full', 'tt', 'cce_robe', 'dhe', 'bloom', 'hemb', 'hnet', 'whemb', 'ldim']
+methods = ['robe', 'ce', 'simple', 'cce', 'full', 'tt', 'cce_robe', 'dhe', 'bloom', 'hemb', 'rhemb', 'hnet', 'whemb', 'ldim']
 
 def make_embedding(vocab, num_params, dimension, method, n_chunks, sparse, seed):
     chunk_dim = dimension // n_chunks
@@ -35,6 +35,8 @@ def make_embedding(vocab, num_params, dimension, method, n_chunks, sparse, seed)
         return cce.BloomEmbedding(rows, dimension, hash)
     elif method == 'whemb':
         return cce.WeightedHashEmbedding(num_params // dimension, dimension, n_chunks, sparse=sparse)
+    elif method == 'rhemb':
+        return cce.RobeWeightedHashEmbedding(num_params, dimension, n_chunks, sparse=sparse)
     elif method == 'hemb':
         return cce.HashEmbedding(num_params, dimension)
     elif method == 'hnet':
@@ -187,7 +189,7 @@ def main():
 
         print(f"Epoch: {epoch}, Time: {train_time:.3}s, Train Loss: {train_loss:.3}, Validation Loss: {valid_loss:.3}, AUC: {valid_auc:.3}")
 
-        if valid_loss > old_valid_loss * 1.1 and valid_auc * 1.1 < old_auc:
+        if valid_loss > old_valid_loss * 1.01 and valid_auc * 1.01 < old_auc:
             print('Early stopping')
             break
         old_valid_loss = min(old_valid_loss, valid_loss)
