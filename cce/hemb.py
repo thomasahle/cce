@@ -46,6 +46,7 @@ class HashEmbedding2(nn.Module):
         n_hash: int,
     ):
         super().__init__()
+        self.dim = dim
         # We pick B and K so B*dim = K*n_hash, while respecting num_params.
         # This fits roughly with the paper specification "K > 10 B".
         B = max(num_params // (2 * n_hash), 1)
@@ -58,12 +59,11 @@ class HashEmbedding2(nn.Module):
         self.reset_parameters()
 
     def reset_parameters(self):
-        rows, dim = self.table.shape
-        nn.init.uniform_(self.table, -(dim**-0.5), dim**-0.5)
+        nn.init.uniform_(self.table, -(self.dim**-0.5), self.dim**-0.5)
         nn.init.uniform_(self.weights, -1, 1)
 
     def forward(self, x):
         vecs = self.table[self.hash0(x)]  # (batch_size, num_hashes, dim)
         weights = self.weights[self.hash1(x)]  # (batch_size, 1, num_hashes)
-        res = torch.cat([weights @ vecs, weights], dim=2)  # (bs, 1, dim + num_hashes)
+        res = torch.cat([weights @ vecs, weights / self.dim**.5], dim=2)  # (bs, 1, dim + num_hashes)
         return res.squeeze(1)  # (batch_size, dim)
