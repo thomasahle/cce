@@ -13,6 +13,8 @@ def extract_smallest_loss(output):
     print('Losses:', val_losses, 'AUCs:', aucs)
     return min(val_losses, default=1), max(aucs, default=0.5)
 
+dim = 5 # 32
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-m', '--method', default='cce', help='Method')
@@ -32,7 +34,7 @@ if __name__ == '__main__':
     losses = defaultdict(list)
     aucs = defaultdict(list)
 
-    arg_prod = [(2**i, 2**j) for i in range(lo_pow, hi_pow+1) for j in range(0, i+1)]
+    arg_prod = [(2**i, 2**j) for i in range(lo_pow, hi_pow+1) for j in range(0, dim+1)]
     for ppd, n_chunks in tqdm(arg_prod, desc="Overall Progress"):
         cmd = [
             sys.executable,
@@ -64,7 +66,7 @@ if __name__ == '__main__':
             write_to_file_and_print(file, f"## {args.method}")
 
             header = "ppd"
-            for j in range(0, hi_pow+1):
+            for j in range(0, dim+1):
                 header += f"\tn-chunks={2**j}"
             write_to_file_and_print(file, header)
 
