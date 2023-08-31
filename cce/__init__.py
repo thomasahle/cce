@@ -2,7 +2,7 @@ from .robe import RobeEmbedding
 from .ce import CompositionalEmbedding
 from .bloom import BloomEmbedding
 from .weighted_hemb import WeightedHashEmbedding
-from .hemb import HashEmbedding
+from .hemb import HashEmbedding, HashEmbedding2
 from .hashnet import HashNetEmbedding
 from .tt import TensorTrainEmbedding
 from .cce import CCEmbedding

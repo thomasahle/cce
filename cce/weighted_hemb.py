@@ -58,18 +58,23 @@ class WeightedHashEmbedding(nn.Module):
         self.dim = dim
         self.n_chunks = n_chunks
         self.sparse = sparse
+        #rows //= 2
         self.hash0 = PolyHash(num_hashes=n_chunks, output_range=rows)
         self.hash1 = PolyHash(num_hashes=n_chunks, output_range=rows * dim)
         self.table = nn.Parameter(torch.empty(rows, dim))
+        #self.table1 = nn.Parameter(torch.empty(rows * dim))
         self.reset_parameters()
 
     def reset_parameters(self):
         nn.init.uniform_(self.table, -(self.dim**-0.5), self.dim**-0.5)
+        #nn.init.uniform_(self.table1, -1, 1)
 
     def forward(self, x):
         vecs = self.table[self.hash0(x)]
         weights = self.table.flatten()[self.hash1(x)].unsqueeze(-1)
+        #weights = self.table1[self.hash1(x)].unsqueeze(-1)
         scale = (self.n_chunks * self.dim) ** 0.5
+        #scale = (self.n_chunks) ** 0.5
         return (vecs * weights).mean(dim=1) * scale
 
     def forward_sparse(self, x):

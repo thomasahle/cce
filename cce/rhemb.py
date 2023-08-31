@@ -10,8 +10,9 @@ class RobeWeightedHashEmbedding(nn.Module):
         self.dim = dim
         self.n_chunks = n_chunks
         self.sparse = sparse
-        self.hash0 = PolyHash(num_hashes=n_chunks, output_range=size)
-        self.hash1 = PolyHash(num_hashes=n_chunks, output_range=size)
+        self.hash0 = PolyHash(num_hashes=n_chunks, output_range=size//2)
+        self.hash1 = PolyHash(num_hashes=n_chunks, output_range=size//2)
+        self.table = nn.Parameter(torch.empty(size))
         self.table = nn.Parameter(torch.empty(size))
         self.reset_parameters()
 

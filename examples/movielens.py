@@ -16,7 +16,7 @@ import dataset
 import cce
 
 
-methods = ['robe', 'ce', 'simple', 'cce', 'full', 'tt', 'cce_robe', 'dhe', 'bloom', 'hemb', 'rhemb', 'hnet', 'whemb', 'ldim']
+methods = ['robe', 'ce', 'simple', 'cce', 'full', 'tt', 'cce_robe', 'dhe', 'bloom', 'hemb',  'hemb2', 'rhemb', 'hnet', 'whemb', 'ldim']
 
 def make_embedding(vocab, num_params, dimension, method, n_chunks, sparse, seed):
     chunk_dim = dimension // n_chunks
@@ -38,7 +38,9 @@ def make_embedding(vocab, num_params, dimension, method, n_chunks, sparse, seed)
     elif method == 'rhemb':
         return cce.RobeWeightedHashEmbedding(num_params, dimension, n_chunks, sparse=sparse)
     elif method == 'hemb':
-        return cce.HashEmbedding(num_params, dimension)
+        return cce.HashEmbedding(num_params, dimension, n_chunks)
+    elif method == 'hemb2':
+        return cce.HashEmbedding2(num_params, dimension, n_chunks)
     elif method == 'hnet':
         hash = cce.PolyHash(num_hashes=dimension, output_range=num_params)
         return cce.HashNetEmbedding(num_params, hash, sparse=sparse)
