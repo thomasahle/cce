@@ -42,7 +42,13 @@ You can also use `--method robe` to use the Robe method, or `ce` for composition
 ## Results
 
 For a simple 32 dim model, varying the number of parameters:
-<img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/ml-1m.png" alt="ml-1m" width="70%"/>
+
+| Size | MovieLens | Synthetic |
+| --- | --- | --- |
+| 1M | <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/ml-1m.png" alt="ml-1m" width="100%"/> |  <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/syn-1m.png" width="100%"/> |
+| 10M | . | <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/syn-10.png" width="100%"/> |
+| 20M | . | . |
+
 
 Similarly a 16 dimensional model on Criteo Kaggle:
 <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/criteo.png" alt="Criteo Kaggle" width="70%"/>
