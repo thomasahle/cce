@@ -10,11 +10,13 @@ class LowDimensionalEmbedding(nn.Module):
         dim0: int,
         dim1: int,
         sparse=False,
+        bias=False,
     ):
         super().__init__()
         self.dim1 = dim1
         self.table = nn.Embedding(vocab, dim0, sparse=sparse)
-        self.upscale = nn.Linear(dim0, dim1)
+        self.bias = bias
+        self.upscale = nn.Linear(dim0, dim1, bias=bias)
         self.reset_parameters()
 
     def reset_parameters(self):
@@ -27,7 +29,7 @@ class LowDimensionalEmbedding(nn.Module):
     def size(self):
         return (
             self.upscale.weight.numel()
-            + self.upscale.bias.numel()
+            + (self.upscale.bias.numel() if self.bias else 0)
             + self.table.weight.numel()
         )
 
