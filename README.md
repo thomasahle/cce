@@ -39,7 +39,7 @@ You can also use `--method robe` to use the Robe method, or `ce` for composition
 - [Tensor Train (TT-Rec) [MLSys '21]](https://arxiv.org/abs/2101.11714)
 - [Random Offset Block Embedding (ROBE) [MLSys '22]](https://proceedings.mlsys.org/paper_files/paper/2022/file/1eb34d662b67a14e3511d0dfd78669be-Paper.pdf)
 
-## Example results
+## Results
 
 For a simple 32 dim model, varying the number of parameters:
 <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/ml-1m.png" alt="ml-1m" width="70%"/>
@@ -48,3 +48,9 @@ Similarly a 16 dimensional model on Criteo Kaggle:
 <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/criteo.png" alt="Criteo Kaggle" width="70%"/>
 
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/clustering-embedding-tables-without-first/click-through-rate-prediction-on-criteo)](https://paperswithcode.com/sota/click-through-rate-prediction-on-criteo?p=clustering-embedding-tables-without-first)
+
+## Parameters
+
+Many of the methods which utilize hashing allow a `n_chunks` parameter, which defines how many sub-vectors are combined to get the final embedding.
+Increasing `n_chunks` nearly always give better results (as evidenced in the plot below), but it also increases time usage.
+<img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/ml25-ce-splits.png" width="70%" />
