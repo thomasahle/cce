@@ -6,6 +6,7 @@ from collections import defaultdict
 parser = argparse.ArgumentParser()
 parser.add_argument("file")
 parser.add_argument("--plotly", action="store_true")
+parser.add_argument("--title", default=None)
 args = parser.parse_args()
 
 names = {
@@ -23,7 +24,12 @@ names = {
     "cce_robe": "CCE Robe Hybrid",
     "full": "Baseline",
     "baseline": "Baseline",
+    "ldim": "Low dimension",
 }
+
+ignore = {
+        'hemb2', 'rhemb', 'hnet'
+        }
 
 main_title = None
 data = {}
@@ -40,6 +46,9 @@ with open(args.file) as f:
             if "auc" in args.file:
                 vals = [max(v, 0.5) for v in vals]
             data[method][ppd] += vals
+
+if args.title is not None:
+    main_title = args.title
 
 for method, md in data.items():
     if 2**18 not in md:
@@ -63,12 +72,15 @@ if args.plotly:
 
 if backend == "pyplot":
     import matplotlib.pyplot as plt
+    plt.figure(figsize=(9,7))
 
     default_colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
     linestyles = ['-', '--', '-.', ':']
     styles = ((color, linestyle) for linestyle in linestyles for color in default_colors)
 
     for method, series in data.items():
+        if method in ignore:
+            continue
         color, linestyle = next(styles)
 
         x = series.keys()
@@ -84,9 +96,10 @@ if backend == "pyplot":
     plt.legend()
     plt.xlabel("Params/dim")
     plt.xscale("log")
-    plt.ylabel("BCE")
+    plt.ylabel("BCE" if args.file.endswith('ll') else 'AUC')
     plt.ylim(min_y * 0.99, max_y * 1.01)
     plt.title(main_title)
+    plt.savefig('output.png')
     plt.show()
 
 if backend == "plotly":
@@ -133,7 +146,7 @@ if backend == "plotly":
         title=main_title,
         xaxis=dict(type="log", title="Params/dim"),
         yaxis=dict(
-            title="BCE",
+            title="BCE" if args.file.endswith('ll') else 'AUC',
             range=[min_y * 0.99, max_y * 1.01],  # Set the fixed y-axis range
         ),
         showlegend=True,
