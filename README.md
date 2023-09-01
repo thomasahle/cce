@@ -45,7 +45,7 @@ For a simple 32 dim model, varying the number of parameters:
 
 | Size | MovieLens | Synthetic |
 | --- | --- | --- |
-| 1M | <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/ml-1m.png" alt="ml-1m" width="100%"/> |  <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/syn-1m.png" width="100%"/> |
+| 1M | <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/ml-1m-auc.png" alt="ml-1m" width="100%"/> |  <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/syn-1m.png" width="100%"/> |
 | 10M | . | <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/syn-10m.png" width="100%"/> |
 | 20M | . | . |
 
