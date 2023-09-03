@@ -14,6 +14,17 @@ def batch_nn(X, Y, bs=None):
         nns[i : i + bs] = torch.argmin(dists, axis=1)
     return nns
 
+# What does it mean to find the best match "under scaling"?
+# dist(x, y) = min_a ||a*x-y||_2^2.
+#  = min_a  <ax-y,ax-y>
+#  = min_a  a^2 |x|^2 - 2 a <x,y> + |y|^2
+#  => 2a|x|^2 = 2<x,y>
+#  => a = <x,y>/|x|^2
+#  => dist(x,y) = <x,y>^2 - 2 <x,y>^2/|x|^2 + |y|^2
+#               = <x,y>^2 (1 - 2/|x|^2) + |y|^2
+# If we first scale |x|=1 (since it doesn't matter given a)
+# we can also write it as
+#  => dist(x,y) = |y|^2 - <x,y>^2
 
 class KMeans:
     """ Simple wrapper for sklearn and faiss """
@@ -64,7 +75,7 @@ class KMeans:
         return batch_nn(bvecs, self.centroids)
 
 
-class CCEmbedding(nn.Module):
+class WCCEmbedding(nn.Module):
     def __init__(
         self,
         vocab: int,
@@ -78,6 +89,7 @@ class CCEmbedding(nn.Module):
         self.vocab = vocab
         self.table0 = nn.Parameter(torch.empty(rows, n_chunks, chunk_size))
         self.table1 = nn.Parameter(torch.empty(rows, n_chunks, chunk_size))
+        self.weights = nn.Parameter(torch.empty(rows, n_chunks, 2))
         self.reset_parameters()
 
     def reset_parameters(self):
@@ -93,13 +105,20 @@ class CCEmbedding(nn.Module):
             torch.randint(rows, size=(self.vocab, n_chunks)), requires_grad=False
         )
 
+        nn.init.uniform_(self.weights, -1, 1)
+        self.h2 = nn.Parameter(
+            torch.randint(rows, size=(self.vocab, n_chunks)), requires_grad=False
+        )
+
     def forward(self, x):
         rows, n_chunks, chunk_size = self.table0.shape
         part0 = self.table0[self.h0[x], range(n_chunks)]
         part1 = self.table1[self.h1[x], range(n_chunks)]
-        return (part0 + part1).flatten(1, 2)
+        ws = self.weights[self.h2[x], range(n_chunks)]
+        # return (part0 + part1).flatten(1, 2)
+        return (part0 * ws[:,:,:1] + part1 * ws[:,:,1:]).flatten(1, 2)
 
-    def cluster(self, niter=100, sample_factor=200, redo=1, verbose=False, max_time=None):
+    def cluster(self, niter=100, sample_factor=200, redo=1, verbose=False):
         rows, n_chunks, chunk_size = self.table0.shape
         vocab, _ = self.h0.shape
 
@@ -118,7 +137,9 @@ class CCEmbedding(nn.Module):
                 )
 
                 # Compute current representations in the column and cluster them
-                vecs = self.table0[self.h0[x, i], i] + self.table1[self.h1[x, i], i]
+                #vecs = self.table0[self.h0[x, i], i] + self.table1[self.h1[x, i], i]
+                ws = self.weights[self.h2[x, i], i]
+                vecs = self.table0[self.h0[x, i], i]*ws[:,:1] + self.table1[self.h1[x, i], i]*ws[:,1:]
                 centroids = kmeans.fit(vecs)
 
                 # In the case where the vocab is really big, we decode it in batches.
@@ -129,9 +150,10 @@ class CCEmbedding(nn.Module):
                     ids = torch.arange(j, min(j + n_samples, vocab))
 
                     # Compute pre-clustering representation of batch
+                    ws = self.weights[self.h2[ids, i], i]
                     bvecs = (
-                        self.table0[self.h0[ids, i], i]
-                        + self.table1[self.h1[ids, i], i]
+                        self.table0[self.h0[ids, i], i]*ws[:,:1]
+                        + self.table1[self.h1[ids, i], i]*ws[:,1:]
                     )
 
                     # Set the new h0 based on decoding he batch in the centroids
@@ -151,3 +173,11 @@ class CCEmbedding(nn.Module):
                 # Initialize table 1 using residuals. This is a arguably a tiny bit better
                 # than 0 initialization.
                 self.table1[:, i, :] = sums / counts.unsqueeze(-1)
+
+                # Weights reset
+                # TODO: ws0 should be learned during the clustering process. Using
+                # some smarter, weighted form of kmeans.
+                # ws1 should be re-initialized together with table1 to give the
+                # optimal values for the residuals.
+                self.weights[:, :, 0] = 1
+                self.weights[:, :, 1] = 1

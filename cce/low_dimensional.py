@@ -10,7 +10,7 @@ class LowDimensionalEmbedding(nn.Module):
         dim0: int,
         dim1: int,
         sparse=False,
-        bias=False,
+        bias=True,
     ):
         super().__init__()
         self.dim1 = dim1

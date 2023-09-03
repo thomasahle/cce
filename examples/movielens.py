@@ -3,13 +3,14 @@ import torch
 import math
 from torch import nn
 import numpy as np
-from torch.utils.data import Dataset as TorchDataset, DataLoader
+from torch.utils.data import Dataset as TorchDataset, DataLoader, TensorDataset
 import argparse
 import time
 from sklearn.metrics import roc_auc_score
 import tqdm
 import sys
 from itertools import takewhile, count
+
 
 import dataset
 
@@ -19,9 +20,10 @@ import cce
 methods = ['robe', 'ce', 'simple', 'cce', 'full', 'tt', 'cce_robe', 'dhe', 'bloom', 'hemb',  'hemb2', 'rhemb', 'hnet', 'whemb', 'ldim']
 
 def make_embedding(vocab, num_params, dimension, method, n_chunks, sparse, seed):
-    chunk_dim = dimension // n_chunks
-    assert n_chunks * chunk_dim == dimension, f"Dimension not divisible by {n_chunks}"
-
+    if method in ['robe', 'ce', 'cce', 'cce_robe']:
+        chunk_dim = dimension // n_chunks
+        assert n_chunks * chunk_dim == dimension, f"Dimension not divisible by {n_chunks}"
+    # Concatenative methods
     if method == 'robe':
         hash = cce.PolyHash(num_hashes=n_chunks, output_range=num_params)
         return cce.RobeEmbedding(size=num_params, chunk_size=chunk_dim, hash=hash, sparse=sparse)
@@ -29,6 +31,15 @@ def make_embedding(vocab, num_params, dimension, method, n_chunks, sparse, seed)
         rows = num_params // dimension
         hash = cce.PolyHash(num_hashes=n_chunks, output_range=rows)
         return cce.CompositionalEmbedding(rows=rows, chunk_size=chunk_dim, hash=hash, sparse=sparse)
+    elif method == 'cce':
+        # We divide rows by two, since the CCE embedding will use two tables
+        return cce.CCEmbedding(vocab=vocab, rows=num_params // dimension // 2, chunk_size=chunk_dim, n_chunks=n_chunks, seed=seed)
+    elif method == 'cce_robe':
+        return cce.CCERobembedding(vocab=vocab, size=num_params//2, chunk_size=chunk_dim, n_chunks=n_chunks)
+    elif method == 'hnet':
+        hash = cce.PolyHash(num_hashes=dimension, output_range=num_params)
+        return cce.HashNetEmbedding(num_params, hash, sparse=sparse)
+    # Additive methods
     elif method == 'bloom':
         rows = num_params // dimension
         hash = cce.PolyHash(num_hashes=n_chunks, output_range=rows)
@@ -41,18 +52,11 @@ def make_embedding(vocab, num_params, dimension, method, n_chunks, sparse, seed)
         return cce.HashEmbedding(num_params, dimension, n_chunks)
     elif method == 'hemb2':
         return cce.HashEmbedding2(num_params, dimension, n_chunks)
-    elif method == 'hnet':
-        hash = cce.PolyHash(num_hashes=dimension, output_range=num_params)
-        return cce.HashNetEmbedding(num_params, hash, sparse=sparse)
+    # Other methods
     elif method == 'simple':
         rows = num_params // dimension
         hash = cce.PolyHash(num_hashes=1, output_range=rows)
         return cce.CompositionalEmbedding(rows=rows, chunk_size=dimension, hash=hash, sparse=sparse)
-    elif method == 'cce':
-        # We divide rows by two, since the CCE embedding will use two tables
-        return cce.CCEmbedding(vocab=vocab, rows=num_params // dimension // 2, chunk_size=dimension//n_chunks, n_chunks=n_chunks, seed=seed)
-    elif method == 'cce_robe':
-        return cce.CCERobembedding(vocab=vocab, size=num_params//2, chunk_size=dimension//n_chunks, n_chunks=n_chunks)
     elif method == 'full':
         emb = nn.Embedding(vocab, dimension, sparse=sparse)
         nn.init.uniform_(emb.weight, -(dimension**-0.5), dimension**-0.5)
@@ -107,7 +111,7 @@ def main():
     parser.add_argument('--ppd', type=int, default=200, help='Parameters per dimension')
     parser.add_argument('--dataset', type=str, default='ml-100k')
     parser.add_argument('--seed', type=int, default=0xcce)
-    parser.add_argument('--batch-size', type=int, default=64)
+    parser.add_argument('--batch-size', type=int, default=4096)
     parser.add_argument('--sparse', action='store_true')
     parser.add_argument('--n-chunks', type=int, default=4)
     args = parser.parse_args()
@@ -189,7 +193,13 @@ def main():
             valid_loss = total_loss * args.batch_size / len(valid)
             valid_auc = roc_auc_score(y_true, y_pred)
 
-        print(f"Epoch: {epoch}, Time: {train_time:.3}s, Train Loss: {train_loss:.3}, Validation Loss: {valid_loss:.3}, AUC: {valid_auc:.3}")
+        print(
+            f"Epoch: {epoch}, "
+            f"Time: {train_time:.3}s, "
+            f"Train Loss: {train_loss:.3}, "
+            f"Validation Loss: {valid_loss:.3}, "
+            f"AUC: {valid_auc:.3}"
+        )
 
         if valid_loss > old_valid_loss * 1.01 and valid_auc * 1.01 < old_auc:
             print('Early stopping')
@@ -202,8 +212,8 @@ def main():
             last_cluster = int(0.75 * args.epochs)
         if model.method in ('cce', 'cce_robe') and epoch < last_cluster:
             start = time.time()
-            model.user_embedding.cluster(verbose=False)
-            model.item_embedding.cluster(verbose=False)
+            model.user_embedding.cluster(verbose=False, max_time=train_time / 2)
+            model.item_embedding.cluster(verbose=False, max_time=train_time / 2)
             cluster_time = time.time() - start
             print(f'Clustering. Time: {cluster_time:.3}s')
             if cluster_time > train_time and cce.cce.use_sklearn:
