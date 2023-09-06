@@ -17,7 +17,7 @@ import dataset
 import cce
 
 
-methods = ['robe', 'ce', 'simple', 'cce', 'full', 'tt', 'cce_robe', 'dhe', 'bloom', 'hemb',  'hemb2', 'rhemb', 'hnet', 'whemb', 'ldim']
+methods = ['robe', 'ce', 'simple', 'cce', 'full', 'tt', 'cce_robe', 'dhe', 'bloom', 'hemb',  'hemb2', 'rhemb', 'hnet', 'whemb', 'ldim', 'sparse']
 
 def make_embedding(vocab, num_params, dimension, method, n_chunks, sparse, seed):
     if method in ['robe', 'ce', 'cce', 'cce_robe']:
@@ -44,6 +44,8 @@ def make_embedding(vocab, num_params, dimension, method, n_chunks, sparse, seed)
         rows = num_params // dimension
         hash = cce.PolyHash(num_hashes=n_chunks, output_range=rows)
         return cce.BloomEmbedding(rows, dimension, hash)
+    elif method == 'sparse':
+        return cce.SparseCodingEmbedding(num_params, vocab, dimension, n_chunks)
     elif method == 'whemb':
         return cce.WeightedHashEmbedding(num_params // dimension, dimension, n_chunks, sparse=sparse)
     elif method == 'rhemb':
@@ -155,6 +157,16 @@ def main():
         optimizer = torch.optim.SparseAdam(model.parameters())
     else:
         optimizer = torch.optim.AdamW(model.parameters())
+    #optimizer = torch.optim.SGD(model.parameters(), lr=10, momentum=0.9)
+
+
+    # Create the cosine annealing scheduler
+    # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+    #         optimizer,
+    #         T_max=args.epochs,
+    #         eta_min=1e-4)
+    #scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=10, threshold=0.0001, threshold_mode='rel', cooldown=0, min_lr=0, eps=1e-08)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min')
 
     # For early stopping
     old_valid_loss = 10**10
@@ -193,6 +205,8 @@ def main():
             valid_loss = total_loss * args.batch_size / len(valid)
             valid_auc = roc_auc_score(y_true, y_pred)
 
+        scheduler.step(valid_loss)
+
         print(
             f"Epoch: {epoch}, "
             f"Time: {train_time:.3}s, "
@@ -210,7 +224,7 @@ def main():
         last_cluster = args.last_cluster
         if last_cluster == -1:
             last_cluster = int(0.75 * args.epochs)
-        if model.method in ('cce', 'cce_robe') and epoch < last_cluster:
+        if hasattr(model.user_embedding, 'cluster') and epoch < last_cluster:
             start = time.time()
             model.user_embedding.cluster(verbose=False, max_time=train_time / 2)
             model.item_embedding.cluster(verbose=False, max_time=train_time / 2)
