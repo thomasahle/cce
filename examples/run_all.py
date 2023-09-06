@@ -18,7 +18,7 @@ if __name__ == '__main__':
     parser.add_argument('-e', '--epochs', default='', help='Epochs')
     parser.add_argument('-d', '--dataset', default='ml-100k', help='Dataset')
     parser.add_argument('-w', '--workers', default='', help='Workers')
-    parser.add_argument('-b', '--batch-size', default='256', help='Batch Size')
+    parser.add_argument('-b', '--batch-size', default='4096', help='Batch Size')
     parser.add_argument('-l', '--lo-pow', default=1, type=int)
     parser.add_argument('-hi', '--hi-pow', default=12, type=int)
 
@@ -50,7 +50,16 @@ if __name__ == '__main__':
             cmd.extend(['--num-workers', args.workers])
 
         print(f'Running {ppd=} {seed=}')
-        output = subprocess.check_output(cmd).decode('utf-8')
+        try:                                                                                                    
+            output = subprocess.check_output(cmd).decode('utf-8')                                               
+        except subprocess.CalledProcessError:                                                                   
+            print("Program failed")                                                                             
+        else:                                                                                                   
+            smallest_loss, top_auc = extract_smallest_loss(output)                                              
+            ppds.append(ppd)                                                                                    
+            losses.append(smallest_loss)                                                                        
+            aucs.append(top_auc)                                                                                
+
         smallest_loss, top_auc = extract_smallest_loss(output)
         ppds.append(ppd)
         losses.append(smallest_loss)

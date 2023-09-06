@@ -1,6 +1,7 @@
 *.pyc
 *.swp
 *.egg-info
+*.pt
 __pycache__/*
 scripts/results*
 scripts/*.html

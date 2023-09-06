@@ -17,8 +17,8 @@ def omp(X, D, s):
     n_atoms, _ = D.shape
 
     # Normalize rows
-    norms = torch.linalg.norm(D, axis=1, keepdims=True) + 1e-6
-    D2 = D / norms
+    norms = torch.linalg.norm(D, axis=1) + 1e-6
+    D2 = D / norms[:, None]
 
     residuals = X.clone()
     ids = torch.zeros((n_samples, s), dtype=int)
@@ -30,25 +30,23 @@ def omp(X, D, s):
         m = torch.linalg.lstsq(subDs, X, rcond=None).solution
         residuals = X - (subDs @ m.unsqueeze(2)).squeeze(2)
 
-    S = torch.zeros((n_samples, n_atoms), dtype=X.dtype, device=X.device)
-    r = torch.arange(n_samples, dtype=int, device=X.device).unsqueeze(-1)
-    S[r, ids] = m
-    S /= norms.T
-    return S
+    m /= norms[ids]
+    return ids, m
 
 
 def k_svd(X, M, s, n_iter, max_time=None):
+    assert n_iter >= 1
     n, d = X.shape
     k, _ = M.shape
-
-    if n_iter == 0:
-        S = omp(X, M, s)
-        return M, S
 
     start = time.time()
     for iter in range(n_iter):
         # Sparse Coding
-        S = omp(X, M, s)
+        ids, m = omp(X, M, s)
+        # TODO: Can we just work directly with ids and m? Maybe use a torch sparse tensor?
+        S = torch.zeros((n, k), dtype=X.dtype, device=X.device)
+        r = torch.arange(n, dtype=int, device=X.device).unsqueeze(-1)
+        S[r, ids] = m
 
         # Dictionary Update, one row at a time
         for j in range(k):
@@ -190,7 +188,8 @@ class SparseCodingEmbedding(nn.Module):
         n_chunks: int,
         n_explore: int = 1,  # Number of random pointers per sample
         sparse: bool = False,
-        num_bits: int = 4, # Number of bits per weight
+        num_bits: int = 8, # Number of bits per weight, None for infinite
+        table_grad: bool = False,
     ):
         super().__init__()
         self.n_explore = n_explore
@@ -198,9 +197,7 @@ class SparseCodingEmbedding(nn.Module):
         self.num_bits = num_bits
         rows = num_params // dim
         # Somehow doing requires_grad=False here works quite well...
-        self.table = nn.Parameter(torch.empty(rows, dim),
-                                  requires_grad=False
-                                  )
+        self.table = nn.Parameter(torch.empty(rows, dim), requires_grad=table_grad)
         self.weights = nn.Parameter(torch.empty(vocab, n_chunks))
         self.h = nn.Parameter(torch.empty((vocab, n_chunks), dtype=torch.int64), requires_grad=False)
         self.reset_parameters()
@@ -216,8 +213,9 @@ class SparseCodingEmbedding(nn.Module):
         # Ideally this should be done at the time of updating the gradients, and we should
         # only dequantize the weights we actually need for the forward pass.
         # However, this should simulate the same effect.
-        with torch.no_grad():
-            self.weights[:] = dequantize(*quantize(self.weights, self.num_bits))
+        if self.num_bits is not None:
+            with torch.no_grad():
+                self.weights[:] = dequantize(*quantize(self.weights, self.num_bits))
 
         # Making our own forward/backward is about twice as fast.
         return SparseCodingEmbeddingFunction.apply(self.table, self.weights, self.h, x, self.sparse)
@@ -229,6 +227,7 @@ class SparseCodingEmbedding(nn.Module):
 
         # We use a sub-sampling strategy, similar to CCE
         n_samples = sample_factor * rows
+        print(f'{vocab=}, {n_samples=}')
 
         if n_samples >= vocab:
             vecs = self.forward(torch.arange(vocab))
@@ -242,7 +241,7 @@ class SparseCodingEmbedding(nn.Module):
             self.table[:] = M
 
             self.h[:, :s] = indices
-            self.h[:, s:] = torch.randint(rows, size=(vocab, n_chunks - s))
+            self.h[:, s:] = torch.randint(rows, size=(vocab, n_chunks - s), device=self.h.device)
 
             self.weights[:, :s] = values
             self.weights[:, s:] = 0
@@ -258,16 +257,10 @@ class SparseCodingEmbedding(nn.Module):
                 ids = torch.arange(j, min(j + n_samples, vocab))
 
                 vecs = self.forward(ids)
-                # Find the best representation of the batch
-                #     M m = vecs
-                # (dim, k) * (k, n) = (dim, n)
-                m = torch.linalg.lstsq(M.T, vecs.T, rcond=None).solution.T
-                # Truncate m to the `s` largest indices and values
-                indices = m.abs().sort(dim=1, descending=True).indices[:, :s]
-                values = torch.gather(m, 1, indices)
+                indices, values = omp(vecs, M, s)
 
                 self.h[ids, :s] = indices
-                self.h[ids, s:] = torch.randint(rows, size=(len(ids), n_chunks - s))
+                self.h[ids, s:] = torch.randint(rows, size=(len(ids), n_chunks - s), device=self.h.device)
 
                 self.weights[ids, :s] = values
                 self.weights[ids, s:] = 0

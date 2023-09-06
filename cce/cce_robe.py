@@ -5,6 +5,7 @@ import numpy as np
 from . import robe
 import faiss
 
+use_faiss = True
 
 def batch_nn(X, Y, bs=None):
     if bs is None:
@@ -21,7 +22,7 @@ def faiss_knn(X, Y):
         # Try to do it on GPU if available
         res = faiss.StandardGpuResources()
     except AttributeError:
-        _, indices = faiss.knn(X.numpy(), Y.numpy(), 1)
+        _, indices = faiss.knn(X.cpu().numpy(), Y.cpu().numpy(), 1)
         return torch.from_numpy(indices).squeeze(1)
     else:
         _, indices = faiss.knn_gpu(res, X, Y, 1)
@@ -87,8 +88,10 @@ class RotaryKMeans:
             # Is that weird/bad?
             centroids = rolling_window(table, self.dim)
 
-            labels = faiss_knn(vecs, centroids)
-            #labels = batch_nn(vecs, centroids)
+            if use_faiss:
+                labels = faiss_knn(vecs, centroids)
+            else:
+                labels = batch_nn(vecs, centroids)
 
             flat_labels = (
                 labels[..., None] + torch.arange(self.dim, device=labels.device)

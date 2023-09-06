@@ -127,7 +127,7 @@ def main():
     device = "cpu"
     # MPS has some bugs related to broadcasting scatter_add
     #if torch.backends.mps.is_available():
-    #    device = torch.device("mps")
+        #device = torch.device("mps")
     if torch.cuda.is_available():
         device = "cuda:0"
     print(f'Device: {device}')
