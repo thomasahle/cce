@@ -28,7 +28,7 @@ names = {
 }
 
 ignore = {
-        'hemb2', 'rhemb', 'hnet'
+        'hemb2', 'rhemb', 'hnet', 'ldim'
         }
 
 main_title = None
