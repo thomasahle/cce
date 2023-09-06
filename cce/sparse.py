@@ -31,7 +31,7 @@ def omp(X, D, s):
         residuals = X - (subDs @ m.unsqueeze(2)).squeeze(2)
 
     S = torch.zeros((n_samples, n_atoms), dtype=X.dtype, device=X.device)
-    r = torch.arange(n_samples, dtype=int).unsqueeze(-1)
+    r = torch.arange(n_samples, dtype=int, device=X.device).unsqueeze(-1)
     S[r, ids] = m
     S /= norms.T
     return S
