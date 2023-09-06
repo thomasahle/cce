@@ -47,7 +47,8 @@ For a simple 32 dim model, varying the number of parameters:
 | --- | --- | --- |
 | 1M | <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/ml-1m-auc.png" width="100%"/> |  <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/syn-1m.png" width="100%"/> |
 | 10M | . | <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/syn-10m.png" width="100%"/> |
-| 25M | <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/ml-25-auc.png" width="100%"/> | . |
+| 20M | <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/ml-20-auc.png" width="100%"/> | <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/syn-20-auc.png" width="100%"/> |
+| 25M | <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/ml-25-auc.png" width="100%"/> | <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/syn-25-auc.png" width="100%"/> |
 
 
 Similarly a 16 dimensional model on Criteo Kaggle:
