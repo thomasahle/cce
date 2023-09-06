@@ -115,6 +115,7 @@ def main():
     parser.add_argument('--seed', type=int, default=0xcce)
     parser.add_argument('--batch-size', type=int, default=4096)
     parser.add_argument('--sparse', action='store_true')
+    parser.add_argument('--cpu', action='store_true')
     parser.add_argument('--n-chunks', type=int, default=4)
     args = parser.parse_args()
 
@@ -125,11 +126,12 @@ def main():
     np.random.seed(args.seed)
 
     device = "cpu"
-    # MPS has some bugs related to broadcasting scatter_add
-    #if torch.backends.mps.is_available():
-        #device = torch.device("mps")
-    if torch.cuda.is_available():
-        device = "cuda:0"
+    if not args.cpu:
+        # MPS has some bugs related to broadcasting scatter_add
+        #if torch.backends.mps.is_available():
+            #device = torch.device("mps")
+        if torch.cuda.is_available():
+            device = "cuda:0"
     print(f'Device: {device}')
 
     # Load and process the data. We predict whether the user rated something >= 3.

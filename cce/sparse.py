@@ -21,7 +21,7 @@ def omp(X, D, s):
     D2 = D / norms[:, None]
 
     residuals = X.clone()
-    ids = torch.zeros((n_samples, s), dtype=int)
+    ids = torch.zeros((n_samples, s), dtype=int, device=X.device)
 
     for step in range(s):
         corrs = torch.abs(residuals @ D2.T)
@@ -208,6 +208,11 @@ class SparseCodingEmbedding(nn.Module):
         self.h[:] = torch.randint(rows, size=self.h.shape)
 
     def forward(self, x):
+        vecs = self.table[self.h[x]]  # (batch_size, num_hashes, dim)
+        weights_ = self.weights[x].unsqueeze(1)  # (batch_size, 1, num_hashes)
+        return (weights_ @ vecs).squeeze(1)  # (batch_size, dim)
+
+    def forward_(self, x):
         # Ideally this should be done at the time of updating the gradients, and we should
         # only dequantize the weights we actually need for the forward pass.
         # However, this should simulate the same effect.
