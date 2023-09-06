@@ -25,6 +25,7 @@ def omp(X, D, s):
 
     for step in range(s):
         corrs = torch.abs(residuals @ D2.T)
+        corrs.scatter_(1, ids[:, :step], -1)  # Mask ids we've already picked
         ids[:, step] = torch.argmax(corrs, axis=1)
         subDs = D2[ids[:, : step + 1]].mT
         m = torch.linalg.lstsq(subDs, X, rcond=None).solution
@@ -43,24 +44,20 @@ def k_svd(X, M, s, n_iter, max_time=None):
     for iter in range(n_iter):
         # Sparse Coding
         ids, m = omp(X, M, s)
-        # TODO: Can we just work directly with ids and m? Maybe use a torch sparse tensor?
-        S = torch.zeros((n, k), dtype=X.dtype, device=X.device)
-        r = torch.arange(n, dtype=int, device=X.device).unsqueeze(-1)
-        S[r, ids] = m
 
         # Dictionary Update, one row at a time
         for j in range(k):
             # Find which samples are currently assumed to be using the kth atom
-            I = (S[:, j] != 0).nonzero(as_tuple=True)[0]
+            mask = (ids == j)
+            I = torch.any(mask, dim=1)
 
-            if len(I) == 0:
+            if not torch.any(I):
                 continue
-
             # Compute current residuals
-            E = X[I] - torch.mm(S[I], M)
+            E = X[I] - (m[I].unsqueeze(1) @ M[ids[I]]).squeeze(1)  # E = X[I] - S[I] @ M
             # Add the current atom back in. This is like assuming it was
             # currently not used by any of the samples.
-            E = E + torch.outer(S[I, j], M[j])
+            E += torch.outer(m[mask], M[j])  # E += torch.outer(S[I, j], M[j])
 
             # Use svd_lowrank from torch to save time and only compute
             # the first singular vector
@@ -68,20 +65,21 @@ def k_svd(X, M, s, n_iter, max_time=None):
             # U, Sigma, V = torch.linalg.svd(E)
             M[j, :] = V[0, :]
             # We also update S, which is how k-svd can have an advantage over MOD
-            S[I, j] = Sigma[0] * U[:, 0]
+            # S[I, j] = Sigma[0] * U[:, 0]
+            m[mask] = Sigma[0] * U[:, 0]
 
         if max_time is not None and time.time() - start > max_time:
             print("K-SVD: Stopping early because ran out of time.")
             break
 
-        error = torch.norm(S @ M - X)
+        SM = (m.unsqueeze(1) @ M[ids]).squeeze(1)  # SM = S @ M
+        error = torch.norm(SM - X)
         if error < 1e-4:
             print("K-SVD: Stopping early because error is near 0.")
             break
-    print(f"K-SVD: error at {iter=}:", torch.norm(S @ M - X).item())
+    print(f"K-SVD: error at {iter=}:", error.item())
 
-    # TODO: I don't really want S back. I just want the pointers (s per row) and the weights
-    return M, S
+    return M, ids, m
 
 def randomized_round(tensor):
     """Perform randomized rounding on a tensor."""
@@ -232,11 +230,7 @@ class SparseCodingEmbedding(nn.Module):
         if n_samples >= vocab:
             vecs = self.forward(torch.arange(vocab))
             s = n_chunks - self.n_explore
-            M, S = k_svd(vecs, self.table, s=s, n_iter=k_svd_iters, max_time=max_time)
-
-            # Convert S to indices and values
-            indices = S.abs().sort(dim=1, descending=True).indices[:, :s]
-            values = torch.gather(S, 1, indices)
+            M, indices, values = k_svd(vecs, self.table, s=s, n_iter=k_svd_iters, max_time=max_time)
 
             self.table[:] = M
 
@@ -251,7 +245,7 @@ class SparseCodingEmbedding(nn.Module):
             x = torch.from_numpy(np.random.choice(vocab, n_samples, replace=False))
             vecs = self.forward(x)
             s = n_chunks - self.n_explore
-            M, _S = k_svd(vecs, self.table, s=s, n_iter=k_svd_iters, max_time=max_time)
+            M, _, _ = k_svd(vecs, self.table, s=s, n_iter=k_svd_iters, max_time=max_time)
 
             for j in range(0, vocab, n_samples):
                 ids = torch.arange(j, min(j + n_samples, vocab))
