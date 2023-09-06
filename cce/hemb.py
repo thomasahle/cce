@@ -2,9 +2,15 @@ import torch
 import torch.nn as nn
 from .hash import PolyHash
 from .robe import get_slices
+import os
 
 # Based on Dan Tito Svenstrup, Jonas Hansen, Ole Winther
 # https://papers.nips.cc/paper_files/paper/2017/hash/f0f6ba4b5e0000340312d33c212c3ae8-Abstract.html
+
+# METHOD_ORIGINAL: When this method is chosen, the weights tensor will be of shape (K, n_hash), and there will be a single hash function (hash1) used that will output values in the range of K.
+# METHOD_INDEP: When this method is selected, the structure of the weights tensor is the same as METHOD_ORIGINAL. However, the hash function hash1 now outputs n_hash values in the range of K.
+# METHOD_FLAT: For this method, the weights tensor is flattened to have a shape of (K * n_hash), and the hash function hash1 now outputs n_hash values in the range of K * n_hash.
+METHOD_FLAT, METHOD_ORIGINAL, METHOD_INDEP = range(3)
 
 class HashEmbedding(nn.Module):
     def __init__(
@@ -12,6 +18,7 @@ class HashEmbedding(nn.Module):
         num_params: int,
         dim: int,
         n_hash: int,  # Paper says "we typically use k = 2"
+        method = METHOD_FLAT
     ):
         super().__init__()
         # We pick B and K so B*dim = K*n_hash, while respecting num_params.
@@ -19,15 +26,27 @@ class HashEmbedding(nn.Module):
         B = max(num_params // (2 * dim), 1)
         K = max(num_params // (2 * n_hash), 1)
         self.table = nn.Parameter(torch.empty(B, dim))
-        #self.weights = nn.Parameter(torch.empty(K, n_hash))
-        self.weights = nn.Parameter(torch.empty(K * n_hash))
 
-        print(self.table.numel() + self.weights.numel(), num_params)
+        self.method = method
+        if (method := os.environ.get('HEMB_METHOD')) is not None:
+            self.method = globals()[method]
+            print('Method =', method)
+        if self.method == METHOD_ORIGINAL:
+            self.weights = nn.Parameter(torch.empty(K, n_hash))
+            self.hash1 = PolyHash(num_hashes=1, output_range=K)
+        elif self.method == METHOD_INDEP:
+            self.weights = nn.Parameter(torch.empty(K, n_hash))
+            self.hash1 = PolyHash(num_hashes=n_hash, output_range=K)
+        elif self.method == METHOD_FLAT:
+            # We could perhaps improve this method for some users if we never hashed
+            # to the same bucket. However, in average it's unlikely to matter.
+            self.weights = nn.Parameter(torch.empty(K * n_hash))
+            self.hash1 = PolyHash(num_hashes=n_hash, output_range=K * n_hash)
+
         assert self.table.numel() + self.weights.numel() <= num_params
 
         self.hash0 = PolyHash(num_hashes=n_hash, output_range=B)
-        #self.hash1 = hash.PolyHash(num_hashes=1, output_range=K)
-        self.hash1 = PolyHash(num_hashes=n_hash, output_range=K * n_hash)
+
         self.reset_parameters()
 
     def reset_parameters(self):
@@ -37,9 +56,12 @@ class HashEmbedding(nn.Module):
 
     def forward(self, x):
         vecs = self.table[self.hash0(x)]  # (batch_size, num_hashes, dim)
-        #weights = self.weights[self.hash1(x)]  # (batch_size, 1, num_hashes)
-        weights = self.weights[self.hash1(x)].unsqueeze(1)  # (batch_size, 1, num_hashes)
-        #weights = torch.softmax(weights, dim=1)
+        if self.method == METHOD_ORIGINAL:
+            weights = self.weights[self.hash1(x)]  # (batch_size, 1, num_hashes)
+        if self.method == METHOD_FLAT:
+            weights = self.weights[self.hash1(x)].unsqueeze(1)
+        elif self.method == METHOD_INDEP:
+            weights = self.weights[self.hash1(x), range(self.hash1.num_hashes)].unsqueeze(1)
         return (weights @ vecs).squeeze(1)  # (batch_size, dim)
 
 
@@ -72,7 +94,8 @@ class HashEmbedding2(nn.Module):
 
     def forward(self, x):
         vecs = self.table[self.hash0(x)]  # (batch_size, num_hashes, dim)
-        weights = self.weights[self.hash1(x)]  # (batch_size, 1, num_hashes)
+        #weights = self.weights[self.hash1(x)]  # (batch_size, 1, num_hashes)
+        weights = self.weights[self.hash1(x)]
         res = torch.cat([weights @ vecs, weights / self.dim**.5], dim=2)  # (bs, 1, dim + num_hashes)
         return res.squeeze(1)  # (batch_size, dim)
 
