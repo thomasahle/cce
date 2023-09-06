@@ -30,7 +30,7 @@ def omp(X, D, s):
         m = torch.linalg.lstsq(subDs, X, rcond=None).solution
         residuals = X - (subDs @ m.unsqueeze(2)).squeeze(2)
 
-    S = torch.zeros((n_samples, n_atoms), dtype=X.dtype)
+    S = torch.zeros((n_samples, n_atoms), dtype=X.dtype, device=X.device)
     r = torch.arange(n_samples, dtype=int).unsqueeze(-1)
     S[r, ids] = m
     S /= norms.T
