@@ -45,7 +45,7 @@ def make_embedding(vocab, num_params, dimension, method, n_chunks, sparse, seed)
         hash = cce.PolyHash(num_hashes=n_chunks, output_range=rows)
         return cce.BloomEmbedding(rows, dimension, hash)
     elif method == 'sparse':
-        return cce.SparseCodingEmbedding(num_params, vocab, dimension, n_chunks)
+        return cce.SparseCodingEmbedding(num_params, vocab, dimension, n_chunks, sparse=sparse)
     elif method == 'whemb':
         return cce.WeightedHashEmbedding(num_params // dimension, dimension, n_chunks, sparse=sparse)
     elif method == 'rhemb':
@@ -150,7 +150,7 @@ def main():
     print(f"Unique users: {n_users}, Unique items: {n_items}")
     print("1 ratios:", train[:,2].to(float).mean().numpy(), valid[:,2].to(float).mean().numpy())
 
-    model = GMF(max_user+1, max_item+1, num_params, dim=dim, method=args.method, n_chunks=args.n_chunks, sparse=args.sparse, seed=args.seed).to(device)
+    model = GMF(max_user+1, max_item+1, num_params, dim=dim, method=args.method, n_chunks=args.n_chunks, sparse=args.sparse, seed=args.seed).float().to(device)
     criterion = nn.BCELoss()
     if args.sparse:
         print("Notice: Sparsity is only supported by some embeddings, and is generally only useful for vocabs >= 100_000")

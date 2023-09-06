@@ -3,6 +3,7 @@ import torch.nn as nn
 import os
 import time
 import numpy as np
+from torch.autograd import Function
 
 
 def omp(X, D, s):
@@ -29,7 +30,7 @@ def omp(X, D, s):
         m = torch.linalg.lstsq(subDs, X, rcond=None).solution
         residuals = X - (subDs @ m.unsqueeze(2)).squeeze(2)
 
-    S = torch.zeros((n_samples, n_atoms), dtype=m.dtype)
+    S = torch.zeros((n_samples, n_atoms), dtype=X.dtype)
     r = torch.arange(n_samples, dtype=int).unsqueeze(-1)
     S[r, ids] = m
     S /= norms.T
@@ -72,33 +73,113 @@ def k_svd(X, M, s, n_iter, max_time=None):
             S[I, j] = Sigma[0] * U[:, 0]
 
         if max_time is not None and time.time() - start > max_time:
-            print("Ran out of time")
+            print("K-SVD: Stopping early because ran out of time.")
             break
-    print(f"K-SVD error at {iter}:", torch.norm(torch.mm(S, M) - X).item())
+
+        error = torch.norm(S @ M - X)
+        if error < 1e-4:
+            print("K-SVD: Stopping early because error is near 0.")
+            break
+    print(f"K-SVD: error at {iter=}:", torch.norm(S @ M - X).item())
 
     # TODO: I don't really want S back. I just want the pointers (s per row) and the weights
     return M, S
 
+def randomized_round(tensor):
+    """Perform randomized rounding on a tensor."""
+    floor_val = torch.floor(tensor)
+    prob = tensor - floor_val
+    return floor_val + torch.bernoulli(prob).to(tensor.device)
 
-def get_nonzero_indices_values(X):
-    mask = X != 0
-    rows = torch.arange(X.size(0), device=X.device).unsqueeze(-1).expand_as(X)
-    indices = torch.where(
-        mask, torch.arange(X.size(1), device=X.device), -torch.ones_like(X)
-    ).long()
-    values = torch.where(mask, X, torch.zeros_like(X))
+def quantize(tensor, num_bits=8):
+    qmin = -2**(num_bits - 1)
+    qmax = 2**(num_bits - 1) - 1
+    min_val, max_val = tensor.min(), tensor.max()
 
-    # Sort and filter out the placeholder (-1) values
-    _, sorted_idx = indices.sort(dim=1, descending=True)
-    range_idx = (
-        torch.arange(X.size(0), device=X.device).unsqueeze(-1).expand_as(sorted_idx)
-    )
-    sorted_indices = torch.gather(indices, 1, sorted_idx)
-    sorted_values = torch.gather(values, 1, sorted_idx)
+    scale = (max_val - min_val) / (qmax - qmin)
+    zero_point = torch.round(qmin - min_val / scale)
 
-    s = mask.sum(dim=1).max()
-    return sorted_indices[:, :s], sorted_values[:, :s]
+    q_value = tensor / scale + zero_point
+    q_value_rounded = randomized_round(q_value)
+    q_tensor = q_value_rounded.clamp(qmin, qmax).char()  # Use torch.int8 for 8-bit
+    return q_tensor, scale, zero_point
 
+def dequantize(q_tensor, scale, zero_point):
+    return scale * (q_tensor.float() - zero_point)
+
+class SparseCodingEmbeddingFunction(Function):
+    @staticmethod
+    def forward(ctx, table, weights, h, x, sparse):
+        ctx.save_for_backward(table, weights, h[x], h, x, torch.tensor([sparse]))
+
+        vecs = table[h[x]]  # (batch_size, num_hashes, dim)
+        weights_ = weights[x].unsqueeze(1)  # (batch_size, 1, num_hashes)
+        return (weights_ @ vecs).squeeze(1)  # (batch_size, dim)
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        table, weights, hx, h, x, sparse = ctx.saved_tensors
+
+        rows, dim = table.shape
+        vocab, n_chunks = weights.shape
+        bs, = x.shape
+        assert h.shape == (vocab, n_chunks)
+        assert hx.shape == (bs, n_chunks)
+        assert grad_output.shape == (bs, dim)
+
+        grad_table = torch.zeros_like(table)
+        if sparse:
+            grad_table = grad_table.to_sparse()
+        assert weights[x].shape == (bs, n_chunks)
+        wg = (weights[x].unsqueeze(2) @ grad_output.unsqueeze(1))
+        assert wg.shape == (bs, n_chunks, dim)
+
+        # The scatter code below is equivalent to the loop
+        #
+        #    for i in range(bs):
+        #        for j in range(n_chunks):
+        #            grad_table[h[x[i]][j]] += wg[i][j]
+        #
+        # Need to distribute, so grad_table[hx[i][j][k]] += wg[i][j][k]
+        # We actually flatten the batch with the chunk dimension, since
+        # it's all the same from the perspective of the gradients.
+        grad_table.scatter_add_(0, hx.flatten()[:, None].expand(-1, dim), wg.flatten(0, 1))
+
+        grad_weights = torch.zeros_like(weights)
+        if sparse:
+            grad_weights = grad_weights.to_sparse()
+        assert table[hx].shape == (bs, n_chunks, dim)
+        src = (table[hx] @ grad_output.unsqueeze(2)).squeeze(2) # (bs, 4)
+        assert src.shape == (bs, n_chunks)
+
+        # The scatter code below is equivalent to the loop:
+        #
+        #    for i in range(bs):
+        #        grad_weights[x[i]] += src[i]
+        #
+        grad_weights.scatter_add_(0, x[:, None].expand(-1, n_chunks).to(torch.int64), src)
+
+        # Returning gradients for table and weights.
+        # Note that even though we are using scatter_add_, the gradient is still
+        # a dense tensor, the sahpe of the tables themselves.
+        return grad_table, grad_weights, None, None, None
+
+def test_back():
+    # TODO: Move this to unittests
+    from torch.autograd import gradcheck
+
+    # Initialize inputs
+    vocab, bs, rows, dim, n_chunks = 6, 5, 3, 4, 2
+    table = torch.rand(rows, dim, dtype=torch.float64, requires_grad=True)
+    weights = torch.rand(vocab, n_chunks, dtype=torch.float64, requires_grad=True)
+    h = torch.randint(0, rows, (vocab, n_chunks), dtype=torch.long)
+    x = torch.randint(0, vocab, (bs,), dtype=torch.long)
+    sparse = False
+
+    # Perform the gradcheck
+    test = gradcheck(SparseCodingEmbeddingFunction.apply, (table, weights, h, x, sparse), eps=1e-6, atol=1e-4)
+    print("Gradcheck Passed? ", test)
+test_back()
 
 class SparseCodingEmbedding(nn.Module):
     def __init__(
@@ -107,67 +188,89 @@ class SparseCodingEmbedding(nn.Module):
         vocab: int,
         dim: int,
         n_chunks: int,
-        n_explore: int = 2,  # Number of random pointers per sample
+        n_explore: int = 1,  # Number of random pointers per sample
+        sparse: bool = False,
+        num_bits: int = 4, # Number of bits per weight
     ):
         super().__init__()
+        self.n_explore = n_explore
+        self.sparse = sparse
+        self.num_bits = num_bits
         rows = num_params // dim
         # Somehow doing requires_grad=False here works quite well...
         self.table = nn.Parameter(torch.empty(rows, dim),
-                                  )
-
-        self.weights = nn.Parameter(torch.empty(vocab, n_chunks),
                                   requires_grad=False
-                                    )
-
-        self.h = nn.Parameter(
-            torch.randint(rows, size=(vocab, n_chunks)), requires_grad=False
-        )
-
-        self.n_explore = n_explore
-
+                                  )
+        self.weights = nn.Parameter(torch.empty(vocab, n_chunks))
+        self.h = nn.Parameter(torch.empty((vocab, n_chunks), dtype=torch.int64), requires_grad=False)
         self.reset_parameters()
 
+    @torch.no_grad()
     def reset_parameters(self):
         rows, dim = self.table.shape
         nn.init.uniform_(self.table, -(dim**-0.5), dim**-0.5)
-        nn.init.uniform_(self.weights, -1/5, 1/5)
-        #nn.init.uniform_(self.weights, 1, 1)
+        nn.init.uniform_(self.weights, -1, 1)
+        self.h[:] = torch.randint(rows, size=self.h.shape)
 
     def forward(self, x):
-        vecs = self.table[self.h[x]]  # (batch_size, num_hashes, dim)
-        weights = self.weights[x].unsqueeze(1)  # (batch_size, 1, num_hashes)
-        return (weights @ vecs).squeeze(1)  # (batch_size, dim)
+        # Ideally this should be done at the time of updating the gradients, and we should
+        # only dequantize the weights we actually need for the forward pass.
+        # However, this should simulate the same effect.
+        with torch.no_grad():
+            self.weights[:] = dequantize(*quantize(self.weights, self.num_bits))
+
+        # Making our own forward/backward is about twice as fast.
+        return SparseCodingEmbeddingFunction.apply(self.table, self.weights, self.h, x, self.sparse)
 
     @torch.no_grad()
-    def cluster(self, verbose=False, max_time=None):
+    def cluster(self, k_svd_iters=100, sample_factor=200, verbose=False, max_time=None):
         rows, dim = self.table.shape
         vocab, n_chunks = self.h.shape
 
-        n_samples = vocab
-        #n_samples = 200 * rows
-        x = (
-            torch.from_numpy(np.random.choice(vocab, n_samples, replace=False))
-            if n_samples < vocab
-            else torch.arange(vocab)
-        )
-        vecs = self.forward(x)
+        # We use a sub-sampling strategy, similar to CCE
+        n_samples = sample_factor * rows
 
-        s = n_chunks - self.n_explore
-        M, S = k_svd(vecs, self.table, s=s, n_iter=1, max_time=max_time)
-        indices, values = get_nonzero_indices_values(S)
-        _, s2 = indices.shape
-        if s2 != s:
-            print(f"Warning: Only got {s2} (not {s}) non-zeros")
-            s = s2
+        if n_samples >= vocab:
+            vecs = self.forward(torch.arange(vocab))
+            s = n_chunks - self.n_explore
+            M, S = k_svd(vecs, self.table, s=s, n_iter=k_svd_iters, max_time=max_time)
 
-        self.table[:] = M
+            # Convert S to indices and values
+            indices = S.abs().sort(dim=1, descending=True).indices[:, :s]
+            values = torch.gather(S, 1, indices)
 
-        self.h[:, :s] = indices
-        self.h[:, s:] = torch.randint(rows, size=(vocab, n_chunks - s))
+            self.table[:] = M
 
-        self.weights[:, :s] = values
-        #self.weights[:, s:] = 0
-        nn.init.uniform_(self.weights[:, s:], -1/5, 1/5)
+            self.h[:, :s] = indices
+            self.h[:, s:] = torch.randint(rows, size=(vocab, n_chunks - s))
+
+            self.weights[:, :s] = values
+            self.weights[:, s:] = 0
+
+        else:
+            # Pick a random set of indices from the vocab and do k_svd on those
+            x = torch.from_numpy(np.random.choice(vocab, n_samples, replace=False))
+            vecs = self.forward(x)
+            s = n_chunks - self.n_explore
+            M, _S = k_svd(vecs, self.table, s=s, n_iter=k_svd_iters, max_time=max_time)
+
+            for j in range(0, vocab, n_samples):
+                ids = torch.arange(j, min(j + n_samples, vocab))
+
+                vecs = self.forward(ids)
+                # Find the best representation of the batch
+                #     M m = vecs
+                # (dim, k) * (k, n) = (dim, n)
+                m = torch.linalg.lstsq(M.T, vecs.T, rcond=None).solution.T
+                # Truncate m to the `s` largest indices and values
+                indices = m.abs().sort(dim=1, descending=True).indices[:, :s]
+                values = torch.gather(m, 1, indices)
+
+                self.h[ids, :s] = indices
+                self.h[ids, s:] = torch.randint(rows, size=(len(ids), n_chunks - s))
+
+                self.weights[ids, :s] = values
+                self.weights[ids, s:] = 0
 
         # Now to make it fair we have to compress the weights a bit more.
         # Like, we can use hashing like in hemb.
