@@ -68,15 +68,16 @@ def k_svd(X, M, s, n_iter, max_time=None):
             # S[I, j] = Sigma[0] * U[:, 0]
             m[mask] = Sigma[0] * U[:, 0]
 
-        if max_time is not None and time.time() - start > max_time:
-            print("K-SVD: Stopping early because ran out of time.")
-            break
-
         SM = (m.unsqueeze(1) @ M[ids]).squeeze(1)  # SM = S @ M
         error = torch.norm(SM - X)
         if error < 1e-4:
             print("K-SVD: Stopping early because error is near 0.")
             break
+
+        if max_time is not None and time.time() - start > max_time:
+            print("K-SVD: Stopping early because ran out of time.")
+            break
+
     print(f"K-SVD: error at {iter=}:", error.item())
 
     return M, ids, m
