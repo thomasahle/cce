@@ -41,6 +41,7 @@ def k_svd(X, M, s, n_iter, max_time=None):
     k, _ = M.shape
 
     start = time.time()
+    last_error = 10**10
     for iter in range(n_iter):
         # Sparse Coding
         ids, m = omp(X, M, s)
@@ -74,6 +75,11 @@ def k_svd(X, M, s, n_iter, max_time=None):
             print("K-SVD: Stopping early because error is near 0.")
             break
 
+        if error > last_error:
+            print(f"K-SVD: Stopping early because error is growing. last_error={last_error.item()}.")
+            break
+        last_error = error
+
         if max_time is not None and time.time() - start > max_time:
             print("K-SVD: Stopping early because ran out of time.")
             break
@@ -94,10 +100,11 @@ def quantize(tensor, num_bits=8):
     min_val, max_val = tensor.min(), tensor.max()
 
     scale = (max_val - min_val) / (qmax - qmin)
-    zero_point = torch.round(qmin - min_val / scale)
+    zero_point = qmin - min_val / scale
 
     q_value = tensor / scale + zero_point
     q_value_rounded = randomized_round(q_value)
+    assert num_bits <= 8, "Can't cast to int8 if num_bits > 8"
     q_tensor = q_value_rounded.clamp(qmin, qmax).char()  # Use torch.int8 for 8-bit
     return q_tensor, scale, zero_point
 
@@ -188,7 +195,7 @@ class SparseCodingEmbedding(nn.Module):
         n_explore: int = 1,  # Number of random pointers per sample
         sparse: bool = False,
         num_bits: int = 8, # Number of bits per weight, None for infinite
-        table_grad: bool = False,
+        table_grad: bool = True,
     ):
         super().__init__()
         self.n_explore = n_explore
@@ -206,7 +213,7 @@ class SparseCodingEmbedding(nn.Module):
         rows, dim = self.table.shape
         nn.init.uniform_(self.table, -(dim**-0.5), dim**-0.5)
         nn.init.uniform_(self.weights, -1, 1)
-        self.h[:] = torch.randint(rows, size=self.h.shape)
+        self.h[:] = torch.randint(rows, size=self.h.shape, device=self.h.device)
 
     def forward(self, x):
         vecs = self.table[self.h[x]]  # (batch_size, num_hashes, dim)
