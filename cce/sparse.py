@@ -63,14 +63,14 @@ def k_svd(X, M, s, n_iter, max_time=None):
             # Use svd_lowrank from torch to save time and only compute
             # the first singular vector
             U, Sigma, V = torch.svd_lowrank(E, q=1)
-            # U, Sigma, V = torch.linalg.svd(E)
-            M[j, :] = V[0, :]
+            M[j, :] = V[:, 0]
             # We also update S, which is how k-svd can have an advantage over MOD
             # S[I, j] = Sigma[0] * U[:, 0]
             m[mask] = Sigma[0] * U[:, 0]
 
         SM = (m.unsqueeze(1) @ M[ids]).squeeze(1)  # SM = S @ M
         error = torch.norm(SM - X)
+        print(error)
         if error < 1e-4:
             print("K-SVD: Stopping early because error is near 0.")
             break
@@ -168,22 +168,6 @@ class SparseCodingEmbeddingFunction(Function):
         # a dense tensor, the sahpe of the tables themselves.
         return grad_table, grad_weights, None, None, None
 
-def test_back():
-    # TODO: Move this to unittests
-    from torch.autograd import gradcheck
-
-    # Initialize inputs
-    vocab, bs, rows, dim, n_chunks = 6, 5, 3, 4, 2
-    table = torch.rand(rows, dim, dtype=torch.float64, requires_grad=True)
-    weights = torch.rand(vocab, n_chunks, dtype=torch.float64, requires_grad=True)
-    h = torch.randint(0, rows, (vocab, n_chunks), dtype=torch.long)
-    x = torch.randint(0, vocab, (bs,), dtype=torch.long)
-    sparse = False
-
-    # Perform the gradcheck
-    test = gradcheck(SparseCodingEmbeddingFunction.apply, (table, weights, h, x, sparse), eps=1e-6, atol=1e-4)
-    print("Gradcheck Passed? ", test)
-test_back()
 
 class SparseCodingEmbedding(nn.Module):
     def __init__(
