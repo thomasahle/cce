@@ -5,22 +5,26 @@ import subprocess
 import re, os, sys
 from tqdm import tqdm
 
+
 def extract_smallest_loss(output):
     print(output)
-    val_losses = list(map(float, re.findall(r'Validation Loss: ([0-9]+\.[0-9]+)', output)))
-    aucs = list(map(float, re.findall(r'AUC: ([0-9]+\.[0-9]+)', output)))
-    print('Losses:', val_losses, 'AUCs:', aucs)
+    val_losses = list(
+        map(float, re.findall(r"Validation Loss: ([0-9]+\.[0-9]+)", output))
+    )
+    aucs = list(map(float, re.findall(r"AUC: ([0-9]+\.[0-9]+)", output)))
+    print("Losses:", val_losses, "AUCs:", aucs)
     return min(val_losses, default=1), max(aucs, default=0.5)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-m', '--method', default='cce', help='Method')
-    parser.add_argument('-e', '--epochs', default='', help='Epochs')
-    parser.add_argument('-d', '--dataset', default='ml-100k', help='Dataset')
-    parser.add_argument('-w', '--workers', default='', help='Workers')
-    parser.add_argument('-b', '--batch-size', default='4096', help='Batch Size')
-    parser.add_argument('-l', '--lo-pow', default=1, type=int)
-    parser.add_argument('-hi', '--hi-pow', default=12, type=int)
+    parser.add_argument("-m", "--method", default="cce", help="Method")
+    parser.add_argument("-e", "--epochs", default="", help="Epochs")
+    parser.add_argument("-d", "--dataset", default="ml-100k", help="Dataset")
+    parser.add_argument("-w", "--workers", default="", help="Workers")
+    parser.add_argument("-b", "--batch-size", default="4096", help="Batch Size")
+    parser.add_argument("-l", "--lo-pow", default=1, type=int)
+    parser.add_argument("-hi", "--hi-pow", default=12, type=int)
 
     args = parser.parse_args()
 
@@ -33,37 +37,34 @@ if __name__ == '__main__':
     losses = []
     aucs = []
 
-    arg_prod = [(seed, 2**i) for seed in range(1, runs+1) for i in range(lo_pow, hi_pow+1)]
+    arg_prod = [
+        (seed, 2**i) for seed in range(1, runs + 1) for i in range(lo_pow, hi_pow + 1)
+    ]
     for seed, ppd in tqdm(arg_prod, desc="Overall Progress"):
         cmd = [
             sys.executable,
-            os.path.join(script_dir, 'movielens.py'),
-            '--method', args.method,
-            '--ppd', str(ppd),
-            '--seed', str(seed),
-            '--dataset', args.dataset,
-            '--batch-size', args.batch_size
+            os.path.join(script_dir, "movielens.py"),
+            "--method", args.method,
+            "--ppd", str(ppd),
+            "--seed", str(seed),
+            "--dataset", args.dataset,
+            "--batch-size", args.batch_size,
         ]
         if args.epochs:
-            cmd.extend(['--epochs', args.epochs])
+            cmd.extend(["--epochs", args.epochs])
         if args.workers:
-            cmd.extend(['--num-workers', args.workers])
+            cmd.extend(["--num-workers", args.workers])
 
-        print(f'Running {ppd=} {seed=}')
-        try:                                                                                                    
-            output = subprocess.check_output(cmd).decode('utf-8')                                               
-        except subprocess.CalledProcessError:                                                                   
-            print("Program failed")                                                                             
-        else:                                                                                                   
-            smallest_loss, top_auc = extract_smallest_loss(output)                                              
-            ppds.append(ppd)                                                                                    
-            losses.append(smallest_loss)                                                                        
-            aucs.append(top_auc)                                                                                
-
-        smallest_loss, top_auc = extract_smallest_loss(output)
-        ppds.append(ppd)
-        losses.append(smallest_loss)
-        aucs.append(top_auc)
+        print(f"Running {ppd=} {seed=}")
+        try:
+            output = subprocess.check_output(cmd).decode("utf-8")
+        except subprocess.CalledProcessError:
+            print("Program failed")
+        else:
+            smallest_loss, top_auc = extract_smallest_loss(output)
+            ppds.append(ppd)
+            losses.append(smallest_loss)
+            aucs.append(top_auc)
 
     # Print & write results
     # Print to file and output at the same time
@@ -71,10 +72,10 @@ if __name__ == '__main__':
         print(text, file=file)
         print(text)
 
-    for typ, vals in [('ll', losses), ('auc', aucs)]:
-        file_name = f'results.{args.dataset}.{args.method}.{typ}'
-        print('Writing results to', file_name)
-        with open(file_name, 'a') as file:
+    for typ, vals in [("ll", losses), ("auc", aucs)]:
+        file_name = f"results.{args.dataset}.{args.method}.{typ}"
+        print("Writing results to", file_name)
+        with open(file_name, "a") as file:
             write_to_file_and_print(file, f"## {args.method}")
 
             header = "ppd"
