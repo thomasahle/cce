@@ -278,7 +278,6 @@ class SparseCodingEmbedding(nn.Module):
         # If I'm just going to put the least-squares (MOD style), I might as well do k-svd.
         # And if I'm already doing k-svd, why not do a couple more iterations?
 
-
 class SparseCodingEmbedding2(nn.Module):
     # Whemb verrsion of SparseCodingEmbedding
 
@@ -293,6 +292,7 @@ class SparseCodingEmbedding2(nn.Module):
         super().__init__()
         self.sparse = sparse
         rows = num_params // dim
+        assert rows >= n_chunks, "Must have at least as many rows as chunks"
         self.table = nn.Parameter(torch.empty(rows, dim))
         self.h0 = nn.Parameter(torch.empty((vocab, n_chunks), dtype=torch.int64), requires_grad=False)
         self.h1 = nn.Parameter(torch.empty((vocab, n_chunks), dtype=torch.int64), requires_grad=False)
@@ -310,6 +310,7 @@ class SparseCodingEmbedding2(nn.Module):
         vecs = self.table[self.h0[x]]  # (batch_size, num_hashes, dim)
         weights = self.table.flatten()[self.h1[x]].unsqueeze(1) * dim**.5
         return (weights @ vecs).squeeze(1)  # (batch_size, dim)
+
 
     @torch.no_grad()
     def cluster(self, k_svd_iters=100, sample_factor=200, verbose=False, max_time=None):
@@ -330,7 +331,6 @@ class SparseCodingEmbedding2(nn.Module):
 
             flatvals = values.flatten()
             flattab = M.flatten() * dim**.5
-            #labels = np.argmin((flatvals[:, None] - flattab[None, :])**2, axis=1)
             labels = faiss_knn(flatvals[:, None], flattab[:, None])
 
             # Measure whether weight pointers are well spread out
@@ -356,12 +356,11 @@ class SparseCodingEmbedding2(nn.Module):
                 ids = torch.arange(j, min(j + n_samples, vocab))
 
                 vecs = self.forward(ids)
-                indices, values = omp(vecs, M, s)
+                indices, values = omp(vecs, M, n_chunks)
 
                 self.h0[ids] = indices
 
                 flatvals = values.flatten()
-                #labels = np.argmin((flatvals[:, None] - flattab[None, :])**2, axis=1)
                 labels = faiss_knn(flatvals[:, None], flattab[:, None])
 
                 self.h1[ids] = labels.reshape(len(ids), n_chunks)
