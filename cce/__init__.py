@@ -9,4 +9,4 @@ from .cce_robe import CCERobembedding
 from .dhe import DeepHashEmbedding
 from .low_dimensional import LowDimensionalEmbedding
 from .hash import MultiHash, QRHash, PolyHash
-from .sparse import SparseCodingEmbedding
+from .sparse import SparseCodingEmbedding, SparseCodingEmbedding2

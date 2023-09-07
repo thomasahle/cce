@@ -17,7 +17,7 @@ import dataset
 import cce
 
 
-methods = ['robe', 'ce', 'simple', 'cce', 'full', 'tt', 'cce_robe', 'dhe', 'bloom', 'hemb',  'hemb2', 'rhemb', 'hnet', 'whemb', 'ldim', 'sparse']
+methods = ['robe', 'ce', 'simple', 'cce', 'full', 'tt', 'cce_robe', 'dhe', 'bloom', 'hemb',  'hemb2', 'rhemb', 'hnet', 'whemb', 'ldim', 'sparse', 'sparse2']
 
 def make_embedding(vocab, num_params, dimension, method, n_chunks, sparse, seed):
     if method in ['robe', 'ce', 'cce', 'cce_robe']:
@@ -46,6 +46,8 @@ def make_embedding(vocab, num_params, dimension, method, n_chunks, sparse, seed)
         return cce.BloomEmbedding(rows, dimension, hash)
     elif method == 'sparse':
         return cce.SparseCodingEmbedding(num_params, vocab, dimension, n_chunks, sparse=sparse)
+    elif method == 'sparse2':
+        return cce.SparseCodingEmbedding2(num_params, vocab, dimension, n_chunks, sparse=sparse)
     elif method == 'whemb':
         return cce.WeightedHashEmbedding(num_params // dimension, dimension, n_chunks, sparse=sparse)
     elif method == 'rhemb':

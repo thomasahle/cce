@@ -4,7 +4,8 @@ import os
 import time
 import numpy as np
 from torch.autograd import Function
-
+from sklearn.cluster import KMeans
+from .cce_robe import faiss_knn
 
 def omp(X, D, s):
     """
@@ -249,11 +250,17 @@ class SparseCodingEmbedding(nn.Module):
                 vecs = self.forward(ids)
                 indices, values = omp(vecs, M, s)
 
+                # We could compute the reconstruction error here, and the gradient,
+                # to update M with gradient descent. Could be a separate loop as well.
+
                 self.h[ids, :s] = indices
                 self.h[ids, s:] = torch.randint(rows, size=(len(ids), n_chunks - s), device=self.h.device)
 
                 self.weights[ids, :s] = values
                 self.weights[ids, s:] = 0
+
+        # Alternatively we could go through each batch and update the dictionary
+        # using online dictionary learning.
 
         # Now to make it fair we have to compress the weights a bit more.
         # Like, we can use hashing like in hemb.
@@ -270,3 +277,92 @@ class SparseCodingEmbedding(nn.Module):
         # Could even just run OMP? Well, I have to put something in the table.
         # If I'm just going to put the least-squares (MOD style), I might as well do k-svd.
         # And if I'm already doing k-svd, why not do a couple more iterations?
+
+
+class SparseCodingEmbedding2(nn.Module):
+    # Whemb verrsion of SparseCodingEmbedding
+
+    def __init__(
+        self,
+        num_params: int,
+        vocab: int,
+        dim: int,
+        n_chunks: int,
+        sparse=False,
+    ):
+        super().__init__()
+        self.sparse = sparse
+        rows = num_params // dim
+        self.table = nn.Parameter(torch.empty(rows, dim))
+        self.h0 = nn.Parameter(torch.empty((vocab, n_chunks), dtype=torch.int64), requires_grad=False)
+        self.h1 = nn.Parameter(torch.empty((vocab, n_chunks), dtype=torch.int64), requires_grad=False)
+        self.reset_parameters()
+
+    @torch.no_grad()
+    def reset_parameters(self):
+        rows, dim = self.table.shape
+        nn.init.uniform_(self.table, -(dim**-0.5), dim**-0.5)
+        self.h0[:] = torch.randint(self.table.shape[0], size=self.h0.shape, device=self.h0.device)
+        self.h1[:] = torch.randint(self.table.numel(), size=self.h1.shape, device=self.h1.device)
+
+    def forward(self, x):
+        rows, dim = self.table.shape
+        vecs = self.table[self.h0[x]]  # (batch_size, num_hashes, dim)
+        weights = self.table.flatten()[self.h1[x]].unsqueeze(1) * dim**.5
+        return (weights @ vecs).squeeze(1)  # (batch_size, dim)
+
+    @torch.no_grad()
+    def cluster(self, k_svd_iters=100, sample_factor=200, verbose=False, max_time=None):
+        rows, dim = self.table.shape
+        vocab, n_chunks = self.h0.shape
+
+        # We use a sub-sampling strategy, similar to CCE
+        n_samples = sample_factor * rows
+        print(f'{vocab=}, {n_samples=}')
+
+        if n_samples >= vocab:
+            vecs = self.forward(torch.arange(vocab))
+            M, indices, values = k_svd(vecs, self.table, s=n_chunks, n_iter=k_svd_iters, max_time=max_time)
+
+            self.table[:] = M
+
+            self.h0[:] = indices
+
+            flatvals = values.flatten()
+            flattab = M.flatten() * dim**.5
+            #labels = np.argmin((flatvals[:, None] - flattab[None, :])**2, axis=1)
+            labels = faiss_knn(flatvals[:, None], flattab[:, None])
+
+            # Measure whether weight pointers are well spread out
+            cnts = torch.tensor([(labels == i).sum() for i in range(len(flattab))])
+            ps = cnts / cnts.sum()
+            ent = (ps * torch.log(1/ps)).nansum().item()
+            uniform = torch.tensor([1/len(flattab)] * len(flattab))
+            maxent = (uniform * torch.log(1/uniform)).nansum().item()
+            print(f'cnt ent: {ent:.3} out of {maxent:.3}')
+
+            self.h1[:] = labels.reshape(vocab, n_chunks)
+
+        else:
+            # Pick a random set of indices from the vocab and do k_svd on those
+            x = torch.from_numpy(np.random.choice(vocab, n_samples, replace=False))
+            vecs = self.forward(x)
+            M, _, _ = k_svd(vecs, self.table, s=n_chunks, n_iter=k_svd_iters, max_time=max_time)
+
+            self.table[:] = M
+            flattab = M.flatten() * dim**.5
+
+            for j in range(0, vocab, n_samples):
+                ids = torch.arange(j, min(j + n_samples, vocab))
+
+                vecs = self.forward(ids)
+                indices, values = omp(vecs, M, s)
+
+                self.h0[ids] = indices
+
+                flatvals = values.flatten()
+                #labels = np.argmin((flatvals[:, None] - flattab[None, :])**2, axis=1)
+                labels = faiss_knn(flatvals[:, None], flattab[:, None])
+
+                self.h1[ids] = labels.reshape(len(ids), n_chunks)
+
