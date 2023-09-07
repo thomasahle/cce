@@ -198,12 +198,12 @@ class SparseCodingEmbedding(nn.Module):
         nn.init.uniform_(self.weights, -1, 1)
         self.h[:] = torch.randint(rows, size=self.h.shape, device=self.h.device)
 
-    def forward(self, x):
+    def forward_old(self, x):
         vecs = self.table[self.h[x]]  # (batch_size, num_hashes, dim)
         weights_ = self.weights[x].unsqueeze(1)  # (batch_size, 1, num_hashes)
         return (weights_ @ vecs).squeeze(1)  # (batch_size, dim)
 
-    def forward_(self, x):
+    def forward(self, x):
         # Ideally this should be done at the time of updating the gradients, and we should
         # only dequantize the weights we actually need for the forward pass.
         # However, this should simulate the same effect.
