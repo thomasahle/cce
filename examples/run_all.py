@@ -56,13 +56,15 @@ if __name__ == "__main__":
             cmd.extend(["--num-workers", args.workers])
 
         print(f"Running {ppd=} {seed=}")
+        ppds.append(ppd)
         try:
             output = subprocess.check_output(cmd).decode("utf-8")
         except subprocess.CalledProcessError:
             print("Program failed")
+            losses.append(1)
+            aucs.append(.5)
         else:
             smallest_loss, top_auc = extract_smallest_loss(output)
-            ppds.append(ppd)
             losses.append(smallest_loss)
             aucs.append(top_auc)
 
