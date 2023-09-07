@@ -341,7 +341,7 @@ class SparseCodingEmbedding2(nn.Module):
             maxent = (uniform * torch.log(1/uniform)).nansum().item()
             print(f'cnt ent: {ent:.3} out of {maxent:.3}')
 
-            self.h1[:] = labels.reshape(vocab, n_chunks)
+            self.h1[:] = labels.reshape(vocab, n_chunks).to(self.h1.device)
 
         else:
             # Pick a random set of indices from the vocab and do k_svd on those
@@ -363,5 +363,5 @@ class SparseCodingEmbedding2(nn.Module):
                 flatvals = values.flatten()
                 labels = faiss_knn(flatvals[:, None], flattab[:, None])
 
-                self.h1[ids] = labels.reshape(len(ids), n_chunks)
+                self.h1[ids] = labels.reshape(len(ids), n_chunks).to(self.h1.device)
 
