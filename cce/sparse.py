@@ -70,7 +70,6 @@ def k_svd(X, M, s, n_iter, max_time=None):
 
         SM = (m.unsqueeze(1) @ M[ids]).squeeze(1)  # SM = S @ M
         error = torch.norm(SM - X)
-        print(error)
         if error < 1e-4:
             print("K-SVD: Stopping early because error is near 0.")
             break
