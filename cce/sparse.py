@@ -279,7 +279,9 @@ class SparseCodingEmbedding(nn.Module):
         # And if I'm already doing k-svd, why not do a couple more iterations?
 
 class SparseCodingEmbedding2(nn.Module):
-    # Whemb verrsion of SparseCodingEmbedding
+    # Whemb verrsion of SparseCodingEmbedding.
+    # Instead of using quantized weights, it simply "hashes" the weights to the
+    # most similar existing parameters in the table.
 
     def __init__(
         self,
@@ -334,12 +336,12 @@ class SparseCodingEmbedding2(nn.Module):
             labels = faiss_knn(flatvals[:, None], flattab[:, None])
 
             # Measure whether weight pointers are well spread out
-            cnts = torch.tensor([(labels == i).sum() for i in range(len(flattab))])
+            cnts = torch.bincount(labels, minlength=len(flattab))
             ps = cnts / cnts.sum()
             ent = (ps * torch.log(1/ps)).nansum().item()
             uniform = torch.tensor([1/len(flattab)] * len(flattab))
             maxent = (uniform * torch.log(1/uniform)).nansum().item()
-            print(f'cnt ent: {ent:.3} out of {maxent:.3}')
+            print(f'Value label entropy: {ent/maxent*100:.1f}% ({ent:.3} out of {maxent:.3})')
 
             self.h1[:] = labels.reshape(vocab, n_chunks).to(self.h1.device)
 
