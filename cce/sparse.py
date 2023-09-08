@@ -6,6 +6,9 @@ import numpy as np
 from torch.autograd import Function
 from sklearn.cluster import KMeans
 from .cce_robe import faiss_knn
+from .hash import PolyHash
+from itertools import count
+from tqdm import tqdm
 
 def omp(X, D, s):
     """
@@ -87,6 +90,66 @@ def k_svd(X, M, s, n_iter, max_time=None):
     print(f"K-SVD: error at {iter=}:", error.item())
 
     return M, ids, m
+
+def mini_ksvd(M, s, batch_maker, n_batches, n_iter, max_time=None):
+    # Inspired by https://csaws.cs.technion.ac.il/~ronrubin/Publications/KSVD-OMP-v2.pdf
+    assert n_iter >= 1
+    k, _ = M.shape
+
+    start = time.time()
+    last_error = 10**10
+    for iter in range(n_iter):
+        error = 0
+        new_Ms = torch.zeros_like(M)
+        n = 0
+        for j in tqdm(range(n_batches)):
+            X = batch_maker(j)
+            if X is None:
+                break
+            new_M = M.clone()
+            # Sparse coding
+            ids, m = omp(X, new_M, s)
+            # Find new dictionary
+            for j in range(k):
+                mask = (ids == j)
+                I = torch.any(mask, dim=1)
+                if not torch.any(I):
+                    continue
+                E = X[I] - (m[I].unsqueeze(1) @ new_M[ids[I]]).squeeze(1) + torch.outer(m[mask], new_M[j])
+
+                # Could use the cheaper alternative decomposition in Approximate K-SVD here
+                U, Sigma, V = torch.svd_lowrank(E, q=1)
+                new_M[j, :] = V[:, 0]
+                m[mask] = Sigma[0] * U[:, 0]
+
+            # "Gradient" update
+            #M = (1-lr)*M + lr*new_M
+            #M = new_M
+            new_Ms += new_M
+            n += 1
+
+            SM = (m.unsqueeze(1) @ M[ids]).squeeze(1)  # SM = S @ M
+            error += torch.norm(SM - X)**2
+
+        M = new_Ms / n
+
+        error = error**.5
+        if error < 1e-4:
+            print("K-SVD: Stopping early because error is near 0.")
+            break
+
+        if error > last_error:
+            print(f"K-SVD: Stopping early because error is growing. last_error={last_error.item()}.")
+            break
+        last_error = error
+
+        if max_time is not None and time.time() - start > max_time:
+            print("K-SVD: Stopping early because ran out of time.")
+            break
+
+    print(f"K-SVD: error at {iter=}:", error.item())
+
+    return M
 
 def randomized_round(tensor):
     """Perform randomized rounding on a tensor."""
@@ -293,11 +356,15 @@ class SparseCodingEmbedding2(nn.Module):
     ):
         super().__init__()
         self.sparse = sparse
+        self.n_chunks = n_chunks
         rows = num_params // dim
         assert rows >= n_chunks, "Must have at least as many rows as chunks"
         self.table = nn.Parameter(torch.empty(rows, dim))
         self.h0 = nn.Parameter(torch.empty((vocab, n_chunks), dtype=torch.int64), requires_grad=False)
         self.h1 = nn.Parameter(torch.empty((vocab, n_chunks), dtype=torch.int64), requires_grad=False)
+        # Polyhash somehow works a bit better than a table hash (above). Nobody knows why.
+        # self.h0 = PolyHash(num_hashes=n_chunks, output_range=rows)
+        # self.h1 = PolyHash(num_hashes=n_chunks, output_range=rows * dim)
         self.reset_parameters()
 
     @torch.no_grad()
@@ -310,60 +377,92 @@ class SparseCodingEmbedding2(nn.Module):
     def forward(self, x):
         rows, dim = self.table.shape
         vecs = self.table[self.h0[x]]  # (batch_size, num_hashes, dim)
-        weights = self.table.flatten()[self.h1[x]].unsqueeze(1) * dim**.5
+        weights = self.table.flatten()[self.h1[x]].unsqueeze(1) * dim**.5 * self.n_chunks**-.5
+        # vecs = self.table[self.h0(x)]  # (batch_size, num_hashes, dim)
+        # weights = self.table.flatten()[self.h1(x)].unsqueeze(1) * dim**.5 * self.n_chunks**-.5
         return (weights @ vecs).squeeze(1)  # (batch_size, dim)
 
+    def _find_batch_size(self):
+        vocab, n_chunks = self.h0.shape
+        last = np.inf
+        print("Finding fastest batch size")
+        for log_batch_size in count(5):
+            print(log_batch_size, '...')
+            batch_size = 2**log_batch_size
+            def make_batch(j):
+                if j * batch_size >= vocab:
+                    return None
+                x = torch.arange(j * batch_size, min((j + 1) * batch_size, vocab))
+                return self.forward(x)
+            start = time.time()
+            _ = mini_ksvd(self.table, n_chunks, make_batch, vocab//batch_size+1, n_iter=1)
+            elapsed = time.time() - start
+            print(batch_size, elapsed)
+            if elapsed > last:
+                break
+            last = elapsed
+        return 2**(log_batch_size - 1)
 
     @torch.no_grad()
-    def cluster(self, k_svd_iters=100, sample_factor=200, verbose=False, max_time=None):
+    def cluster(self, k_svd_iters=100, batch_size=None, verbose=False, max_time=None):
         rows, dim = self.table.shape
         vocab, n_chunks = self.h0.shape
+        n_atoms = self.table.numel()
 
-        # We use a sub-sampling strategy, similar to CCE
-        n_samples = sample_factor * rows
-        print(f'{vocab=}, {n_samples=}')
+        #max_time *= 10
 
-        if n_samples >= vocab:
+        if batch_size is None:
+            #batch_size = 10**9 // rows
+            batch_size = 10**8 // rows
+            #batch_size = self._find_batch_size()
+            #batch_size = max(2 * rows, 4096*2)
+
+        print(f'{batch_size=}, {vocab=}, {rows=}')
+
+        if batch_size >= vocab:
             vecs = self.forward(torch.arange(vocab))
             M, indices, values = k_svd(vecs, self.table, s=n_chunks, n_iter=k_svd_iters, max_time=max_time)
-
             self.table[:] = M
 
+            indices, values = omp(vecs, M, n_chunks)
             self.h0[:] = indices
 
-            flatvals = values.flatten()
-            flattab = M.flatten() * dim**.5
-            labels = faiss_knn(flatvals[:, None], flattab[:, None])
-
-            # Measure whether weight pointers are well spread out
-            cnts = torch.bincount(labels, minlength=len(flattab))
-            ps = cnts / cnts.sum()
-            ent = (ps * torch.log(1/ps)).nansum().item()
-            uniform = torch.tensor([1/len(flattab)] * len(flattab))
-            maxent = (uniform * torch.log(1/uniform)).nansum().item()
-            print(f'Value label entropy: {ent/maxent*100:.1f}% ({ent:.3} out of {maxent:.3})')
-
+            labels = faiss_knn(values.reshape(-1, 1), M.reshape(-1, 1) * dim**.5)
             self.h1[:] = labels.reshape(vocab, n_chunks).to(self.h1.device)
+
+            cnts = torch.bincount(labels, minlength=n_atoms)
 
         else:
             # Pick a random set of indices from the vocab and do k_svd on those
-            x = torch.from_numpy(np.random.choice(vocab, n_samples, replace=False))
-            vecs = self.forward(x)
-            M, _, _ = k_svd(vecs, self.table, s=n_chunks, n_iter=k_svd_iters, max_time=max_time)
+            # x = torch.from_numpy(np.random.choice(vocab, n_samples, replace=False))
+            n_batches = vocab // batch_size + 1
+            def make_batch(j):
+                if j * batch_size >= vocab:
+                    return None
+                x = torch.arange(j * batch_size, min((j + 1) * batch_size, vocab))
+                return self.forward(x)
 
+            M = mini_ksvd(self.table, n_chunks, make_batch, n_batches, n_iter=k_svd_iters, max_time=max_time)
             self.table[:] = M
-            flattab = M.flatten() * dim**.5
 
-            for j in range(0, vocab, n_samples):
-                ids = torch.arange(j, min(j + n_samples, vocab))
+            cnts = torch.zeros(n_atoms)
+
+            for j in range(0, vocab, batch_size):
+                ids = torch.arange(j, min(j + batch_size, vocab))
 
                 vecs = self.forward(ids)
                 indices, values = omp(vecs, M, n_chunks)
-
                 self.h0[ids] = indices
 
-                flatvals = values.flatten()
-                labels = faiss_knn(flatvals[:, None], flattab[:, None])
-
+                labels = faiss_knn(values.reshape(-1, 1), M.reshape(-1, 1) * dim**.5)
                 self.h1[ids] = labels.reshape(len(ids), n_chunks).to(self.h1.device)
+
+                cnts += torch.bincount(labels, minlength=n_atoms)
+
+        # Measure whether weight pointers are well spread out
+        ps = cnts / cnts.sum()
+        ent = (ps * torch.log(1/ps)).nansum().item()
+        uniform = torch.tensor([1/n_atoms] * n_atoms)
+        maxent = (uniform * torch.log(1/uniform)).nansum().item()
+        print(f'Value label entropy: {ent/maxent*100:.1f}% ({ent:.3} out of {maxent:.3})')
 
