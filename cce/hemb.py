@@ -101,40 +101,27 @@ class HashEmbedding2(nn.Module):
 
 
 class WeightedHashEmbedding(nn.Module):
-    def __init__(self, rows: int, dim: int, n_chunks: int, sparse=False, share_table=True):
+    def __init__(self, rows: int, dim: int, n_chunks: int, sparse=False):
         super().__init__()
         self.dim = dim
         self.n_chunks = n_chunks
         self.sparse = sparse
 
-        self.share_table = share_table
-        if share_table:
-            self.hash0 = PolyHash(num_hashes=n_chunks, output_range=rows)
-            self.hash1 = PolyHash(num_hashes=n_chunks, output_range=rows * dim)
-            self.table0 = nn.Parameter(torch.empty(rows, dim))
-            self.table1 = self.table0
-        else:
-            self.hash0 = PolyHash(num_hashes=n_chunks, output_range=rows // 2)
-            self.hash1 = PolyHash(num_hashes=n_chunks, output_range=rows * dim // 2)
-            self.table0 = nn.Parameter(torch.empty(rows // 2, dim))
-            self.table1 = nn.Parameter(torch.empty(rows * dim // 2))
+        self.hash0 = PolyHash(num_hashes=n_chunks, output_range=rows)
+        self.hash1 = PolyHash(num_hashes=n_chunks, output_range=rows * dim)
+        self.table = nn.Parameter(torch.empty(rows, dim))
 
         self.reset_parameters()
 
     def reset_parameters(self):
-        nn.init.uniform_(self.table0, -(self.dim**-0.5), self.dim**-0.5)
-        if not self.share_table:
-            nn.init.uniform_(self.table1, -1, 1)
+        nn.init.uniform_(self.table, -(self.dim**-0.5), self.dim**-0.5)
 
     def forward(self, x):
         vecs = self.table0[self.hash0(x)]
 
         weights = self.table1.view(-1)[self.hash1(x)].unsqueeze(-1)
 
-        if self.share_table:
-            scale = (self.n_chunks * self.dim) ** 0.5
-        else:
-            scale = (self.n_chunks) ** 0.5
+        scale = (self.n_chunks * self.dim) ** 0.5
 
         return (vecs * weights).mean(dim=1) * scale
 

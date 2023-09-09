@@ -9,6 +9,8 @@ from .cce_robe import faiss_knn
 from .hash import PolyHash
 from itertools import count
 from tqdm import tqdm
+from ortools.linear_solver import pywraplp
+import random
 
 def omp(X, D, s):
     """
@@ -173,6 +175,48 @@ def quantize(tensor, num_bits=8):
 
 def dequantize(q_tensor, scale, zero_point):
     return scale * (q_tensor.float() - zero_point)
+
+
+def solveAssignmentProblem(N, M, price_function):
+
+    print(f"Making LP problem of size {N} times {M}...")
+    solver = pywraplp.Solver.CreateSolver('GLOP')  # Use 'GLOP' for LP
+
+    # Create variables
+    x = {}
+    for i in range(N):
+        for j in range(M):
+            x[i, j] = solver.BoolVar(f'x[{i}][{j}]')
+
+    # Set objective
+    objective = solver.Objective()
+    for i in range(N):
+        for j in range(M):
+            objective.SetCoefficient(x[i, j], price_function(i, j))
+    objective.SetMinimization()
+
+    # Add constraints
+    for i in range(N):
+        solver.Add(sum(x[i, j] for j in range(M)) == 1)
+    
+    for j in range(M):
+        solver.Add(sum(x[i, j] for i in range(N)) == N/M)
+
+    print("Running solver...")
+    # Solve the model
+    status = solver.Solve()
+
+    assignments = []
+    if status == pywraplp.Solver.OPTIMAL:
+        for i in range(N):
+            for j in range(M):
+                if int(x[i, j].solution_value()) == 1:
+                    assignments.append(j)
+    else:
+        print("The problem does not have an optimal solution!")
+    
+    return assignments
+
 
 class SparseCodingEmbeddingFunction(Function):
     @staticmethod
@@ -454,7 +498,42 @@ class SparseCodingEmbedding2(nn.Module):
                 indices, values = omp(vecs, M, n_chunks)
                 self.h0[ids] = indices
 
-                labels = faiss_knn(values.reshape(-1, 1), M.reshape(-1, 1) * dim**.5)
+                flatvals = values.flatten()
+                flattabs = M.flatten() * dim**.5
+                # def price_function(vi, tj):
+                #     return (flatvals[vi] - flattabs[vj])**2
+                # labels = solveAssignmentProblem(len(flatvals), len(flattabs), price_function)
+
+                start = time.time()
+                sorted_ = flattabs.sort()
+                # For each value, this finds the table element that's either higher or lower (index-1)
+                ind = torch.searchsorted(sorted_.values, flatvals)
+                high = torch.minimum(ind, torch.tensor([len(flattabs)-1]))
+                low = torch.maximum(ind-1, torch.tensor([0]))
+                labels = torch.stack([sorted_.indices[low], sorted_.indices[high]], dim=1)
+                choice = torch.argmin((flattabs[labels] - flatvals[:, None])**2, dim=1)
+                labels0 = labels[range(len(labels)), choice]
+                #print(time.time()-start)
+
+                ps = (labels[:, 1] - flatvals) / (labels[:, 1] - labels[:, 0])
+                choice = torch.where(torch.rand(len(labels)) < ps, 1, 0)
+                labels1 = labels[range(len(labels)), choice]
+
+                start = time.time()
+                labels2 = faiss_knn(values.reshape(-1, 1), M.reshape(-1, 1) * dim**.5)
+                #print(time.time()-start)
+
+                # print(labels)
+                # print(labels1)
+                #for i in range(3):
+                    #print(flatvals[i], flattabs[labels0[i]], flattabs[labels1[i]], flattabs[labels2[i]])
+
+                labels = labels2
+                # 0: .789
+                # 1: .779
+                # 2: .79
+                
+
                 self.h1[ids] = labels.reshape(len(ids), n_chunks).to(self.h1.device)
 
                 cnts += torch.bincount(labels, minlength=n_atoms)

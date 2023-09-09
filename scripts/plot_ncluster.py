@@ -28,13 +28,14 @@ for j, row in enumerate(rows[1:]):
 
     y_pos = ys[0]  # Get the y value of the first point for the line
     label_str = '$2^{' + str(j+2) + '}$'
-    if j == len(rows)-2:
+    if j == 6:
         label_str = 'ppd=' + label_str
-    plt.annotate(label_str, (xs[0], y_pos), textcoords="offset points", xytext=(0,1), ha='center', fontsize=9)
+    plt.annotate(label_str, (xs[0], y_pos), textcoords="offset points", xytext=(0,3), ha='center', fontsize=9)
 
 
 plt.xscale('log')
 plt.xlabel("N Chunks")
+plt.xticks([2**i for i in range(6)], [2**i for i in range(6)])
 plt.ylabel('AUC')
 plt.title("Movielens 25M, CE-concat, dim=32, best of 10 epochs")
 #plt.legend()
