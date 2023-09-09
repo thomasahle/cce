@@ -63,4 +63,4 @@ Increasing `n_chunks` nearly always give better results (as evidenced in the plo
 In our results above we always used a default of `n_chunks=4`.
 | CE | CCE |
 | --- | --- |
-| <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/ml25-ce-splits.png" width="100%" /> | <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/ml25-cce-splits.png" width="100%" /> |
+| <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/ml1-ce-splits.png" width="100%" /> | <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/ml25-cce-splits.png" width="100%" /> |
