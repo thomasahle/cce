@@ -1,0 +1,1908 @@
+Epoch: 9, Time: 1.52e+02s, Train Loss: 0.624, Validation Loss: 0.606, AUC: 0.628
+
+Losses: [0.62, 0.615, 0.612, 0.609, 0.609, 0.608, 0.606, 0.605, 0.605, 0.606] AUCs: [0.577, 0.596, 0.604, 0.612, 0.615, 0.6
+19, 0.624, 0.627, 0.628, 0.628]
+Overall Progress:  27%|███████████▎                             | 28/102 [17:55:54<33:07:17, 1611.32s/it]Running ppd=64 n_c
+hunks=16
+100%|███████████████████████████████████████████████████████████████████| 10/10 [24:27<00:00, 146.76s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 2048
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.62e+02s, Train Loss: 0.64, Validation Loss: 0.611, AUC: 0.606
+Clustering. Time: 33.3s
+Epoch: 1, Time: 1.63e+02s, Train Loss: 0.628, Validation Loss: 0.609, AUC: 0.62
+Clustering. Time: 29.7s
+Epoch: 2, Time: 1.26e+02s, Train Loss: 0.623, Validation Loss: 0.605, AUC: 0.629
+Clustering. Time: 22.4s
+Epoch: 3, Time: 1.2e+02s, Train Loss: 0.619, Validation Loss: 0.602, AUC: 0.636
+Clustering. Time: 25.4s
+Epoch: 4, Time: 1.29e+02s, Train Loss: 0.616, Validation Loss: 0.6, AUC: 0.641
+Clustering. Time: 28.2s
+Epoch: 5, Time: 1.47e+02s, Train Loss: 0.612, Validation Loss: 0.6, AUC: 0.645
+Clustering. Time: 24.2s
+Epoch: 6, Time: 86.9s, Train Loss: 0.61, Validation Loss: 0.598, AUC: 0.649
+Clustering. Time: 9.43s
+Epoch: 7, Time: 1.19e+02s, Train Loss: 0.609, Validation Loss: 0.598, AUC: 0.649
+Epoch: 8, Time: 1.12e+02s, Train Loss: 0.608, Validation Loss: 0.597, AUC: 0.649
+Epoch: 9, Time: 1.09e+02s, Train Loss: 0.608, Validation Loss: 0.596, AUC: 0.649
+
+Losses: [0.611, 0.609, 0.605, 0.602, 0.6, 0.6, 0.598, 0.598, 0.597, 0.596] AUCs: [0.606, 0.62, 0.629, 0.636, 0.641, 0.645,
+0.649, 0.649, 0.649, 0.649]
+Overall Progress:  28%|███████████▋                             | 29/102 [18:20:30<31:50:58, 1570.66s/it]Running ppd=64 n_c
+hunks=32
+100%|███████████████████████████████████████████████████████████████████| 10/10 [22:32<00:00, 135.25s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 2048
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.06e+02s, Train Loss: 0.629, Validation Loss: 0.602, AUC: 0.636
+Clustering. Time: 42.9s
+Epoch: 1, Time: 75.8s, Train Loss: 0.616, Validation Loss: 0.599, AUC: 0.645
+Clustering. Time: 40.0s
+Epoch: 2, Time: 1.11e+02s, Train Loss: 0.609, Validation Loss: 0.595, AUC: 0.652
+Clustering. Time: 49.4s
+Epoch: 3, Time: 1.1e+02s, Train Loss: 0.605, Validation Loss: 0.592, AUC: 0.659
+Clustering. Time: 42.8s
+Epoch: 4, Time: 1.03e+02s, Train Loss: 0.602, Validation Loss: 0.592, AUC: 0.661
+Clustering. Time: 25.8s
+Epoch: 5, Time: 1.06e+02s, Train Loss: 0.6, Validation Loss: 0.589, AUC: 0.663
+Clustering. Time: 45.1s
+Epoch: 6, Time: 1.16e+02s, Train Loss: 0.598, Validation Loss: 0.588, AUC: 0.664
+Clustering. Time: 48.7s
+Epoch: 7, Time: 1.12e+02s, Train Loss: 0.596, Validation Loss: 0.589, AUC: 0.667
+Epoch: 8, Time: 92.6s, Train Loss: 0.595, Validation Loss: 0.587, AUC: 0.667
+Epoch: 9, Time: 1.08e+02s, Train Loss: 0.595, Validation Loss: 0.588, AUC: 0.667
+
+Losses: [0.602, 0.599, 0.595, 0.592, 0.592, 0.589, 0.588, 0.589, 0.587, 0.588] AUCs: [0.636, 0.645, 0.652, 0.659, 0.661, 0.
+663, 0.664, 0.667, 0.667, 0.667]
+Overall Progress:  29%|████████████                             | 30/102 [18:43:10<30:08:56, 1507.45s/it]Running ppd=128 n_
+chunks=1
+100%|███████████████████████████████████████████████████████████████████| 10/10 [21:13<00:00, 127.34s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 4096
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.21e+02s, Train Loss: 0.661, Validation Loss: 0.624, AUC: 0.543
+Clustering. Time: 3.67s
+Epoch: 1, Time: 1.25e+02s, Train Loss: 0.657, Validation Loss: 0.622, AUC: 0.552
+Clustering. Time: 0.65s
+Epoch: 2, Time: 1.11e+02s, Train Loss: 0.656, Validation Loss: 0.623, AUC: 0.556
+Clustering. Time: 0.986s
+Epoch: 3, Time: 1.1e+02s, Train Loss: 0.654, Validation Loss: 0.621, AUC: 0.565
+Clustering. Time: 0.355s
+Epoch: 4, Time: 1.31e+02s, Train Loss: 0.652, Validation Loss: 0.62, AUC: 0.572
+Clustering. Time: 1.12s
+Epoch: 5, Time: 1.17e+02s, Train Loss: 0.65, Validation Loss: 0.62, AUC: 0.575
+Clustering. Time: 0.692s
+Epoch: 6, Time: 1.32e+02s, Train Loss: 0.648, Validation Loss: 0.619, AUC: 0.578
+Clustering. Time: 0.987s
+Epoch: 7, Time: 1.46e+02s, Train Loss: 0.647, Validation Loss: 0.619, AUC: 0.581
+Epoch: 8, Time: 1.43e+02s, Train Loss: 0.647, Validation Loss: 0.618, AUC: 0.581
+Epoch: 9, Time: 1.08e+02s, Train Loss: 0.647, Validation Loss: 0.618, AUC: 0.581
+
+Losses: [0.624, 0.622, 0.623, 0.621, 0.62, 0.62, 0.619, 0.619, 0.618, 0.618] AUCs: [0.543, 0.552, 0.556, 0.565, 0.572, 0.57
+5, 0.578, 0.581, 0.581, 0.581]
+Overall Progress:  30%|████████████▍                            | 31/102 [19:04:30<28:23:12, 1439.34s/it]Running ppd=128 n_
+chunks=2
+100%|███████████████████████████████████████████████████████████████████| 10/10 [22:04<00:00, 132.48s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 4096
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.26e+02s, Train Loss: 0.657, Validation Loss: 0.622, AUC: 0.561
+Clustering. Time: 3.26s
+Epoch: 1, Time: 1.51e+02s, Train Loss: 0.65, Validation Loss: 0.618, AUC: 0.575
+Clustering. Time: 1.58s
+Epoch: 2, Time: 1.53e+02s, Train Loss: 0.646, Validation Loss: 0.617, AUC: 0.584
+Clustering. Time: 1.54s
+Epoch: 3, Time: 1.39e+02s, Train Loss: 0.644, Validation Loss: 0.616, AUC: 0.59
+Clustering. Time: 3.3s
+Epoch: 4, Time: 1.45e+02s, Train Loss: 0.641, Validation Loss: 0.616, AUC: 0.594
+Clustering. Time: 2.14s
+Epoch: 5, Time: 1.52e+02s, Train Loss: 0.639, Validation Loss: 0.614, AUC: 0.599
+Clustering. Time: 2.22s
+Epoch: 6, Time: 1.53e+02s, Train Loss: 0.637, Validation Loss: 0.613, AUC: 0.604
+Clustering. Time: 1.6s
+Epoch: 7, Time: 1.55e+02s, Train Loss: 0.635, Validation Loss: 0.613, AUC: 0.607
+Epoch: 8, Time: 48.4s, Train Loss: 0.635, Validation Loss: 0.613, AUC: 0.607
+Epoch: 9, Time: 66.1s, Train Loss: 0.635, Validation Loss: 0.613, AUC: 0.607
+
+Losses: [0.622, 0.618, 0.617, 0.616, 0.616, 0.614, 0.613, 0.613, 0.613, 0.613] AUCs: [0.561, 0.575, 0.584, 0.59, 0.594, 0.5
+99, 0.604, 0.607, 0.607, 0.607]
+Overall Progress:  31%|████████████▊                            | 32/102 [19:26:43<27:21:54, 1407.35s/it]Running ppd=128 n_
+chunks=4
+100%|███████████████████████████████████████████████████████████████████| 10/10 [25:15<00:00, 151.51s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 4096
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.62e+02s, Train Loss: 0.65, Validation Loss: 0.618, AUC: 0.582
+Clustering. Time: 6.94s
+Epoch: 1, Time: 1.24e+02s, Train Loss: 0.641, Validation Loss: 0.615, AUC: 0.598
+Clustering. Time: 5.15s
+Epoch: 2, Time: 1.44e+02s, Train Loss: 0.634, Validation Loss: 0.611, AUC: 0.611
+Clustering. Time: 4.37s
+Epoch: 3, Time: 1.49e+02s, Train Loss: 0.63, Validation Loss: 0.61, AUC: 0.618
+Clustering. Time: 7.71s
+Epoch: 4, Time: 1.36e+02s, Train Loss: 0.627, Validation Loss: 0.607, AUC: 0.625
+Clustering. Time: 4.3s
+Epoch: 5, Time: 1.69e+02s, Train Loss: 0.625, Validation Loss: 0.605, AUC: 0.629
+Clustering. Time: 9.51s
+Epoch: 6, Time: 1.2e+02s, Train Loss: 0.622, Validation Loss: 0.604, AUC: 0.633
+Clustering. Time: 4.33s
+Epoch: 7, Time: 1.7e+02s, Train Loss: 0.62, Validation Loss: 0.603, AUC: 0.637
+Epoch: 8, Time: 1.23e+02s, Train Loss: 0.62, Validation Loss: 0.602, AUC: 0.636
+Epoch: 9, Time: 1.5e+02s, Train Loss: 0.62, Validation Loss: 0.603, AUC: 0.637
+
+Losses: [0.618, 0.615, 0.611, 0.61, 0.607, 0.605, 0.604, 0.603, 0.602, 0.603] AUCs: [0.582, 0.598, 0.611, 0.618, 0.625, 0.6
+29, 0.633, 0.637, 0.636, 0.637]
+Overall Progress:  32%|█████████████▎                           | 33/102 [19:52:06<27:38:23, 1442.07s/it]Running ppd=128 n_
+chunks=8
+100%|███████████████████████████████████████████████████████████████████| 10/10 [22:05<00:00, 132.59s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 4096
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.05e+02s, Train Loss: 0.638, Validation Loss: 0.612, AUC: 0.607
+Clustering. Time: 24.4s
+Epoch: 1, Time: 85.1s, Train Loss: 0.626, Validation Loss: 0.607, AUC: 0.624
+Clustering. Time: 3.06s
+Epoch: 2, Time: 1.13e+02s, Train Loss: 0.619, Validation Loss: 0.604, AUC: 0.634
+Clustering. Time: 15.2s
+Epoch: 3, Time: 1.42e+02s, Train Loss: 0.615, Validation Loss: 0.601, AUC: 0.642
+Clustering. Time: 5.22s
+Epoch: 4, Time: 1.23e+02s, Train Loss: 0.612, Validation Loss: 0.599, AUC: 0.646
+Clustering. Time: 6.11s
+Epoch: 5, Time: 93.6s, Train Loss: 0.609, Validation Loss: 0.597, AUC: 0.65
+Clustering. Time: 8.61s
+Epoch: 6, Time: 1.49e+02s, Train Loss: 0.606, Validation Loss: 0.595, AUC: 0.654
+Clustering. Time: 8.64s
+Epoch: 7, Time: 1.44e+02s, Train Loss: 0.605, Validation Loss: 0.593, AUC: 0.656
+Epoch: 8, Time: 1.32e+02s, Train Loss: 0.604, Validation Loss: 0.594, AUC: 0.657
+Epoch: 9, Time: 1.45e+02s, Train Loss: 0.604, Validation Loss: 0.593, AUC: 0.656
+
+Losses: [0.612, 0.607, 0.604, 0.601, 0.599, 0.597, 0.595, 0.593, 0.594, 0.593] AUCs: [0.607, 0.624, 0.634, 0.642, 0.646, 0.
+65, 0.654, 0.656, 0.657, 0.656]
+Overall Progress:  33%|█████████████▋                           | 34/102 [20:14:18<26:36:57, 1409.08s/it]Running ppd=128 n_
+chunks=16
+100%|███████████████████████████████████████████████████████████████████| 10/10 [27:02<00:00, 162.24s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 4096
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.52e+02s, Train Loss: 0.625, Validation Loss: 0.602, AUC: 0.635
+Clustering. Time: 20.4s
+Epoch: 1, Time: 1.07e+02s, Train Loss: 0.61, Validation Loss: 0.598, AUC: 0.648
+Clustering. Time: 12.6s
+Epoch: 2, Time: 1.53e+02s, Train Loss: 0.604, Validation Loss: 0.595, AUC: 0.656
+Clustering. Time: 17.9s
+Epoch: 3, Time: 1.51e+02s, Train Loss: 0.6, Validation Loss: 0.592, AUC: 0.661
+Clustering. Time: 18.1s
+Epoch: 4, Time: 1.51e+02s, Train Loss: 0.597, Validation Loss: 0.591, AUC: 0.663
+Clustering. Time: 18.0s
+Epoch: 5, Time: 1.41e+02s, Train Loss: 0.594, Validation Loss: 0.589, AUC: 0.667
+Clustering. Time: 18.3s
+Epoch: 6, Time: 1.65e+02s, Train Loss: 0.592, Validation Loss: 0.588, AUC: 0.669
+Clustering. Time: 12.8s
+Epoch: 7, Time: 1.65e+02s, Train Loss: 0.59, Validation Loss: 0.587, AUC: 0.67
+Epoch: 8, Time: 1.39e+02s, Train Loss: 0.589, Validation Loss: 0.587, AUC: 0.67
+Epoch: 9, Time: 1.52e+02s, Train Loss: 0.589, Validation Loss: 0.586, AUC: 0.67
+
+Losses: [0.602, 0.598, 0.595, 0.592, 0.591, 0.589, 0.588, 0.587, 0.587, 0.586] AUCs: [0.635, 0.648, 0.656, 0.661, 0.663, 0.
+667, 0.669, 0.67, 0.67, 0.67]
+Overall Progress:  34%|██████████████                           | 35/102 [20:41:29<27:27:45, 1475.61s/it]Running ppd=128 n_
+chunks=32
+100%|███████████████████████████████████████████████████████████████████| 10/10 [27:48<00:00, 166.81s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 4096
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.64e+02s, Train Loss: 0.615, Validation Loss: 0.592, AUC: 0.659
+Clustering. Time: 28.0s
+Epoch: 1, Time: 99.0s, Train Loss: 0.598, Validation Loss: 0.587, AUC: 0.668
+Clustering. Time: 36.3s
+Epoch: 2, Time: 1.69e+02s, Train Loss: 0.592, Validation Loss: 0.586, AUC: 0.672
+Clustering. Time: 36.3s
+Epoch: 3, Time: 1.52e+02s, Train Loss: 0.587, Validation Loss: 0.583, AUC: 0.675
+Clustering. Time: 36.7s
+Epoch: 4, Time: 1.49e+02s, Train Loss: 0.584, Validation Loss: 0.583, AUC: 0.677
+Clustering. Time: 29.7s
+Epoch: 5, Time: 1.05e+02s, Train Loss: 0.582, Validation Loss: 0.582, AUC: 0.677
+Clustering. Time: 27.3s
+Epoch: 6, Time: 1.42e+02s, Train Loss: 0.581, Validation Loss: 0.582, AUC: 0.679
+Clustering. Time: 27.4s
+Epoch: 7, Time: 1.36e+02s, Train Loss: 0.579, Validation Loss: 0.583, AUC: 0.679
+Epoch: 8, Time: 1.54e+02s, Train Loss: 0.578, Validation Loss: 0.58, AUC: 0.679
+Epoch: 9, Time: 1.52e+02s, Train Loss: 0.578, Validation Loss: 0.581, AUC: 0.679
+
+Losses: [0.592, 0.587, 0.586, 0.583, 0.583, 0.582, 0.582, 0.583, 0.58, 0.581] AUCs: [0.659, 0.668, 0.672, 0.675, 0.677, 0.6
+77, 0.679, 0.679, 0.679, 0.679]
+Overall Progress:  35%|██████████████▍                          | 36/102 [21:09:25<28:09:25, 1535.84s/it]Running ppd=256 n_
+chunks=1
+100%|███████████████████████████████████████████████████████████████████| 10/10 [16:50<00:00, 101.06s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 8192
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.18e+02s, Train Loss: 0.657, Validation Loss: 0.622, AUC: 0.559
+Clustering. Time: 2.7s
+Epoch: 1, Time: 1.12e+02s, Train Loss: 0.651, Validation Loss: 0.619, AUC: 0.576
+Clustering. Time: 0.678s
+Epoch: 2, Time: 87.5s, Train Loss: 0.647, Validation Loss: 0.617, AUC: 0.585
+Clustering. Time: 0.692s
+Epoch: 3, Time: 1.12e+02s, Train Loss: 0.643, Validation Loss: 0.616, AUC: 0.593
+Clustering. Time: 0.657s
+Epoch: 4, Time: 1.11e+02s, Train Loss: 0.641, Validation Loss: 0.614, AUC: 0.599
+Clustering. Time: 0.531s
+Epoch: 5, Time: 90.6s, Train Loss: 0.639, Validation Loss: 0.613, AUC: 0.602
+Clustering. Time: 0.827s
+Epoch: 6, Time: 1.2e+02s, Train Loss: 0.638, Validation Loss: 0.612, AUC: 0.606
+Clustering. Time: 0.689s
+Epoch: 7, Time: 73.7s, Train Loss: 0.637, Validation Loss: 0.612, AUC: 0.608
+Epoch: 8, Time: 50.1s, Train Loss: 0.636, Validation Loss: 0.612, AUC: 0.608
+Epoch: 9, Time: 1.11e+02s, Train Loss: 0.636, Validation Loss: 0.612, AUC: 0.608
+
+Losses: [0.622, 0.619, 0.617, 0.616, 0.614, 0.613, 0.612, 0.612, 0.612, 0.612] AUCs: [0.559, 0.576, 0.585, 0.593, 0.599, 0.
+602, 0.606, 0.608, 0.608, 0.608]
+Overall Progress:  36%|██████████████▊                          | 37/102 [21:26:23<24:55:30, 1380.46s/it]Running ppd=256 n_
+chunks=2
+100%|███████████████████████████████████████████████████████████████████| 10/10 [20:19<00:00, 121.95s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 8192
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.14e+02s, Train Loss: 0.649, Validation Loss: 0.62, AUC: 0.577
+Clustering. Time: 3.82s
+Epoch: 1, Time: 1.2e+02s, Train Loss: 0.639, Validation Loss: 0.614, AUC: 0.597
+Clustering. Time: 1.35s
+Epoch: 2, Time: 94.3s, Train Loss: 0.634, Validation Loss: 0.612, AUC: 0.607
+Clustering. Time: 0.921s
+Epoch: 3, Time: 1.18e+02s, Train Loss: 0.63, Validation Loss: 0.609, AUC: 0.615
+Clustering. Time: 1.35s
+Epoch: 4, Time: 1.18e+02s, Train Loss: 0.627, Validation Loss: 0.607, AUC: 0.622
+Clustering. Time: 1.34s
+Epoch: 5, Time: 1.21e+02s, Train Loss: 0.624, Validation Loss: 0.605, AUC: 0.626
+Clustering. Time: 1.3s
+Epoch: 6, Time: 1.19e+02s, Train Loss: 0.622, Validation Loss: 0.604, AUC: 0.63
+Clustering. Time: 0.938s
+Epoch: 7, Time: 1.12e+02s, Train Loss: 0.619, Validation Loss: 0.604, AUC: 0.634
+Epoch: 8, Time: 1.32e+02s, Train Loss: 0.619, Validation Loss: 0.604, AUC: 0.633
+Epoch: 9, Time: 1.41e+02s, Train Loss: 0.619, Validation Loss: 0.604, AUC: 0.633
+
+Losses: [0.62, 0.614, 0.612, 0.609, 0.607, 0.605, 0.604, 0.604, 0.604, 0.604] AUCs: [0.577, 0.597, 0.607, 0.615, 0.622, 0.6
+26, 0.63, 0.634, 0.633, 0.633]
+Overall Progress:  37%|███████████████▎                         | 38/102 [21:46:50<23:43:15, 1334.30s/it]Running ppd=256 n_
+chunks=4
+100%|███████████████████████████████████████████████████████████████████| 10/10 [24:09<00:00, 144.93s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 8192
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.27e+02s, Train Loss: 0.639, Validation Loss: 0.612, AUC: 0.604
+Clustering. Time: 2.94s
+Epoch: 1, Time: 1.18e+02s, Train Loss: 0.625, Validation Loss: 0.607, AUC: 0.624
+Clustering. Time: 3.15s
+Epoch: 2, Time: 1.45e+02s, Train Loss: 0.619, Validation Loss: 0.603, AUC: 0.635
+Clustering. Time: 3.19s
+Epoch: 3, Time: 1.46e+02s, Train Loss: 0.614, Validation Loss: 0.6, AUC: 0.644
+Clustering. Time: 3.14s
+Epoch: 4, Time: 1.48e+02s, Train Loss: 0.61, Validation Loss: 0.598, AUC: 0.647
+Clustering. Time: 1.81s
+Epoch: 5, Time: 1.25e+02s, Train Loss: 0.607, Validation Loss: 0.596, AUC: 0.651
+Clustering. Time: 2.6s
+Epoch: 6, Time: 1.43e+02s, Train Loss: 0.605, Validation Loss: 0.596, AUC: 0.654
+Clustering. Time: 3.14s
+Epoch: 7, Time: 1.56e+02s, Train Loss: 0.603, Validation Loss: 0.594, AUC: 0.657
+Epoch: 8, Time: 1.52e+02s, Train Loss: 0.603, Validation Loss: 0.594, AUC: 0.657
+Epoch: 9, Time: 1.46e+02s, Train Loss: 0.603, Validation Loss: 0.594, AUC: 0.657
+
+Losses: [0.612, 0.607, 0.603, 0.6, 0.598, 0.596, 0.596, 0.594, 0.594, 0.594] AUCs: [0.604, 0.624, 0.635, 0.644, 0.647, 0.65
+1, 0.654, 0.657, 0.657, 0.657]
+Overall Progress:  38%|███████████████▋                         | 39/102 [22:11:07<23:59:49, 1371.26s/it]Running ppd=256 n_
+chunks=8
+100%|███████████████████████████████████████████████████████████████████| 10/10 [25:32<00:00, 153.28s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 8192
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.57e+02s, Train Loss: 0.625, Validation Loss: 0.605, AUC: 0.632
+Clustering. Time: 9.08s
+Epoch: 1, Time: 1.56e+02s, Train Loss: 0.608, Validation Loss: 0.597, AUC: 0.649
+Clustering. Time: 6.4s
+Epoch: 2, Time: 1.48e+02s, Train Loss: 0.601, Validation Loss: 0.592, AUC: 0.659
+Clustering. Time: 4.87s
+Epoch: 3, Time: 1.14e+02s, Train Loss: 0.597, Validation Loss: 0.591, AUC: 0.663
+Clustering. Time: 6.58s
+Epoch: 4, Time: 1.67e+02s, Train Loss: 0.594, Validation Loss: 0.589, AUC: 0.666
+Clustering. Time: 6.37s
+Epoch: 5, Time: 1.58e+02s, Train Loss: 0.591, Validation Loss: 0.588, AUC: 0.668
+Clustering. Time: 6.36s
+Epoch: 6, Time: 1.55e+02s, Train Loss: 0.589, Validation Loss: 0.586, AUC: 0.67
+Clustering. Time: 4.96s
+Epoch: 7, Time: 82.1s, Train Loss: 0.588, Validation Loss: 0.586, AUC: 0.672
+Epoch: 8, Time: 1.68e+02s, Train Loss: 0.587, Validation Loss: 0.585, AUC: 0.672
+Epoch: 9, Time: 1.57e+02s, Train Loss: 0.587, Validation Loss: 0.586, AUC: 0.671
+
+Losses: [0.605, 0.597, 0.592, 0.591, 0.589, 0.588, 0.586, 0.586, 0.585, 0.586] AUCs: [0.632, 0.649, 0.659, 0.663, 0.666, 0.
+668, 0.67, 0.672, 0.672, 0.671]
+Overall Progress:  39%|████████████████                         | 40/102 [22:36:49<24:29:38, 1422.23s/it]Running ppd=256 n_
+chunks=16
+100%|███████████████████████████████████████████████████████████████████| 10/10 [28:29<00:00, 170.93s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 8192
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.63e+02s, Train Loss: 0.612, Validation Loss: 0.592, AUC: 0.658
+Clustering. Time: 14.0s
+Epoch: 1, Time: 1.68e+02s, Train Loss: 0.593, Validation Loss: 0.587, AUC: 0.669
+Clustering. Time: 13.6s
+Epoch: 2, Time: 1.57e+02s, Train Loss: 0.586, Validation Loss: 0.584, AUC: 0.674
+Clustering. Time: 13.6s
+Epoch: 3, Time: 1.68e+02s, Train Loss: 0.582, Validation Loss: 0.583, AUC: 0.676
+Clustering. Time: 13.8s
+Epoch: 4, Time: 1.56e+02s, Train Loss: 0.58, Validation Loss: 0.582, AUC: 0.678
+Clustering. Time: 13.8s
+Epoch: 5, Time: 1.46e+02s, Train Loss: 0.577, Validation Loss: 0.58, AUC: 0.68
+Clustering. Time: 11.5s
+Epoch: 6, Time: 1.34e+02s, Train Loss: 0.575, Validation Loss: 0.58, AUC: 0.68
+Clustering. Time: 13.8s
+Epoch: 7, Time: 1.69e+02s, Train Loss: 0.573, Validation Loss: 0.58, AUC: 0.682
+Epoch: 8, Time: 1.69e+02s, Train Loss: 0.572, Validation Loss: 0.58, AUC: 0.681
+Epoch: 9, Time: 1.59e+02s, Train Loss: 0.572, Validation Loss: 0.58, AUC: 0.681
+
+Losses: [0.592, 0.587, 0.584, 0.583, 0.582, 0.58, 0.58, 0.58, 0.58, 0.58] AUCs: [0.658, 0.669, 0.674, 0.676, 0.678, 0.68, 0
+.68, 0.682, 0.681, 0.681]
+Overall Progress:  40%|████████████████▍                        | 41/102 [23:05:26<25:36:00, 1510.83s/it]Running ppd=256 n_
+chunks=32
+100%|███████████████████████████████████████████████████████████████████| 10/10 [31:15<00:00, 187.58s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 8192
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.69e+02s, Train Loss: 0.607, Validation Loss: 0.585, AUC: 0.672
+Clustering. Time: 29.6s
+Epoch: 1, Time: 1.69e+02s, Train Loss: 0.585, Validation Loss: 0.582, AUC: 0.677
+Clustering. Time: 27.3s
+Epoch: 2, Time: 1.67e+02s, Train Loss: 0.577, Validation Loss: 0.58, AUC: 0.679
+Clustering. Time: 23.5s
+Epoch: 3, Time: 1.53e+02s, Train Loss: 0.572, Validation Loss: 0.579, AUC: 0.682
+Clustering. Time: 27.4s
+Epoch: 4, Time: 1.7e+02s, Train Loss: 0.569, Validation Loss: 0.579, AUC: 0.682
+Clustering. Time: 27.3s
+Epoch: 5, Time: 1.65e+02s, Train Loss: 0.567, Validation Loss: 0.578, AUC: 0.683
+Clustering. Time: 24.1s
+Epoch: 6, Time: 1.7e+02s, Train Loss: 0.565, Validation Loss: 0.576, AUC: 0.685
+Clustering. Time: 27.1s
+Epoch: 7, Time: 1.7e+02s, Train Loss: 0.563, Validation Loss: 0.577, AUC: 0.686
+Epoch: 8, Time: 1.69e+02s, Train Loss: 0.562, Validation Loss: 0.576, AUC: 0.686
+Epoch: 9, Time: 1.59e+02s, Train Loss: 0.562, Validation Loss: 0.577, AUC: 0.686
+
+Losses: [0.585, 0.582, 0.58, 0.579, 0.579, 0.578, 0.576, 0.577, 0.576, 0.577] AUCs: [0.672, 0.677, 0.679, 0.682, 0.682, 0.6
+83, 0.685, 0.686, 0.686, 0.686]
+Overall Progress:  41%|████████████████▉                        | 42/102 [23:36:50<27:02:50, 1622.85s/it]Running ppd=512 n_
+chunks=1
+100%|███████████████████████████████████████████████████████████████████| 10/10 [25:21<00:00, 152.19s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 16384
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.5e+02s, Train Loss: 0.649, Validation Loss: 0.617, AUC: 0.585
+Clustering. Time: 3.86s
+Epoch: 1, Time: 1.67e+02s, Train Loss: 0.639, Validation Loss: 0.613, AUC: 0.601
+Clustering. Time: 1.19s
+Epoch: 2, Time: 1.57e+02s, Train Loss: 0.634, Validation Loss: 0.61, AUC: 0.61
+Clustering. Time: 1.11s
+Epoch: 3, Time: 1.67e+02s, Train Loss: 0.63, Validation Loss: 0.61, AUC: 0.616
+Clustering. Time: 1.12s
+Epoch: 4, Time: 1.68e+02s, Train Loss: 0.627, Validation Loss: 0.607, AUC: 0.621
+Clustering. Time: 1.04s
+Epoch: 5, Time: 1.66e+02s, Train Loss: 0.625, Validation Loss: 0.606, AUC: 0.624
+Clustering. Time: 1.04s
+Epoch: 6, Time: 1.22e+02s, Train Loss: 0.624, Validation Loss: 0.606, AUC: 0.627
+Clustering. Time: 1.13s
+Epoch: 7, Time: 1.25e+02s, Train Loss: 0.623, Validation Loss: 0.605, AUC: 0.628
+Epoch: 8, Time: 1.18e+02s, Train Loss: 0.622, Validation Loss: 0.605, AUC: 0.627
+Epoch: 9, Time: 1.44e+02s, Train Loss: 0.622, Validation Loss: 0.605, AUC: 0.628
+
+Losses: [0.617, 0.613, 0.61, 0.61, 0.607, 0.606, 0.606, 0.605, 0.605, 0.605] AUCs: [0.585, 0.601, 0.61, 0.616, 0.621, 0.624
+, 0.627, 0.628, 0.627, 0.628]
+Overall Progress:  42%|█████████████████▎                       | 43/102 [24:02:21<26:08:27, 1595.04s/it]Running ppd=512 n_
+chunks=2
+100%|███████████████████████████████████████████████████████████████████| 10/10 [20:06<00:00, 120.65s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 16384
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.5e+02s, Train Loss: 0.638, Validation Loss: 0.612, AUC: 0.608
+Clustering. Time: 4.48s
+Epoch: 1, Time: 1.51e+02s, Train Loss: 0.624, Validation Loss: 0.605, AUC: 0.629
+Clustering. Time: 1.69s
+Epoch: 2, Time: 1.29e+02s, Train Loss: 0.617, Validation Loss: 0.602, AUC: 0.638
+Clustering. Time: 1.43s
+Epoch: 3, Time: 1.08e+02s, Train Loss: 0.613, Validation Loss: 0.6, AUC: 0.643
+Clustering. Time: 1.5s
+Epoch: 4, Time: 1.1e+02s, Train Loss: 0.609, Validation Loss: 0.598, AUC: 0.648
+Clustering. Time: 1.54s
+Epoch: 5, Time: 1.08e+02s, Train Loss: 0.607, Validation Loss: 0.597, AUC: 0.65
+Clustering. Time: 1.5s
+Epoch: 6, Time: 1.06e+02s, Train Loss: 0.604, Validation Loss: 0.596, AUC: 0.653
+Clustering. Time: 1.2s
+Epoch: 7, Time: 91.6s, Train Loss: 0.602, Validation Loss: 0.595, AUC: 0.655
+Epoch: 8, Time: 1.09e+02s, Train Loss: 0.602, Validation Loss: 0.595, AUC: 0.655
+Epoch: 9, Time: 1.11e+02s, Train Loss: 0.602, Validation Loss: 0.595, AUC: 0.655
+
+Losses: [0.612, 0.605, 0.602, 0.6, 0.598, 0.597, 0.596, 0.595, 0.595, 0.595] AUCs: [0.608, 0.629, 0.638, 0.643, 0.648, 0.65
+, 0.653, 0.655, 0.655, 0.655]
+Overall Progress:  43%|█████████████████▋                       | 44/102 [24:22:35<23:51:31, 1480.89s/it]Running ppd=512 n_
+chunks=4
+100%|███████████████████████████████████████████████████████████████████| 10/10 [18:46<00:00, 112.62s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 16384
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.09e+02s, Train Loss: 0.625, Validation Loss: 0.603, AUC: 0.634
+Clustering. Time: 4.83s
+Epoch: 1, Time: 1.11e+02s, Train Loss: 0.607, Validation Loss: 0.597, AUC: 0.65
+Clustering. Time: 2.74s
+Epoch: 2, Time: 1.1e+02s, Train Loss: 0.6, Validation Loss: 0.594, AUC: 0.658
+Clustering. Time: 2.79s
+Epoch: 3, Time: 1.1e+02s, Train Loss: 0.596, Validation Loss: 0.59, AUC: 0.663
+Clustering. Time: 2.8s
+Epoch: 4, Time: 1.11e+02s, Train Loss: 0.592, Validation Loss: 0.589, AUC: 0.667
+Clustering. Time: 2.71s
+Epoch: 5, Time: 89.2s, Train Loss: 0.59, Validation Loss: 0.587, AUC: 0.67
+Clustering. Time: 2.84s
+Epoch: 6, Time: 1.11e+02s, Train Loss: 0.588, Validation Loss: 0.585, AUC: 0.672
+Clustering. Time: 2.81s
+Epoch: 7, Time: 1.12e+02s, Train Loss: 0.586, Validation Loss: 0.586, AUC: 0.672
+Epoch: 8, Time: 1.1e+02s, Train Loss: 0.585, Validation Loss: 0.585, AUC: 0.672
+Epoch: 9, Time: 1.12e+02s, Train Loss: 0.585, Validation Loss: 0.586, AUC: 0.672
+
+Losses: [0.603, 0.597, 0.594, 0.59, 0.589, 0.587, 0.585, 0.586, 0.585, 0.586] AUCs: [0.634, 0.65, 0.658, 0.663, 0.667, 0.67
+, 0.672, 0.672, 0.672, 0.672]
+Overall Progress:  44%|██████████████████                       | 45/102 [24:41:28<21:47:44, 1376.58s/it]Running ppd=512 n_
+chunks=8
+100%|███████████████████████████████████████████████████████████████████| 10/10 [18:07<00:00, 108.76s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 16384
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.11e+02s, Train Loss: 0.613, Validation Loss: 0.593, AUC: 0.658
+Clustering. Time: 7.3s
+Epoch: 1, Time: 1.12e+02s, Train Loss: 0.591, Validation Loss: 0.588, AUC: 0.668
+Clustering. Time: 5.53s
+Epoch: 2, Time: 1.13e+02s, Train Loss: 0.584, Validation Loss: 0.585, AUC: 0.673
+Clustering. Time: 5.16s
+Epoch: 3, Time: 36.4s, Train Loss: 0.579, Validation Loss: 0.582, AUC: 0.676
+Clustering. Time: 4.32s
+Epoch: 4, Time: 71.3s, Train Loss: 0.576, Validation Loss: 0.582, AUC: 0.679
+Clustering. Time: 5.99s
+Epoch: 5, Time: 1.15e+02s, Train Loss: 0.574, Validation Loss: 0.58, AUC: 0.68
+Clustering. Time: 5.77s
+Epoch: 6, Time: 1.16e+02s, Train Loss: 0.571, Validation Loss: 0.58, AUC: 0.681
+Clustering. Time: 5.74s
+Epoch: 7, Time: 1.17e+02s, Train Loss: 0.57, Validation Loss: 0.58, AUC: 0.681
+Epoch: 8, Time: 1.17e+02s, Train Loss: 0.568, Validation Loss: 0.58, AUC: 0.682
+Epoch: 9, Time: 1.19e+02s, Train Loss: 0.568, Validation Loss: 0.58, AUC: 0.682
+
+Losses: [0.593, 0.588, 0.585, 0.582, 0.582, 0.58, 0.58, 0.58, 0.58, 0.58] AUCs: [0.658, 0.668, 0.673, 0.676, 0.679, 0.68, 0
+.681, 0.681, 0.682, 0.682]
+Overall Progress:  45%|██████████████████▍                      | 46/102 [24:59:43<20:05:55, 1292.07s/it]Running ppd=512 n_
+chunks=16
+100%|███████████████████████████████████████████████████████████████████| 10/10 [24:31<00:00, 147.10s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 16384
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.19e+02s, Train Loss: 0.604, Validation Loss: 0.585, AUC: 0.674
+Clustering. Time: 14.9s
+Epoch: 1, Time: 1.18e+02s, Train Loss: 0.577, Validation Loss: 0.581, AUC: 0.679
+Clustering. Time: 13.0s
+Epoch: 2, Time: 1.26e+02s, Train Loss: 0.57, Validation Loss: 0.578, AUC: 0.683
+Clustering. Time: 13.3s
+Epoch: 3, Time: 1.31e+02s, Train Loss: 0.565, Validation Loss: 0.577, AUC: 0.685
+Clustering. Time: 13.9s
+Epoch: 4, Time: 1.28e+02s, Train Loss: 0.561, Validation Loss: 0.577, AUC: 0.687
+Clustering. Time: 14.0s
+Epoch: 5, Time: 1.39e+02s, Train Loss: 0.558, Validation Loss: 0.576, AUC: 0.688
+Clustering. Time: 14.1s
+Epoch: 6, Time: 1.39e+02s, Train Loss: 0.555, Validation Loss: 0.575, AUC: 0.689
+Clustering. Time: 13.3s
+Epoch: 7, Time: 1.36e+02s, Train Loss: 0.553, Validation Loss: 0.575, AUC: 0.69
+Epoch: 8, Time: 1.56e+02s, Train Loss: 0.551, Validation Loss: 0.574, AUC: 0.69
+Epoch: 9, Time: 1.58e+02s, Train Loss: 0.551, Validation Loss: 0.574, AUC: 0.69
+
+Losses: [0.585, 0.581, 0.578, 0.577, 0.577, 0.576, 0.575, 0.575, 0.574, 0.574] AUCs: [0.674, 0.679, 0.683, 0.685, 0.687, 0.
+688, 0.689, 0.69, 0.69, 0.69]
+Overall Progress:  46%|██████████████████▉                      | 47/102 [25:24:22<20:35:40, 1348.01s/it]Running ppd=512 n_
+chunks=32
+100%|███████████████████████████████████████████████████████████████████| 10/10 [29:12<00:00, 175.24s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 16384
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.36e+02s, Train Loss: 0.599, Validation Loss: 0.579, AUC: 0.678
+Clustering. Time: 29.9s
+Epoch: 1, Time: 1.49e+02s, Train Loss: 0.571, Validation Loss: 0.577, AUC: 0.684
+Clustering. Time: 28.0s
+Epoch: 2, Time: 1.55e+02s, Train Loss: 0.561, Validation Loss: 0.577, AUC: 0.687
+Clustering. Time: 27.8s
+Epoch: 3, Time: 1.55e+02s, Train Loss: 0.554, Validation Loss: 0.574, AUC: 0.69
+Clustering. Time: 27.2s
+Epoch: 4, Time: 1.54e+02s, Train Loss: 0.549, Validation Loss: 0.572, AUC: 0.692
+Clustering. Time: 27.6s
+Epoch: 5, Time: 1.55e+02s, Train Loss: 0.546, Validation Loss: 0.571, AUC: 0.695
+Clustering. Time: 27.7s
+Epoch: 6, Time: 1.55e+02s, Train Loss: 0.543, Validation Loss: 0.569, AUC: 0.697
+Clustering. Time: 28.8s
+Epoch: 7, Time: 1.49e+02s, Train Loss: 0.54, Validation Loss: 0.567, AUC: 0.698
+Epoch: 8, Time: 1.6e+02s, Train Loss: 0.538, Validation Loss: 0.568, AUC: 0.698
+Epoch: 9, Time: 1.6e+02s, Train Loss: 0.538, Validation Loss: 0.568, AUC: 0.698
+
+Losses: [0.579, 0.577, 0.577, 0.574, 0.572, 0.571, 0.569, 0.567, 0.568, 0.568] AUCs: [0.678, 0.684, 0.687, 0.69, 0.692, 0.6
+95, 0.697, 0.698, 0.698, 0.698]
+Overall Progress:  47%|███████████████████▎                     | 48/102 [25:53:41<22:04:23, 1471.55s/it]Running ppd=1024 n
+_chunks=1
+100%|███████████████████████████████████████████████████████████████████| 10/10 [23:03<00:00, 138.39s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 32768
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.59e+02s, Train Loss: 0.641, Validation Loss: 0.613, AUC: 0.602
+Clustering. Time: 4.29s
+Epoch: 1, Time: 1.58e+02s, Train Loss: 0.626, Validation Loss: 0.608, AUC: 0.622
+Clustering. Time: 1.72s
+Epoch: 2, Time: 1.58e+02s, Train Loss: 0.62, Validation Loss: 0.605, AUC: 0.632
+Clustering. Time: 1.9s
+Epoch: 3, Time: 1.59e+02s, Train Loss: 0.615, Validation Loss: 0.602, AUC: 0.638
+Clustering. Time: 1.91s
+Epoch: 4, Time: 1.58e+02s, Train Loss: 0.612, Validation Loss: 0.601, AUC: 0.641
+Clustering. Time: 2.06s
+Epoch: 5, Time: 1.15e+02s, Train Loss: 0.611, Validation Loss: 0.6, AUC: 0.643
+Clustering. Time: 1.91s
+Epoch: 6, Time: 1.1e+02s, Train Loss: 0.609, Validation Loss: 0.6, AUC: 0.645
+Clustering. Time: 1.86s
+Epoch: 7, Time: 1.1e+02s, Train Loss: 0.607, Validation Loss: 0.599, AUC: 0.645
+Epoch: 8, Time: 1.11e+02s, Train Loss: 0.607, Validation Loss: 0.6, AUC: 0.645
+Epoch: 9, Time: 1.08e+02s, Train Loss: 0.606, Validation Loss: 0.6, AUC: 0.645
+
+Losses: [0.613, 0.608, 0.605, 0.602, 0.601, 0.6, 0.6, 0.599, 0.6, 0.6] AUCs: [0.602, 0.622, 0.632, 0.638, 0.641, 0.643, 0.6
+45, 0.645, 0.645, 0.645]
+Overall Progress:  48%|███████████████████▋                     | 49/102 [26:16:53<21:18:45, 1447.65s/it]Running ppd=1024 n
+_chunks=2
+100%|███████████████████████████████████████████████████████████████████| 10/10 [18:58<00:00, 113.88s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 32768
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.1e+02s, Train Loss: 0.626, Validation Loss: 0.603, AUC: 0.635
+Clustering. Time: 4.03s
+Epoch: 1, Time: 1.09e+02s, Train Loss: 0.607, Validation Loss: 0.598, AUC: 0.648
+Clustering. Time: 2.11s
+Epoch: 2, Time: 1.1e+02s, Train Loss: 0.599, Validation Loss: 0.594, AUC: 0.657
+Clustering. Time: 1.98s
+Epoch: 3, Time: 1.11e+02s, Train Loss: 0.594, Validation Loss: 0.591, AUC: 0.661
+Clustering. Time: 2.03s
+Epoch: 4, Time: 1.08e+02s, Train Loss: 0.59, Validation Loss: 0.59, AUC: 0.665
+Clustering. Time: 2.48s
+Epoch: 5, Time: 1.11e+02s, Train Loss: 0.586, Validation Loss: 0.589, AUC: 0.667
+Clustering. Time: 1.97s
+Epoch: 6, Time: 1.09e+02s, Train Loss: 0.584, Validation Loss: 0.588, AUC: 0.669
+Clustering. Time: 2.0s
+Epoch: 7, Time: 1.11e+02s, Train Loss: 0.582, Validation Loss: 0.587, AUC: 0.67
+Epoch: 8, Time: 1.12e+02s, Train Loss: 0.581, Validation Loss: 0.587, AUC: 0.67
+Epoch: 9, Time: 1.11e+02s, Train Loss: 0.58, Validation Loss: 0.587, AUC: 0.67
+
+Losses: [0.603, 0.598, 0.594, 0.591, 0.59, 0.589, 0.588, 0.587, 0.587, 0.587] AUCs: [0.635, 0.648, 0.657, 0.661, 0.665, 0.6
+67, 0.669, 0.67, 0.67, 0.67]
+Overall Progress:  49%|████████████████████                     | 50/102 [26:36:00<19:36:18, 1357.28s/it]Running ppd=1024 n
+_chunks=4
+100%|███████████████████████████████████████████████████████████████████| 10/10 [19:12<00:00, 115.25s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 32768
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.12e+02s, Train Loss: 0.612, Validation Loss: 0.592, AUC: 0.658
+Clustering. Time: 5.32s
+Epoch: 1, Time: 81.6s, Train Loss: 0.588, Validation Loss: 0.587, AUC: 0.67
+Clustering. Time: 3.78s
+Epoch: 2, Time: 1.14e+02s, Train Loss: 0.581, Validation Loss: 0.584, AUC: 0.674
+Clustering. Time: 3.55s
+Epoch: 3, Time: 1.12e+02s, Train Loss: 0.575, Validation Loss: 0.583, AUC: 0.676
+Clustering. Time: 3.37s
+Epoch: 4, Time: 1.13e+02s, Train Loss: 0.571, Validation Loss: 0.582, AUC: 0.678
+Clustering. Time: 3.44s
+Epoch: 5, Time: 1.15e+02s, Train Loss: 0.568, Validation Loss: 0.581, AUC: 0.68
+Clustering. Time: 3.41s
+Epoch: 6, Time: 1.14e+02s, Train Loss: 0.565, Validation Loss: 0.579, AUC: 0.681
+Clustering. Time: 3.51s
+Epoch: 7, Time: 1.15e+02s, Train Loss: 0.562, Validation Loss: 0.579, AUC: 0.682
+Epoch: 8, Time: 1.16e+02s, Train Loss: 0.56, Validation Loss: 0.58, AUC: 0.682
+Epoch: 9, Time: 1.15e+02s, Train Loss: 0.56, Validation Loss: 0.58, AUC: 0.683
+
+Losses: [0.592, 0.587, 0.584, 0.583, 0.582, 0.581, 0.579, 0.579, 0.58, 0.58] AUCs: [0.658, 0.67, 0.674, 0.676, 0.678, 0.68,
+ 0.681, 0.682, 0.682, 0.683]
+Overall Progress:  50%|████████████████████▌                    | 51/102 [26:55:20<18:23:22, 1298.09s/it]Running ppd=1024 n
+_chunks=8
+100%|███████████████████████████████████████████████████████████████████| 10/10 [21:41<00:00, 130.17s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 32768
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.17e+02s, Train Loss: 0.602, Validation Loss: 0.584, AUC: 0.673
+Clustering. Time: 8.54s
+Epoch: 1, Time: 1.16e+02s, Train Loss: 0.572, Validation Loss: 0.581, AUC: 0.68
+Clustering. Time: 6.43s
+Epoch: 2, Time: 1.19e+02s, Train Loss: 0.563, Validation Loss: 0.579, AUC: 0.683
+Clustering. Time: 6.56s
+Epoch: 3, Time: 1.19e+02s, Train Loss: 0.557, Validation Loss: 0.577, AUC: 0.685
+Clustering. Time: 6.91s
+Epoch: 4, Time: 1.24e+02s, Train Loss: 0.552, Validation Loss: 0.576, AUC: 0.688
+Clustering. Time: 6.55s
+Epoch: 5, Time: 1.27e+02s, Train Loss: 0.547, Validation Loss: 0.575, AUC: 0.69
+Clustering. Time: 6.66s
+Epoch: 6, Time: 1.23e+02s, Train Loss: 0.543, Validation Loss: 0.574, AUC: 0.692
+Clustering. Time: 6.56s
+Epoch: 7, Time: 1.12e+02s, Train Loss: 0.54, Validation Loss: 0.572, AUC: 0.694
+Epoch: 8, Time: 1.37e+02s, Train Loss: 0.537, Validation Loss: 0.572, AUC: 0.694
+Epoch: 9, Time: 1.38e+02s, Train Loss: 0.537, Validation Loss: 0.573, AUC: 0.694
+
+Losses: [0.584, 0.581, 0.579, 0.577, 0.576, 0.575, 0.574, 0.572, 0.572, 0.573] AUCs: [0.673, 0.68, 0.683, 0.685, 0.688, 0.6
+9, 0.692, 0.694, 0.694, 0.694]
+Overall Progress:  51%|████████████████████▉                    | 52/102 [27:17:09<18:04:29, 1301.38s/it]Running ppd=1024 n
+_chunks=16
+100%|███████████████████████████████████████████████████████████████████| 10/10 [27:41<00:00, 166.13s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 32768
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.4e+02s, Train Loss: 0.595, Validation Loss: 0.578, AUC: 0.681
+Clustering. Time: 17.5s
+Epoch: 1, Time: 1.56e+02s, Train Loss: 0.558, Validation Loss: 0.576, AUC: 0.687
+Clustering. Time: 15.1s
+Epoch: 2, Time: 1.57e+02s, Train Loss: 0.547, Validation Loss: 0.573, AUC: 0.692
+Clustering. Time: 14.8s
+Epoch: 3, Time: 1.49e+02s, Train Loss: 0.539, Validation Loss: 0.57, AUC: 0.696
+Clustering. Time: 14.8s
+Epoch: 4, Time: 1.55e+02s, Train Loss: 0.533, Validation Loss: 0.567, AUC: 0.701
+Clustering. Time: 15.0s
+Epoch: 5, Time: 1.53e+02s, Train Loss: 0.527, Validation Loss: 0.565, AUC: 0.704
+Clustering. Time: 15.0s
+Epoch: 6, Time: 1.53e+02s, Train Loss: 0.523, Validation Loss: 0.563, AUC: 0.707
+Clustering. Time: 15.0s
+Epoch: 7, Time: 1.56e+02s, Train Loss: 0.519, Validation Loss: 0.561, AUC: 0.71
+Epoch: 8, Time: 1.53e+02s, Train Loss: 0.516, Validation Loss: 0.561, AUC: 0.71
+Epoch: 9, Time: 1.55e+02s, Train Loss: 0.516, Validation Loss: 0.561, AUC: 0.71
+
+Losses: [0.578, 0.576, 0.573, 0.57, 0.567, 0.565, 0.563, 0.561, 0.561, 0.561] AUCs: [0.681, 0.687, 0.692, 0.696, 0.701, 0.7
+04, 0.707, 0.71, 0.71, 0.71]
+Overall Progress:  52%|█████████████████████▎                   | 53/102 [27:44:58<19:12:52, 1411.68s/it]Running ppd=1024 n
+_chunks=32
+100%|███████████████████████████████████████████████████████████████████| 10/10 [27:12<00:00, 163.30s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 32768
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.48e+02s, Train Loss: 0.591, Validation Loss: 0.574, AUC: 0.686
+Clustering. Time: 33.0s
+Epoch: 1, Time: 1.58e+02s, Train Loss: 0.55, Validation Loss: 0.569, AUC: 0.695
+Clustering. Time: 30.4s
+Epoch: 2, Time: 1.6e+02s, Train Loss: 0.536, Validation Loss: 0.565, AUC: 0.703
+Clustering. Time: 31.2s
+Epoch: 3, Time: 90.8s, Train Loss: 0.527, Validation Loss: 0.56, AUC: 0.71
+Clustering. Time: 29.1s
+Epoch: 4, Time: 1.61e+02s, Train Loss: 0.52, Validation Loss: 0.554, AUC: 0.717
+Clustering. Time: 29.8s
+Epoch: 5, Time: 1.6e+02s, Train Loss: 0.515, Validation Loss: 0.55, AUC: 0.721
+Clustering. Time: 30.6s
+Epoch: 6, Time: 1.61e+02s, Train Loss: 0.511, Validation Loss: 0.546, AUC: 0.725
+Clustering. Time: 30.7s
+Epoch: 7, Time: 1.32e+02s, Train Loss: 0.507, Validation Loss: 0.543, AUC: 0.73
+Epoch: 8, Time: 1.12e+02s, Train Loss: 0.505, Validation Loss: 0.542, AUC: 0.731
+Epoch: 9, Time: 1.11e+02s, Train Loss: 0.505, Validation Loss: 0.543, AUC: 0.731
+
+Losses: [0.574, 0.569, 0.565, 0.56, 0.554, 0.55, 0.546, 0.543, 0.542, 0.543] AUCs: [0.686, 0.695, 0.703, 0.71, 0.717, 0.721
+, 0.725, 0.73, 0.731, 0.731]
+Overall Progress:  53%|█████████████████████▋                   | 54/102 [28:12:19<19:44:29, 1480.61s/it]Running ppd=2048 n
+_chunks=1
+100%|███████████████████████████████████████████████████████████████████| 10/10 [18:38<00:00, 111.87s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 65536
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.09e+02s, Train Loss: 0.627, Validation Loss: 0.604, AUC: 0.632
+Clustering. Time: 5.96s
+Epoch: 1, Time: 1.09e+02s, Train Loss: 0.605, Validation Loss: 0.597, AUC: 0.65
+Clustering. Time: 3.64s
+Epoch: 2, Time: 1.09e+02s, Train Loss: 0.598, Validation Loss: 0.594, AUC: 0.657
+Clustering. Time: 3.89s
+Epoch: 3, Time: 1.1e+02s, Train Loss: 0.593, Validation Loss: 0.594, AUC: 0.659
+Clustering. Time: 3.84s
+Epoch: 4, Time: 1.1e+02s, Train Loss: 0.591, Validation Loss: 0.592, AUC: 0.661
+Clustering. Time: 3.73s
+Epoch: 5, Time: 1.09e+02s, Train Loss: 0.588, Validation Loss: 0.593, AUC: 0.662
+Clustering. Time: 4.06s
+Epoch: 6, Time: 1.11e+02s, Train Loss: 0.587, Validation Loss: 0.591, AUC: 0.663
+Clustering. Time: 4.48s
+Epoch: 7, Time: 1.1e+02s, Train Loss: 0.586, Validation Loss: 0.591, AUC: 0.664
+Epoch: 8, Time: 1.11e+02s, Train Loss: 0.584, Validation Loss: 0.591, AUC: 0.664
+Epoch: 9, Time: 80.8s, Train Loss: 0.583, Validation Loss: 0.591, AUC: 0.664
+
+Losses: [0.604, 0.597, 0.594, 0.594, 0.592, 0.593, 0.591, 0.591, 0.591, 0.591] AUCs: [0.632, 0.65, 0.657, 0.659, 0.661, 0.6
+62, 0.663, 0.664, 0.664, 0.664]
+Overall Progress:  54%|██████████████████████                   | 55/102 [28:31:05<17:56:26, 1374.18s/it]Running ppd=2048 n
+_chunks=2
+100%|███████████████████████████████████████████████████████████████████| 10/10 [19:29<00:00, 116.90s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 65536
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.08e+02s, Train Loss: 0.611, Validation Loss: 0.594, AUC: 0.658
+Clustering. Time: 5.72s
+Epoch: 1, Time: 1.12e+02s, Train Loss: 0.584, Validation Loss: 0.588, AUC: 0.669
+Clustering. Time: 3.33s
+Epoch: 2, Time: 1.11e+02s, Train Loss: 0.576, Validation Loss: 0.585, AUC: 0.674
+Clustering. Time: 3.33s
+Epoch: 3, Time: 1.12e+02s, Train Loss: 0.569, Validation Loss: 0.584, AUC: 0.677
+Clustering. Time: 3.29s
+Epoch: 4, Time: 1.13e+02s, Train Loss: 0.564, Validation Loss: 0.582, AUC: 0.68
+Clustering. Time: 3.32s
+Epoch: 5, Time: 1.1e+02s, Train Loss: 0.56, Validation Loss: 0.58, AUC: 0.681
+Clustering. Time: 3.27s
+Epoch: 6, Time: 1.14e+02s, Train Loss: 0.557, Validation Loss: 0.581, AUC: 0.682
+Clustering. Time: 3.34s
+Epoch: 7, Time: 1.13e+02s, Train Loss: 0.555, Validation Loss: 0.58, AUC: 0.684
+Epoch: 8, Time: 1.15e+02s, Train Loss: 0.553, Validation Loss: 0.58, AUC: 0.684
+Epoch: 9, Time: 1.15e+02s, Train Loss: 0.552, Validation Loss: 0.581, AUC: 0.684
+
+Losses: [0.594, 0.588, 0.585, 0.584, 0.582, 0.58, 0.581, 0.58, 0.58, 0.581] AUCs: [0.658, 0.669, 0.674, 0.677, 0.68, 0.681,
+ 0.682, 0.684, 0.684, 0.684]
+Overall Progress:  55%|██████████████████████▌                  | 56/102 [28:50:41<16:48:00, 1314.79s/it]Running ppd=2048 n
+_chunks=4
+100%|███████████████████████████████████████████████████████████████████| 10/10 [17:31<00:00, 105.12s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 65536
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.15e+02s, Train Loss: 0.601, Validation Loss: 0.584, AUC: 0.672
+Clustering. Time: 7.07s
+Epoch: 1, Time: 1.16e+02s, Train Loss: 0.567, Validation Loss: 0.581, AUC: 0.679
+Clustering. Time: 4.79s
+Epoch: 2, Time: 1.14e+02s, Train Loss: 0.555, Validation Loss: 0.579, AUC: 0.684
+Clustering. Time: 4.87s
+Epoch: 3, Time: 1.19e+02s, Train Loss: 0.547, Validation Loss: 0.577, AUC: 0.688
+Clustering. Time: 4.8s
+Epoch: 4, Time: 1.18e+02s, Train Loss: 0.54, Validation Loss: 0.575, AUC: 0.692
+Clustering. Time: 6.13s
+Epoch: 5, Time: 88.9s, Train Loss: 0.534, Validation Loss: 0.573, AUC: 0.695
+Clustering. Time: 4.57s
+Epoch: 6, Time: 45.8s, Train Loss: 0.529, Validation Loss: 0.571, AUC: 0.697
+Clustering. Time: 4.51s
+Epoch: 7, Time: 87.7s, Train Loss: 0.525, Validation Loss: 0.57, AUC: 0.7
+Epoch: 8, Time: 94.7s, Train Loss: 0.523, Validation Loss: 0.57, AUC: 0.7
+Epoch: 9, Time: 97.5s, Train Loss: 0.522, Validation Loss: 0.57, AUC: 0.7
+
+Losses: [0.584, 0.581, 0.579, 0.577, 0.575, 0.573, 0.571, 0.57, 0.57, 0.57] AUCs: [0.672, 0.679, 0.684, 0.688, 0.692, 0.695
+, 0.697, 0.7, 0.7, 0.7]
+Overall Progress:  56%|██████████████████████▉                  | 57/102 [29:08:20<15:28:25, 1237.90s/it]Running ppd=2048 n
+_chunks=8
+100%|███████████████████████████████████████████████████████████████████| 10/10 [20:43<00:00, 124.40s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 65536
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 86.4s, Train Loss: 0.591, Validation Loss: 0.579, AUC: 0.681
+Clustering. Time: 11.0s
+Epoch: 1, Time: 1.08e+02s, Train Loss: 0.548, Validation Loss: 0.574, AUC: 0.69
+Clustering. Time: 8.33s
+Epoch: 2, Time: 63.8s, Train Loss: 0.534, Validation Loss: 0.57, AUC: 0.696
+Clustering. Time: 9.96s
+Epoch: 3, Time: 1.15e+02s, Train Loss: 0.523, Validation Loss: 0.565, AUC: 0.704
+Clustering. Time: 8.28s
+Epoch: 4, Time: 1.11e+02s, Train Loss: 0.514, Validation Loss: 0.56, AUC: 0.711
+Clustering. Time: 8.41s
+Epoch: 5, Time: 1.21e+02s, Train Loss: 0.506, Validation Loss: 0.557, AUC: 0.716
+Clustering. Time: 8.3s
+Epoch: 6, Time: 1.49e+02s, Train Loss: 0.5, Validation Loss: 0.553, AUC: 0.721
+Clustering. Time: 8.36s
+Epoch: 7, Time: 1.45e+02s, Train Loss: 0.495, Validation Loss: 0.55, AUC: 0.725
+Epoch: 8, Time: 1.25e+02s, Train Loss: 0.492, Validation Loss: 0.55, AUC: 0.725
+Epoch: 9, Time: 1.32e+02s, Train Loss: 0.491, Validation Loss: 0.551, AUC: 0.725
+
+Losses: [0.579, 0.574, 0.57, 0.565, 0.56, 0.557, 0.553, 0.55, 0.55, 0.551] AUCs: [0.681, 0.69, 0.696, 0.704, 0.711, 0.716,
+0.721, 0.725, 0.725, 0.725]
+Overall Progress:  57%|███████████████████████▎                 | 58/102 [29:29:10<15:10:34, 1241.70s/it]Running ppd=2048 n
+_chunks=16
+100%|███████████████████████████████████████████████████████████████████| 10/10 [19:30<00:00, 117.08s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 65536
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.42e+02s, Train Loss: 0.587, Validation Loss: 0.572, AUC: 0.69
+Clustering. Time: 21.4s
+Epoch: 1, Time: 1.48e+02s, Train Loss: 0.534, Validation Loss: 0.562, AUC: 0.704
+Clustering. Time: 18.3s
+Epoch: 2, Time: 92.6s, Train Loss: 0.516, Validation Loss: 0.555, AUC: 0.716
+Clustering. Time: 18.0s
+Epoch: 3, Time: 91.9s, Train Loss: 0.504, Validation Loss: 0.546, AUC: 0.726
+Clustering. Time: 18.5s
+Epoch: 4, Time: 88.6s, Train Loss: 0.495, Validation Loss: 0.54, AUC: 0.734
+Clustering. Time: 18.0s
+Epoch: 5, Time: 62.8s, Train Loss: 0.489, Validation Loss: 0.534, AUC: 0.741
+Clustering. Time: 18.0s
+Epoch: 6, Time: 99.8s, Train Loss: 0.483, Validation Loss: 0.529, AUC: 0.747
+Clustering. Time: 20.7s
+Epoch: 7, Time: 95.3s, Train Loss: 0.478, Validation Loss: 0.525, AUC: 0.752
+Epoch: 8, Time: 1e+02s, Train Loss: 0.476, Validation Loss: 0.524, AUC: 0.753
+Epoch: 9, Time: 99.5s, Train Loss: 0.475, Validation Loss: 0.524, AUC: 0.753
+
+Losses: [0.572, 0.562, 0.555, 0.546, 0.54, 0.534, 0.529, 0.525, 0.524, 0.524] AUCs: [0.69, 0.704, 0.716, 0.726, 0.734, 0.74
+1, 0.747, 0.752, 0.753, 0.753]
+Overall Progress:  58%|███████████████████████▋                 | 59/102 [29:48:49<14:36:22, 1222.84s/it]Running ppd=2048 n
+_chunks=32
+100%|███████████████████████████████████████████████████████████████████| 10/10 [26:05<00:00, 156.57s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 65536
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 97.2s, Train Loss: 0.585, Validation Loss: 0.569, AUC: 0.694
+Clustering. Time: 38.7s
+Epoch: 1, Time: 1.01e+02s, Train Loss: 0.526, Validation Loss: 0.555, AUC: 0.714
+Clustering. Time: 36.5s
+Epoch: 2, Time: 1.01e+02s, Train Loss: 0.508, Validation Loss: 0.542, AUC: 0.729
+Clustering. Time: 37.0s
+Epoch: 3, Time: 1.25e+02s, Train Loss: 0.497, Validation Loss: 0.533, AUC: 0.741
+Clustering. Time: 37.3s
+Epoch: 4, Time: 1.5e+02s, Train Loss: 0.489, Validation Loss: 0.525, AUC: 0.75
+Clustering. Time: 37.1s
+Epoch: 5, Time: 1.5e+02s, Train Loss: 0.483, Validation Loss: 0.519, AUC: 0.757
+Clustering. Time: 37.3s
+Epoch: 6, Time: 1.5e+02s, Train Loss: 0.479, Validation Loss: 0.514, AUC: 0.763
+Clustering. Time: 38.0s
+Epoch: 7, Time: 1.33e+02s, Train Loss: 0.475, Validation Loss: 0.51, AUC: 0.768
+Epoch: 8, Time: 1.36e+02s, Train Loss: 0.474, Validation Loss: 0.509, AUC: 0.769
+Epoch: 9, Time: 1.37e+02s, Train Loss: 0.473, Validation Loss: 0.509, AUC: 0.769
+
+Losses: [0.569, 0.555, 0.542, 0.533, 0.525, 0.519, 0.514, 0.51, 0.509, 0.509] AUCs: [0.694, 0.714, 0.729, 0.741, 0.75, 0.75
+7, 0.763, 0.768, 0.769, 0.769]
+Overall Progress:  59%|████████████████████████                 | 60/102 [30:15:03<15:29:35, 1327.99s/it]Running ppd=4096 n
+_chunks=1
+  0%|                                                                             | 0/10 [00:00<?, ?it/sWARNING clustering
+56062 points to 2048 centroids: please provide at least 79872 training points
+ 10%|██████▊                                                             | 1/10 [02:23<21:35, 143.98s/itWARNING clustering
+56062 points to 2048 centroids: please provide at least 79872 training points
+ 20%|█████████████▌                                                      | 2/10 [04:48<19:16, 144.55s/itWARNING clustering
+56062 points to 2048 centroids: please provide at least 79872 training points
+ 30%|████████████████████▍                                               | 3/10 [07:00<16:10, 138.65s/itWARNING clustering
+56062 points to 2048 centroids: please provide at least 79872 training points
+ 40%|███████████████████████████▏                                        | 4/10 [09:12<13:35, 135.92s/itWARNING clustering
+56062 points to 2048 centroids: please provide at least 79872 training points
+ 50%|██████████████████████████████████                                  | 5/10 [11:18<11:02, 132.52s/itWARNING clustering
+56062 points to 2048 centroids: please provide at least 79872 training points
+ 60%|████████████████████████████████████████▊                           | 6/10 [13:23<08:39, 129.94s/itWARNING clustering
+56062 points to 2048 centroids: please provide at least 79872 training points
+100%|███████████████████████████████████████████████████████████████████| 10/10 [21:08<00:00, 126.85s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 131072
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.32e+02s, Train Loss: 0.612, Validation Loss: 0.594, AUC: 0.657
+Clustering. Time: 9.32s
+Epoch: 1, Time: 1.36e+02s, Train Loss: 0.583, Validation Loss: 0.588, AUC: 0.669
+Clustering. Time: 6.8s
+Epoch: 2, Time: 1.22e+02s, Train Loss: 0.574, Validation Loss: 0.586, AUC: 0.673
+Clustering. Time: 7.1s
+Epoch: 3, Time: 1.22e+02s, Train Loss: 0.567, Validation Loss: 0.585, AUC: 0.676
+Clustering. Time: 7.94s
+Epoch: 4, Time: 1.17e+02s, Train Loss: 0.563, Validation Loss: 0.583, AUC: 0.679
+Clustering. Time: 7.69s
+Epoch: 5, Time: 1.16e+02s, Train Loss: 0.56, Validation Loss: 0.583, AUC: 0.68
+Clustering. Time: 7.06s
+Epoch: 6, Time: 1.14e+02s, Train Loss: 0.559, Validation Loss: 0.582, AUC: 0.681
+Clustering. Time: 6.03s
+Epoch: 7, Time: 1.12e+02s, Train Loss: 0.557, Validation Loss: 0.583, AUC: 0.68
+Epoch: 8, Time: 1.13e+02s, Train Loss: 0.553, Validation Loss: 0.584, AUC: 0.68
+Epoch: 9, Time: 1.11e+02s, Train Loss: 0.552, Validation Loss: 0.585, AUC: 0.679
+
+Losses: [0.594, 0.588, 0.586, 0.585, 0.583, 0.583, 0.582, 0.583, 0.584, 0.585] AUCs: [0.657, 0.669, 0.673, 0.676, 0.679, 0.
+68, 0.681, 0.68, 0.68, 0.679]
+Overall Progress:  60%|████████████████████████▌                | 61/102 [30:36:19<14:56:53, 1312.53s/it]Running ppd=4096 n
+_chunks=2
+  0%|                                                                             | 0/10 [00:00<?, ?it/sWARNING clustering
+56062 points to 2048 centroids: please provide at least 79872 training points
+WARNING clustering 56062 points to 2048 centroids: please provide at least 79872 training points
+ 10%|██████▊                                                             | 1/10 [02:01<18:16, 121.86s/itWARNING clustering
+56062 points to 2048 centroids: please provide at least 79872 training points
+WARNING clustering 56062 points to 2048 centroids: please provide at least 79872 training points
+ 20%|█████████████▌                                                      | 2/10 [03:31<13:44, 103.09s/itWARNING clustering
+56062 points to 2048 centroids: please provide at least 79872 training points
+WARNING clustering 56062 points to 2048 centroids: please provide at least 79872 training points
+ 30%|████████████████████▍                                               | 3/10 [05:30<12:51, 110.17s/itWARNING clustering
+56062 points to 2048 centroids: please provide at least 79872 training points
+WARNING clustering 56062 points to 2048 centroids: please provide at least 79872 training points
+ 40%|███████████████████████████▏                                        | 4/10 [07:30<11:25, 114.19s/itWARNING clustering
+56062 points to 2048 centroids: please provide at least 79872 training points
+WARNING clustering 56062 points to 2048 centroids: please provide at least 79872 training points
+ 50%|██████████████████████████████████                                  | 5/10 [09:31<09:42, 116.56s/itWARNING clustering
+56062 points to 2048 centroids: please provide at least 79872 training points
+WARNING clustering 56062 points to 2048 centroids: please provide at least 79872 training points
+ 60%|████████████████████████████████████████▊                           | 6/10 [11:33<07:53, 118.49s/itWARNING clustering
+56062 points to 2048 centroids: please provide at least 79872 training points
+WARNING clustering 56062 points to 2048 centroids: please provide at least 79872 training points
+100%|███████████████████████████████████████████████████████████████████| 10/10 [19:04<00:00, 114.48s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 131072
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.13e+02s, Train Loss: 0.601, Validation Loss: 0.586, AUC: 0.672
+Clustering. Time: 6.94s
+Epoch: 1, Time: 83.1s, Train Loss: 0.564, Validation Loss: 0.581, AUC: 0.681
+Clustering. Time: 4.79s
+Epoch: 2, Time: 1.12e+02s, Train Loss: 0.552, Validation Loss: 0.578, AUC: 0.686
+Clustering. Time: 4.78s
+Epoch: 3, Time: 1.14e+02s, Train Loss: 0.543, Validation Loss: 0.575, AUC: 0.691
+Clustering. Time: 4.72s
+Epoch: 4, Time: 1.13e+02s, Train Loss: 0.536, Validation Loss: 0.573, AUC: 0.694
+Clustering. Time: 5.68s
+Epoch: 5, Time: 1.15e+02s, Train Loss: 0.531, Validation Loss: 0.572, AUC: 0.697
+Clustering. Time: 5.32s
+Epoch: 6, Time: 1.13e+02s, Train Loss: 0.528, Validation Loss: 0.571, AUC: 0.698
+Clustering. Time: 6.12s
+Epoch: 7, Time: 1.04e+02s, Train Loss: 0.525, Validation Loss: 0.57, AUC: 0.7
+Epoch: 8, Time: 1.04e+02s, Train Loss: 0.521, Validation Loss: 0.57, AUC: 0.701
+Epoch: 9, Time: 1.16e+02s, Train Loss: 0.519, Validation Loss: 0.571, AUC: 0.7
+
+Losses: [0.586, 0.581, 0.578, 0.575, 0.573, 0.572, 0.571, 0.57, 0.57, 0.571] AUCs: [0.672, 0.681, 0.686, 0.691, 0.694, 0.69
+7, 0.698, 0.7, 0.701, 0.7]
+Overall Progress:  61%|████████████████████████▉                | 62/102 [30:55:31<14:02:58, 1264.46s/it]Running ppd=4096 n
+_chunks=4
+  0%|                                                                             | 0/10 [00:00<?, ?it/sWARNING clustering
+56062 points to 2048 centroids: please provide at least 79872 training points
+WARNING clustering 56062 points to 2048 centroids: please provide at least 79872 training points
+WARNING clustering 56062 points to 2048 centroids: please provide at least 79872 training points
+WARNING clustering 56062 points to 2048 centroids: please provide at least 79872 training points
+ 10%|██████▊                                                             | 1/10 [02:07<19:06, 127.44s/itWARNING clustering
+56062 points to 2048 centroids: please provide at least 79872 training points
+WARNING clustering 56062 points to 2048 centroids: please provide at least 79872 training points
+WARNING clustering 56062 points to 2048 centroids: please provide at least 79872 training points
+WARNING clustering 56062 points to 2048 centroids: please provide at least 79872 training points
+ 20%|█████████████▌                                                      | 2/10 [04:15<17:03, 127.97s/itWARNING clustering
+56062 points to 2048 centroids: please provide at least 79872 training points
+WARNING clustering 56062 points to 2048 centroids: please provide at least 79872 training points
+WARNING clustering 56062 points to 2048 centroids: please provide at least 79872 training points
+WARNING clustering 56062 points to 2048 centroids: please provide at least 79872 training points
+ 30%|████████████████████▍                                               | 3/10 [06:22<14:50, 127.26s/itWARNING clustering
+56062 points to 2048 centroids: please provide at least 79872 training points
+WARNING clustering 56062 points to 2048 centroids: please provide at least 79872 training points
+WARNING clustering 56062 points to 2048 centroids: please provide at least 79872 training points
+WARNING clustering 56062 points to 2048 centroids: please provide at least 79872 training points
+ 40%|███████████████████████████▏                                        | 4/10 [08:36<12:59, 129.85s/itWARNING clustering
+56062 points to 2048 centroids: please provide at least 79872 training points
+WARNING clustering 56062 points to 2048 centroids: please provide at least 79872 training points
+WARNING clustering 56062 points to 2048 centroids: please provide at least 79872 training points
+WARNING clustering 56062 points to 2048 centroids: please provide at least 79872 training points
+ 50%|██████████████████████████████████                                  | 5/10 [11:06<11:26, 137.22s/itWARNING clustering
+56062 points to 2048 centroids: please provide at least 79872 training points
+WARNING clustering 56062 points to 2048 centroids: please provide at least 79872 training points
+WARNING clustering 56062 points to 2048 centroids: please provide at least 79872 training points
+WARNING clustering 56062 points to 2048 centroids: please provide at least 79872 training points
+ 60%|████████████████████████████████████████▊                           | 6/10 [13:44<09:36, 144.21s/itWARNING clustering
+56062 points to 2048 centroids: please provide at least 79872 training points
+WARNING clustering 56062 points to 2048 centroids: please provide at least 79872 training points
+WARNING clustering 56062 points to 2048 centroids: please provide at least 79872 training points
+WARNING clustering 56062 points to 2048 centroids: please provide at least 79872 training points
+100%|███████████████████████████████████████████████████████████████████| 10/10 [23:33<00:00, 141.34s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 131072
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.16e+02s, Train Loss: 0.59, Validation Loss: 0.579, AUC: 0.683
+Clustering. Time: 8.8s
+Epoch: 1, Time: 1.2e+02s, Train Loss: 0.545, Validation Loss: 0.573, AUC: 0.692
+Clustering. Time: 6.41s
+Epoch: 2, Time: 1.18e+02s, Train Loss: 0.53, Validation Loss: 0.568, AUC: 0.701
+Clustering. Time: 6.13s
+Epoch: 3, Time: 1.25e+02s, Train Loss: 0.518, Validation Loss: 0.563, AUC: 0.709
+Clustering. Time: 6.6s
+Epoch: 4, Time: 1.41e+02s, Train Loss: 0.509, Validation Loss: 0.558, AUC: 0.715
+Clustering. Time: 6.23s
+Epoch: 5, Time: 1.49e+02s, Train Loss: 0.502, Validation Loss: 0.555, AUC: 0.72
+Clustering. Time: 6.16s
+Epoch: 6, Time: 1.49e+02s, Train Loss: 0.498, Validation Loss: 0.553, AUC: 0.722
+Clustering. Time: 6.11s
+Epoch: 7, Time: 1.49e+02s, Train Loss: 0.494, Validation Loss: 0.551, AUC: 0.725
+Epoch: 8, Time: 1.31e+02s, Train Loss: 0.49, Validation Loss: 0.552, AUC: 0.725
+Epoch: 9, Time: 1.45e+02s, Train Loss: 0.488, Validation Loss: 0.552, AUC: 0.726
+
+Losses: [0.579, 0.573, 0.568, 0.563, 0.558, 0.555, 0.553, 0.551, 0.552, 0.552] AUCs: [0.683, 0.692, 0.701, 0.709, 0.715, 0.
+72, 0.722, 0.725, 0.725, 0.726]
+Overall Progress:  62%|█████████████████████████▎               | 63/102 [31:19:12<14:12:23, 1311.36s/it]Running ppd=4096 n
+_chunks=8
+100%|███████████████████████████████████████████████████████████████████| 10/10 [23:46<00:00, 142.68s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 131072
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.55e+02s, Train Loss: 0.585, Validation Loss: 0.57, AUC: 0.693
+Clustering. Time: 15.1s
+Epoch: 1, Time: 1.43e+02s, Train Loss: 0.527, Validation Loss: 0.561, AUC: 0.708
+Clustering. Time: 10.2s
+Epoch: 2, Time: 1.44e+02s, Train Loss: 0.508, Validation Loss: 0.551, AUC: 0.72
+Clustering. Time: 10.8s
+Epoch: 3, Time: 1.46e+02s, Train Loss: 0.494, Validation Loss: 0.543, AUC: 0.731
+Clustering. Time: 10.3s
+Epoch: 4, Time: 1.32e+02s, Train Loss: 0.483, Validation Loss: 0.536, AUC: 0.74
+Clustering. Time: 10.2s
+Epoch: 5, Time: 1.31e+02s, Train Loss: 0.475, Validation Loss: 0.53, AUC: 0.747
+Clustering. Time: 10.5s
+Epoch: 6, Time: 1.24e+02s, Train Loss: 0.469, Validation Loss: 0.526, AUC: 0.753
+Clustering. Time: 10.6s
+Epoch: 7, Time: 1.25e+02s, Train Loss: 0.463, Validation Loss: 0.521, AUC: 0.758
+Epoch: 8, Time: 98.8s, Train Loss: 0.459, Validation Loss: 0.521, AUC: 0.759
+Epoch: 9, Time: 1.25e+02s, Train Loss: 0.458, Validation Loss: 0.521, AUC: 0.759
+
+Losses: [0.57, 0.561, 0.551, 0.543, 0.536, 0.53, 0.526, 0.521, 0.521, 0.521] AUCs: [0.693, 0.708, 0.72, 0.731, 0.74, 0.747,
+ 0.753, 0.758, 0.759, 0.759]
+Overall Progress:  63%|█████████████████████████▋               | 64/102 [31:43:07<14:14:02, 1348.49s/it]Running ppd=4096 n
+_chunks=16
+100%|███████████████████████████████████████████████████████████████████| 10/10 [23:24<00:00, 140.40s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 131072
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.25e+02s, Train Loss: 0.578, Validation Loss: 0.561, AUC: 0.704
+Clustering. Time: 22.9s
+Epoch: 1, Time: 1.23e+02s, Train Loss: 0.513, Validation Loss: 0.545, AUC: 0.726
+Clustering. Time: 20.8s
+Epoch: 2, Time: 1.24e+02s, Train Loss: 0.494, Validation Loss: 0.532, AUC: 0.742
+Clustering. Time: 21.5s
+Epoch: 3, Time: 1.23e+02s, Train Loss: 0.482, Validation Loss: 0.522, AUC: 0.754
+Clustering. Time: 21.2s
+Epoch: 4, Time: 1.26e+02s, Train Loss: 0.473, Validation Loss: 0.514, AUC: 0.763
+Clustering. Time: 21.0s
+Epoch: 5, Time: 1.26e+02s, Train Loss: 0.466, Validation Loss: 0.508, AUC: 0.77
+Clustering. Time: 22.1s
+Epoch: 6, Time: 1.28e+02s, Train Loss: 0.46, Validation Loss: 0.504, AUC: 0.775
+Clustering. Time: 20.5s
+Epoch: 7, Time: 1.16e+02s, Train Loss: 0.455, Validation Loss: 0.5, AUC: 0.78
+Epoch: 8, Time: 1.12e+02s, Train Loss: 0.452, Validation Loss: 0.499, AUC: 0.781
+Epoch: 9, Time: 1.31e+02s, Train Loss: 0.451, Validation Loss: 0.499, AUC: 0.781
+
+Losses: [0.561, 0.545, 0.532, 0.522, 0.514, 0.508, 0.504, 0.5, 0.499, 0.499] AUCs: [0.704, 0.726, 0.742, 0.754, 0.763, 0.77
+, 0.775, 0.78, 0.781, 0.781]
+Overall Progress:  64%|██████████████████████████▏              | 65/102 [32:06:39<14:03:16, 1367.49s/it]Running ppd=4096 n
+_chunks=32
+100%|███████████████████████████████████████████████████████████████████| 10/10 [31:07<00:00, 186.75s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 131072
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.33e+02s, Train Loss: 0.575, Validation Loss: 0.556, AUC: 0.71
+Clustering. Time: 44.1s
+Epoch: 1, Time: 1.35e+02s, Train Loss: 0.509, Validation Loss: 0.536, AUC: 0.736
+Clustering. Time: 40.6s
+Epoch: 2, Time: 1.36e+02s, Train Loss: 0.491, Validation Loss: 0.523, AUC: 0.753
+Clustering. Time: 41.3s
+Epoch: 3, Time: 1.43e+02s, Train Loss: 0.481, Validation Loss: 0.513, AUC: 0.765
+Clustering. Time: 42.0s
+Epoch: 4, Time: 1.56e+02s, Train Loss: 0.474, Validation Loss: 0.506, AUC: 0.772
+Clustering. Time: 42.0s
+Epoch: 5, Time: 1.73e+02s, Train Loss: 0.468, Validation Loss: 0.501, AUC: 0.778
+Clustering. Time: 41.8s
+Epoch: 6, Time: 1.66e+02s, Train Loss: 0.463, Validation Loss: 0.497, AUC: 0.782
+Clustering. Time: 40.9s
+Epoch: 7, Time: 1.71e+02s, Train Loss: 0.459, Validation Loss: 0.494, AUC: 0.785
+Epoch: 8, Time: 1.72e+02s, Train Loss: 0.457, Validation Loss: 0.494, AUC: 0.786
+Epoch: 9, Time: 1.63e+02s, Train Loss: 0.456, Validation Loss: 0.495, AUC: 0.786
+
+Losses: [0.556, 0.536, 0.523, 0.513, 0.506, 0.501, 0.497, 0.494, 0.494, 0.495] AUCs: [0.71, 0.736, 0.753, 0.765, 0.772, 0.7
+78, 0.782, 0.785, 0.786, 0.786]
+Overall Progress:  65%|██████████████████████████▌              | 66/102 [32:37:55<15:12:02, 1520.07s/it]Running ppd=8192 n
+_chunks=1
+100%|███████████████████████████████████████████████████████████████████| 10/10 [23:25<00:00, 140.55s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 262144
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.6e+02s, Train Loss: 0.601, Validation Loss: 0.585, AUC: 0.674
+Clustering. Time: 15.5s
+Epoch: 1, Time: 1.59e+02s, Train Loss: 0.559, Validation Loss: 0.579, AUC: 0.685
+Clustering. Time: 13.8s
+Epoch: 2, Time: 1.58e+02s, Train Loss: 0.547, Validation Loss: 0.577, AUC: 0.69
+Clustering. Time: 15.0s
+Epoch: 3, Time: 1.62e+02s, Train Loss: 0.539, Validation Loss: 0.575, AUC: 0.693
+Clustering. Time: 15.9s
+Epoch: 4, Time: 1.52e+02s, Train Loss: 0.535, Validation Loss: 0.574, AUC: 0.695
+Clustering. Time: 17.6s
+Epoch: 5, Time: 1.45e+02s, Train Loss: 0.532, Validation Loss: 0.574, AUC: 0.696
+Clustering. Time: 15.2s
+Epoch: 6, Time: 1.02e+02s, Train Loss: 0.53, Validation Loss: 0.573, AUC: 0.697
+Clustering. Time: 14.0s
+Epoch: 7, Time: 67.6s, Train Loss: 0.529, Validation Loss: 0.573, AUC: 0.698
+Epoch: 8, Time: 94.3s, Train Loss: 0.522, Validation Loss: 0.574, AUC: 0.698
+Epoch: 9, Time: 75.4s, Train Loss: 0.519, Validation Loss: 0.575, AUC: 0.698
+
+Losses: [0.585, 0.579, 0.577, 0.575, 0.574, 0.574, 0.573, 0.573, 0.574, 0.575] AUCs: [0.674, 0.685, 0.69, 0.693, 0.695, 0.6
+96, 0.697, 0.698, 0.698, 0.698]
+Overall Progress:  66%|██████████████████████████▉              | 67/102 [33:01:29<14:28:03, 1488.11s/it]Running ppd=8192 n
+_chunks=2
+100%|████████████████████████████████████████████████████████████████████| 10/10 [12:45<00:00, 76.54s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 262144
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 85.5s, Train Loss: 0.589, Validation Loss: 0.578, AUC: 0.684
+Clustering. Time: 15.2s
+Epoch: 1, Time: 69.9s, Train Loss: 0.54, Validation Loss: 0.572, AUC: 0.696
+Clustering. Time: 10.6s
+Epoch: 2, Time: 71.5s, Train Loss: 0.524, Validation Loss: 0.565, AUC: 0.705
+Clustering. Time: 9.34s
+Epoch: 3, Time: 70.7s, Train Loss: 0.513, Validation Loss: 0.561, AUC: 0.713
+Clustering. Time: 13.2s
+Epoch: 4, Time: 69.1s, Train Loss: 0.505, Validation Loss: 0.558, AUC: 0.717
+Clustering. Time: 8.82s
+Epoch: 5, Time: 64.1s, Train Loss: 0.501, Validation Loss: 0.556, AUC: 0.72
+Clustering. Time: 10.0s
+Epoch: 6, Time: 55.6s, Train Loss: 0.498, Validation Loss: 0.555, AUC: 0.721
+Clustering. Time: 9.59s
+Epoch: 7, Time: 62.1s, Train Loss: 0.496, Validation Loss: 0.555, AUC: 0.722
+Epoch: 8, Time: 50.8s, Train Loss: 0.489, Validation Loss: 0.556, AUC: 0.723
+Epoch: 9, Time: 76.7s, Train Loss: 0.486, Validation Loss: 0.556, AUC: 0.723
+
+Losses: [0.578, 0.572, 0.565, 0.561, 0.558, 0.556, 0.555, 0.555, 0.556, 0.556] AUCs: [0.684, 0.696, 0.705, 0.713, 0.717, 0.
+72, 0.721, 0.722, 0.723, 0.723]
+Overall Progress:  67%|███████████████████████████▎             | 68/102 [33:14:22<12:01:39, 1273.53s/it]Running ppd=8192 n
+_chunks=4
+100%|████████████████████████████████████████████████████████████████████| 10/10 [14:18<00:00, 85.84s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 262144
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 64.2s, Train Loss: 0.582, Validation Loss: 0.569, AUC: 0.696
+Clustering. Time: 11.4s
+Epoch: 1, Time: 70.7s, Train Loss: 0.52, Validation Loss: 0.558, AUC: 0.713
+Clustering. Time: 9.42s
+Epoch: 2, Time: 75.2s, Train Loss: 0.5, Validation Loss: 0.547, AUC: 0.728
+Clustering. Time: 15.1s
+Epoch: 3, Time: 74.1s, Train Loss: 0.487, Validation Loss: 0.538, AUC: 0.739
+Clustering. Time: 26.1s
+Epoch: 4, Time: 68.4s, Train Loss: 0.478, Validation Loss: 0.533, AUC: 0.745
+Clustering. Time: 12.4s
+Epoch: 5, Time: 69.7s, Train Loss: 0.472, Validation Loss: 0.529, AUC: 0.75
+Clustering. Time: 21.3s
+Epoch: 6, Time: 70.1s, Train Loss: 0.468, Validation Loss: 0.527, AUC: 0.753
+Clustering. Time: 18.2s
+Epoch: 7, Time: 57.2s, Train Loss: 0.465, Validation Loss: 0.526, AUC: 0.755
+Epoch: 8, Time: 90.3s, Train Loss: 0.459, Validation Loss: 0.525, AUC: 0.756
+Epoch: 9, Time: 93.6s, Train Loss: 0.456, Validation Loss: 0.526, AUC: 0.756
+
+Losses: [0.569, 0.558, 0.547, 0.538, 0.533, 0.529, 0.527, 0.526, 0.525, 0.526] AUCs: [0.696, 0.713, 0.728, 0.739, 0.745, 0.
+75, 0.753, 0.755, 0.756, 0.756]
+Overall Progress:  68%|███████████████████████████▋             | 69/102 [33:28:48<10:33:13, 1151.32s/it]Running ppd=8192 n
+_chunks=8
+100%|███████████████████████████████████████████████████████████████████| 10/10 [25:38<00:00, 153.87s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 262144
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 98.6s, Train Loss: 0.575, Validation Loss: 0.558, AUC: 0.708
+Clustering. Time: 39.4s
+Epoch: 1, Time: 92.4s, Train Loss: 0.505, Validation Loss: 0.54, AUC: 0.733
+Clustering. Time: 26.9s
+Epoch: 2, Time: 1.33e+02s, Train Loss: 0.484, Validation Loss: 0.525, AUC: 0.75
+Clustering. Time: 14.1s
+Epoch: 3, Time: 1.4e+02s, Train Loss: 0.469, Validation Loss: 0.514, AUC: 0.763
+Clustering. Time: 30.9s
+Epoch: 4, Time: 1.45e+02s, Train Loss: 0.458, Validation Loss: 0.507, AUC: 0.771
+Clustering. Time: 22.2s
+Epoch: 5, Time: 1.44e+02s, Train Loss: 0.45, Validation Loss: 0.502, AUC: 0.778
+Clustering. Time: 15.6s
+Epoch: 6, Time: 1.38e+02s, Train Loss: 0.443, Validation Loss: 0.499, AUC: 0.782
+Clustering. Time: 13.9s
+Epoch: 7, Time: 1.53e+02s, Train Loss: 0.438, Validation Loss: 0.496, AUC: 0.785
+Epoch: 8, Time: 1.52e+02s, Train Loss: 0.433, Validation Loss: 0.496, AUC: 0.786
+Epoch: 9, Time: 1.56e+02s, Train Loss: 0.432, Validation Loss: 0.496, AUC: 0.787
+
+Losses: [0.558, 0.54, 0.525, 0.514, 0.507, 0.502, 0.499, 0.496, 0.496, 0.496] AUCs: [0.708, 0.733, 0.75, 0.763, 0.771, 0.77
+8, 0.782, 0.785, 0.786, 0.787]
+Overall Progress:  69%|████████████████████████████▏            | 70/102 [33:54:40<11:18:09, 1271.55s/it]Running ppd=8192 n
+_chunks=16
+100%|███████████████████████████████████████████████████████████████████| 10/10 [27:33<00:00, 165.37s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 262144
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.36e+02s, Train Loss: 0.572, Validation Loss: 0.548, AUC: 0.721
+Clustering. Time: 28.7s
+Epoch: 1, Time: 1.41e+02s, Train Loss: 0.495, Validation Loss: 0.524, AUC: 0.751
+Clustering. Time: 75.1s
+Epoch: 2, Time: 1.39e+02s, Train Loss: 0.475, Validation Loss: 0.509, AUC: 0.768
+Clustering. Time: 46.4s
+Epoch: 3, Time: 1.41e+02s, Train Loss: 0.463, Validation Loss: 0.5, AUC: 0.779
+Clustering. Time: 27.6s
+Epoch: 4, Time: 1.37e+02s, Train Loss: 0.453, Validation Loss: 0.494, AUC: 0.786
+Clustering. Time: 36.3s
+Epoch: 5, Time: 1.44e+02s, Train Loss: 0.446, Validation Loss: 0.49, AUC: 0.79
+Clustering. Time: 38.2s
+Epoch: 6, Time: 1.43e+02s, Train Loss: 0.44, Validation Loss: 0.488, AUC: 0.794
+Clustering. Time: 25.7s
+Epoch: 7, Time: 1.19e+02s, Train Loss: 0.435, Validation Loss: 0.486, AUC: 0.796
+Epoch: 8, Time: 1.29e+02s, Train Loss: 0.431, Validation Loss: 0.486, AUC: 0.797
+Epoch: 9, Time: 1.24e+02s, Train Loss: 0.43, Validation Loss: 0.486, AUC: 0.797
+
+Losses: [0.548, 0.524, 0.509, 0.5, 0.494, 0.49, 0.488, 0.486, 0.486, 0.486] AUCs: [0.721, 0.751, 0.768, 0.779, 0.786, 0.79,
+ 0.794, 0.796, 0.797, 0.797]
+Overall Progress:  70%|████████████████████████████▌            | 71/102 [34:22:25<11:57:57, 1389.60s/it]Running ppd=8192 n
+_chunks=32
+100%|███████████████████████████████████████████████████████████████████| 10/10 [26:29<00:00, 159.00s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 262144
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.23e+02s, Train Loss: 0.567, Validation Loss: 0.54, AUC: 0.73
+Clustering. Time: 1.34e+02s
+Epoch: 1, Time: 1.22e+02s, Train Loss: 0.492, Validation Loss: 0.516, AUC: 0.759
+Clustering. Time: 63.1s
+Epoch: 2, Time: 1.05e+02s, Train Loss: 0.475, Validation Loss: 0.503, AUC: 0.775
+Clustering. Time: 63.6s
+Epoch: 3, Time: 1.04e+02s, Train Loss: 0.465, Validation Loss: 0.495, AUC: 0.784
+Clustering. Time: 61.8s
+Epoch: 4, Time: 1.03e+02s, Train Loss: 0.457, Validation Loss: 0.491, AUC: 0.789
+Clustering. Time: 58.1s
+Epoch: 5, Time: 1.05e+02s, Train Loss: 0.45, Validation Loss: 0.488, AUC: 0.792
+Clustering. Time: 59.2s
+Epoch: 6, Time: 1.01e+02s, Train Loss: 0.444, Validation Loss: 0.486, AUC: 0.795
+Clustering. Time: 58.6s
+Epoch: 7, Time: 1.05e+02s, Train Loss: 0.439, Validation Loss: 0.485, AUC: 0.797
+Epoch: 8, Time: 1e+02s, Train Loss: 0.435, Validation Loss: 0.486, AUC: 0.797
+Epoch: 9, Time: 1.05e+02s, Train Loss: 0.434, Validation Loss: 0.486, AUC: 0.797
+
+Losses: [0.54, 0.516, 0.503, 0.495, 0.491, 0.488, 0.486, 0.485, 0.486, 0.486] AUCs: [0.73, 0.759, 0.775, 0.784, 0.789, 0.79
+2, 0.795, 0.797, 0.797, 0.797]
+Overall Progress:  71%|████████████████████████████▉            | 72/102 [34:49:11<12:07:17, 1454.57s/it]Running ppd=16384
+n_chunks=1
+100%|███████████████████████████████████████████████████████████████████| 10/10 [20:52<00:00, 125.30s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 524288
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 95.5s, Train Loss: 0.59, Validation Loss: 0.578, AUC: 0.686
+Clustering. Time: 28.3s
+Epoch: 1, Time: 1.05e+02s, Train Loss: 0.535, Validation Loss: 0.569, AUC: 0.7
+Clustering. Time: 26.9s
+Epoch: 2, Time: 1.01e+02s, Train Loss: 0.52, Validation Loss: 0.564, AUC: 0.709
+Clustering. Time: 24.7s
+Epoch: 3, Time: 1.07e+02s, Train Loss: 0.511, Validation Loss: 0.56, AUC: 0.714
+Clustering. Time: 25.1s
+Epoch: 4, Time: 81.0s, Train Loss: 0.506, Validation Loss: 0.559, AUC: 0.717
+Clustering. Time: 29.1s
+Epoch: 5, Time: 1.11e+02s, Train Loss: 0.502, Validation Loss: 0.559, AUC: 0.718
+Clustering. Time: 29.9s
+Epoch: 6, Time: 1.09e+02s, Train Loss: 0.5, Validation Loss: 0.558, AUC: 0.718
+Clustering. Time: 27.5s
+Epoch: 7, Time: 1.1e+02s, Train Loss: 0.499, Validation Loss: 0.559, AUC: 0.718
+Epoch: 8, Time: 1.13e+02s, Train Loss: 0.489, Validation Loss: 0.561, AUC: 0.719
+Epoch: 9, Time: 1.11e+02s, Train Loss: 0.484, Validation Loss: 0.562, AUC: 0.719
+
+Losses: [0.578, 0.569, 0.564, 0.56, 0.559, 0.559, 0.558, 0.559, 0.561, 0.562] AUCs: [0.686, 0.7, 0.709, 0.714, 0.717, 0.718
+, 0.718, 0.718, 0.719, 0.719]
+Overall Progress:  72%|█████████████████████████████▎           | 73/102 [35:10:11<11:14:53, 1396.32s/it]Running ppd=16384
+n_chunks=2
+100%|███████████████████████████████████████████████████████████████████| 10/10 [25:27<00:00, 152.78s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 524288
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.13e+02s, Train Loss: 0.579, Validation Loss: 0.569, AUC: 0.697
+Clustering. Time: 20.0s
+Epoch: 1, Time: 1.12e+02s, Train Loss: 0.513, Validation Loss: 0.554, AUC: 0.719
+Clustering. Time: 17.0s
+Epoch: 2, Time: 1.18e+02s, Train Loss: 0.494, Validation Loss: 0.543, AUC: 0.733
+Clustering. Time: 17.3s
+Epoch: 3, Time: 1.15e+02s, Train Loss: 0.483, Validation Loss: 0.537, AUC: 0.741
+Clustering. Time: 17.1s
+Epoch: 4, Time: 1.55e+02s, Train Loss: 0.476, Validation Loss: 0.534, AUC: 0.745
+Clustering. Time: 17.0s
+Epoch: 5, Time: 1.52e+02s, Train Loss: 0.472, Validation Loss: 0.534, AUC: 0.747
+Clustering. Time: 16.5s
+Epoch: 6, Time: 1.53e+02s, Train Loss: 0.469, Validation Loss: 0.533, AUC: 0.748
+Clustering. Time: 17.0s
+Epoch: 7, Time: 1.55e+02s, Train Loss: 0.467, Validation Loss: 0.534, AUC: 0.748
+Epoch: 8, Time: 1.54e+02s, Train Loss: 0.457, Validation Loss: 0.534, AUC: 0.75
+Epoch: 9, Time: 1.53e+02s, Train Loss: 0.453, Validation Loss: 0.535, AUC: 0.75
+
+Losses: [0.569, 0.554, 0.543, 0.537, 0.534, 0.534, 0.533, 0.534, 0.534, 0.535] AUCs: [0.697, 0.719, 0.733, 0.741, 0.745, 0.
+747, 0.748, 0.748, 0.75, 0.75]
+Overall Progress:  73%|█████████████████████████████▋           | 74/102 [35:35:47<11:11:03, 1437.97s/it]Running ppd=16384
+n_chunks=4
+100%|███████████████████████████████████████████████████████████████████| 10/10 [25:20<00:00, 152.06s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 524288
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.55e+02s, Train Loss: 0.57, Validation Loss: 0.554, AUC: 0.715
+Clustering. Time: 21.5s
+Epoch: 1, Time: 1.48e+02s, Train Loss: 0.496, Validation Loss: 0.533, AUC: 0.742
+Clustering. Time: 16.4s
+Epoch: 2, Time: 1.39e+02s, Train Loss: 0.474, Validation Loss: 0.518, AUC: 0.759
+Clustering. Time: 16.1s
+Epoch: 3, Time: 1.36e+02s, Train Loss: 0.461, Validation Loss: 0.509, AUC: 0.769
+Clustering. Time: 15.7s
+Epoch: 4, Time: 1.4e+02s, Train Loss: 0.451, Validation Loss: 0.505, AUC: 0.775
+Clustering. Time: 15.9s
+Epoch: 5, Time: 1.38e+02s, Train Loss: 0.445, Validation Loss: 0.503, AUC: 0.778
+Clustering. Time: 16.3s
+Epoch: 6, Time: 1.33e+02s, Train Loss: 0.441, Validation Loss: 0.503, AUC: 0.779
+Clustering. Time: 15.9s
+Epoch: 7, Time: 1.27e+02s, Train Loss: 0.438, Validation Loss: 0.503, AUC: 0.78
+Epoch: 8, Time: 1.32e+02s, Train Loss: 0.431, Validation Loss: 0.503, AUC: 0.781
+Epoch: 9, Time: 1.31e+02s, Train Loss: 0.427, Validation Loss: 0.504, AUC: 0.782
+
+Losses: [0.554, 0.533, 0.518, 0.509, 0.505, 0.503, 0.503, 0.503, 0.503, 0.504] AUCs: [0.715, 0.742, 0.759, 0.769, 0.775, 0.
+778, 0.779, 0.78, 0.781, 0.782]
+Overall Progress:  74%|██████████████████████████████▏          | 75/102 [36:01:15<10:59:19, 1465.16s/it]Running ppd=16384
+n_chunks=8
+100%|███████████████████████████████████████████████████████████████████| 10/10 [16:44<00:00, 100.42s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 524288
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.28e+02s, Train Loss: 0.568, Validation Loss: 0.542, AUC: 0.729
+Clustering. Time: 26.0s
+Epoch: 1, Time: 1.25e+02s, Train Loss: 0.484, Validation Loss: 0.513, AUC: 0.762
+Clustering. Time: 23.0s
+Epoch: 2, Time: 1.16e+02s, Train Loss: 0.461, Validation Loss: 0.498, AUC: 0.78
+Clustering. Time: 21.5s
+Epoch: 3, Time: 1.18e+02s, Train Loss: 0.445, Validation Loss: 0.49, AUC: 0.789
+Clustering. Time: 20.6s
+Epoch: 4, Time: 1.11e+02s, Train Loss: 0.434, Validation Loss: 0.486, AUC: 0.794
+Clustering. Time: 21.0s
+Epoch: 5, Time: 57.3s, Train Loss: 0.425, Validation Loss: 0.483, AUC: 0.798
+Clustering. Time: 21.6s
+Epoch: 6, Time: 44.8s, Train Loss: 0.418, Validation Loss: 0.482, AUC: 0.801
+Clustering. Time: 26.5s
+Epoch: 7, Time: 44.7s, Train Loss: 0.412, Validation Loss: 0.482, AUC: 0.802
+Epoch: 8, Time: 46.0s, Train Loss: 0.406, Validation Loss: 0.483, AUC: 0.802
+Epoch: 9, Time: 38.3s, Train Loss: 0.404, Validation Loss: 0.484, AUC: 0.802
+
+Losses: [0.542, 0.513, 0.498, 0.49, 0.486, 0.483, 0.482, 0.482, 0.483, 0.484] AUCs: [0.729, 0.762, 0.78, 0.789, 0.794, 0.79
+8, 0.801, 0.802, 0.802, 0.802]
+Overall Progress:  75%|███████████████████████████████▎          | 76/102 [36:18:07<9:36:00, 1329.23s/it]Running ppd=16384
+n_chunks=16
+100%|████████████████████████████████████████████████████████████████████| 10/10 [13:02<00:00, 78.27s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 524288
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 45.3s, Train Loss: 0.562, Validation Loss: 0.528, AUC: 0.743
+Clustering. Time: 47.7s
+Epoch: 1, Time: 43.5s, Train Loss: 0.481, Validation Loss: 0.502, AUC: 0.774
+Clustering. Time: 48.9s
+Epoch: 2, Time: 43.1s, Train Loss: 0.461, Validation Loss: 0.49, AUC: 0.788
+Clustering. Time: 40.6s
+Epoch: 3, Time: 39.9s, Train Loss: 0.447, Validation Loss: 0.484, AUC: 0.795
+Clustering. Time: 56.4s
+Epoch: 4, Time: 44.7s, Train Loss: 0.435, Validation Loss: 0.481, AUC: 0.799
+Clustering. Time: 47.7s
+Epoch: 5, Time: 39.6s, Train Loss: 0.426, Validation Loss: 0.48, AUC: 0.802
+Clustering. Time: 49.6s
+Epoch: 6, Time: 44.2s, Train Loss: 0.418, Validation Loss: 0.48, AUC: 0.803
+Clustering. Time: 54.1s
+Epoch: 7, Time: 47.2s, Train Loss: 0.412, Validation Loss: 0.48, AUC: 0.805
+Epoch: 8, Time: 46.3s, Train Loss: 0.406, Validation Loss: 0.481, AUC: 0.804
+Epoch: 9, Time: 36.7s, Train Loss: 0.404, Validation Loss: 0.483, AUC: 0.804
+
+Losses: [0.528, 0.502, 0.49, 0.484, 0.481, 0.48, 0.48, 0.48, 0.481, 0.483] AUCs: [0.743, 0.774, 0.788, 0.795, 0.799, 0.802,
+ 0.803, 0.805, 0.804, 0.804]
+Overall Progress:  75%|███████████████████████████████▋          | 77/102 [36:31:17<8:06:22, 1167.28s/it]Running ppd=16384
+n_chunks=32
+100%|███████████████████████████████████████████████████████████████████| 10/10 [55:56<00:00, 335.66s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 524288
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 52.7s, Train Loss: 0.561, Validation Loss: 0.523, AUC: 0.75
+Clustering. Time: 3.5e+02s
+Epoch: 1, Time: 45.3s, Train Loss: 0.478, Validation Loss: 0.498, AUC: 0.778
+Clustering. Time: 4.08e+02s
+Epoch: 2, Time: 43.7s, Train Loss: 0.46, Validation Loss: 0.487, AUC: 0.791
+Clustering. Time: 3.84e+02s
+Epoch: 3, Time: 46.0s, Train Loss: 0.448, Validation Loss: 0.482, AUC: 0.796
+Clustering. Time: 4.03e+02s
+Epoch: 4, Time: 55.0s, Train Loss: 0.438, Validation Loss: 0.48, AUC: 0.8
+Clustering. Time: 3.87e+02s
+Epoch: 5, Time: 87.3s, Train Loss: 0.43, Validation Loss: 0.479, AUC: 0.802
+Clustering. Time: 3.73e+02s
+Epoch: 6, Time: 89.6s, Train Loss: 0.422, Validation Loss: 0.479, AUC: 0.803
+Clustering. Time: 3.9e+02s
+Epoch: 7, Time: 77.8s, Train Loss: 0.415, Validation Loss: 0.48, AUC: 0.804
+Epoch: 8, Time: 71.5s, Train Loss: 0.41, Validation Loss: 0.481, AUC: 0.804
+Epoch: 9, Time: 79.1s, Train Loss: 0.407, Validation Loss: 0.483, AUC: 0.804
+
+Losses: [0.523, 0.498, 0.487, 0.482, 0.48, 0.479, 0.479, 0.48, 0.481, 0.483] AUCs: [0.75, 0.778, 0.791, 0.796, 0.8, 0.802,
+0.803, 0.804, 0.804, 0.804]
+Overall Progress:  76%|███████████████████████████████▎         | 78/102 [37:27:20<12:10:25, 1826.08s/it]Running ppd=32768
+n_chunks=1
+100%|███████████████████████████████████████████████████████████████████| 10/10 [23:38<00:00, 141.82s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 1048576
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 59.1s, Train Loss: 0.582, Validation Loss: 0.567, AUC: 0.7
+Clustering. Time: 1.03e+02s
+Epoch: 1, Time: 63.2s, Train Loss: 0.508, Validation Loss: 0.549, AUC: 0.726
+Clustering. Time: 1.01e+02s
+Epoch: 2, Time: 62.9s, Train Loss: 0.49, Validation Loss: 0.54, AUC: 0.737
+Clustering. Time: 82.6s
+Epoch: 3, Time: 54.2s, Train Loss: 0.481, Validation Loss: 0.538, AUC: 0.742
+Clustering. Time: 1.59e+02s
+Epoch: 4, Time: 45.9s, Train Loss: 0.476, Validation Loss: 0.537, AUC: 0.743
+Clustering. Time: 1.42e+02s
+Epoch: 5, Time: 57.4s, Train Loss: 0.472, Validation Loss: 0.538, AUC: 0.743
+Clustering. Time: 1.22e+02s
+Epoch: 6, Time: 51.8s, Train Loss: 0.47, Validation Loss: 0.539, AUC: 0.743
+Clustering. Time: 1.48e+02s
+Epoch: 7, Time: 63.0s, Train Loss: 0.468, Validation Loss: 0.541, AUC: 0.742
+Epoch: 8, Time: 51.6s, Train Loss: 0.454, Validation Loss: 0.542, AUC: 0.744
+Epoch: 9, Time: 41.3s, Train Loss: 0.447, Validation Loss: 0.544, AUC: 0.744
+
+Losses: [0.567, 0.549, 0.54, 0.538, 0.537, 0.538, 0.539, 0.541, 0.542, 0.544] AUCs: [0.7, 0.726, 0.737, 0.742, 0.743, 0.743
+, 0.743, 0.742, 0.744, 0.744]
+Overall Progress:  77%|███████████████████████████████▊         | 79/102 [37:51:09<10:54:17, 1706.83s/it]Running ppd=32768
+n_chunks=2
+100%|████████████████████████████████████████████████████████████████████| 10/10 [12:08<00:00, 72.83s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 1048576
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 46.3s, Train Loss: 0.569, Validation Loss: 0.549, AUC: 0.721
+Clustering. Time: 40.7s
+Epoch: 1, Time: 39.0s, Train Loss: 0.488, Validation Loss: 0.525, AUC: 0.752
+Clustering. Time: 40.6s
+Epoch: 2, Time: 46.2s, Train Loss: 0.467, Validation Loss: 0.513, AUC: 0.766
+Clustering. Time: 41.2s
+Epoch: 3, Time: 35.5s, Train Loss: 0.456, Validation Loss: 0.508, AUC: 0.772
+Clustering. Time: 40.0s
+Epoch: 4, Time: 41.7s, Train Loss: 0.449, Validation Loss: 0.507, AUC: 0.774
+Clustering. Time: 36.2s
+Epoch: 5, Time: 43.4s, Train Loss: 0.444, Validation Loss: 0.509, AUC: 0.774
+Clustering. Time: 42.6s
+Epoch: 6, Time: 46.4s, Train Loss: 0.441, Validation Loss: 0.509, AUC: 0.774
+Clustering. Time: 52.0s
+Epoch: 7, Time: 42.5s, Train Loss: 0.439, Validation Loss: 0.511, AUC: 0.774
+Epoch: 8, Time: 40.3s, Train Loss: 0.427, Validation Loss: 0.511, AUC: 0.776
+Epoch: 9, Time: 46.8s, Train Loss: 0.42, Validation Loss: 0.512, AUC: 0.777
+
+Losses: [0.549, 0.525, 0.513, 0.508, 0.507, 0.509, 0.509, 0.511, 0.511, 0.512] AUCs: [0.721, 0.752, 0.766, 0.772, 0.774, 0.
+774, 0.774, 0.774, 0.776, 0.777]
+Overall Progress:  78%|████████████████████████████████▉         | 80/102 [38:03:24<8:38:56, 1415.28s/it]Running ppd=32768
+n_chunks=4
+100%|████████████████████████████████████████████████████████████████████| 10/10 [12:32<00:00, 75.26s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 1048576
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 48.2s, Train Loss: 0.561, Validation Loss: 0.531, AUC: 0.741
+Clustering. Time: 53.3s
+Epoch: 1, Time: 43.4s, Train Loss: 0.474, Validation Loss: 0.503, AUC: 0.773
+Clustering. Time: 36.9s
+Epoch: 2, Time: 43.2s, Train Loss: 0.451, Validation Loss: 0.489, AUC: 0.789
+Clustering. Time: 50.3s
+Epoch: 3, Time: 40.7s, Train Loss: 0.436, Validation Loss: 0.484, AUC: 0.795
+Clustering. Time: 46.5s
+Epoch: 4, Time: 43.9s, Train Loss: 0.427, Validation Loss: 0.483, AUC: 0.798
+Clustering. Time: 46.6s
+Epoch: 5, Time: 38.1s, Train Loss: 0.42, Validation Loss: 0.483, AUC: 0.799
+Clustering. Time: 33.8s
+Epoch: 6, Time: 45.8s, Train Loss: 0.416, Validation Loss: 0.484, AUC: 0.8
+Clustering. Time: 45.5s
+Epoch: 7, Time: 39.5s, Train Loss: 0.412, Validation Loss: 0.485, AUC: 0.799
+Epoch: 8, Time: 45.0s, Train Loss: 0.404, Validation Loss: 0.486, AUC: 0.8
+Epoch: 9, Time: 43.7s, Train Loss: 0.399, Validation Loss: 0.488, AUC: 0.801
+
+Losses: [0.531, 0.503, 0.489, 0.484, 0.483, 0.483, 0.484, 0.485, 0.486, 0.488] AUCs: [0.741, 0.773, 0.789, 0.795, 0.798, 0.
+799, 0.8, 0.799, 0.8, 0.801]
+Overall Progress:  79%|█████████████████████████████████▎        | 81/102 [38:16:03<7:06:27, 1218.47s/it]Running ppd=32768
+n_chunks=8
+100%|████████████████████████████████████████████████████████████████████| 10/10 [14:10<00:00, 85.06s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 1048576
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 43.3s, Train Loss: 0.556, Validation Loss: 0.516, AUC: 0.758
+Clustering. Time: 63.5s
+Epoch: 1, Time: 41.5s, Train Loss: 0.468, Validation Loss: 0.489, AUC: 0.788
+Clustering. Time: 75.7s
+Epoch: 2, Time: 45.8s, Train Loss: 0.445, Validation Loss: 0.478, AUC: 0.799
+Clustering. Time: 45.7s
+Epoch: 3, Time: 35.6s, Train Loss: 0.428, Validation Loss: 0.475, AUC: 0.805
+Clustering. Time: 60.4s
+Epoch: 4, Time: 43.9s, Train Loss: 0.414, Validation Loss: 0.474, AUC: 0.807
+Clustering. Time: 68.0s
+Epoch: 5, Time: 45.8s, Train Loss: 0.404, Validation Loss: 0.476, AUC: 0.809
+Clustering. Time: 61.6s
+Epoch: 6, Time: 42.4s, Train Loss: 0.395, Validation Loss: 0.478, AUC: 0.809
+Clustering. Time: 41.0s
+Epoch: 7, Time: 42.5s, Train Loss: 0.388, Validation Loss: 0.48, AUC: 0.81
+Epoch: 8, Time: 41.0s, Train Loss: 0.381, Validation Loss: 0.483, AUC: 0.81
+Epoch: 9, Time: 44.0s, Train Loss: 0.377, Validation Loss: 0.486, AUC: 0.809
+
+Losses: [0.516, 0.489, 0.478, 0.475, 0.474, 0.476, 0.478, 0.48, 0.483, 0.486] AUCs: [0.758, 0.788, 0.799, 0.805, 0.807, 0.8
+09, 0.809, 0.81, 0.81, 0.809]
+Overall Progress:  80%|█████████████████████████████████▊        | 82/102 [38:30:21<6:10:06, 1110.31s/it]Running ppd=32768
+n_chunks=16
+100%|███████████████████████████████████████████████████████████████████| 10/10 [21:38<00:00, 129.88s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 1048576
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 45.4s, Train Loss: 0.555, Validation Loss: 0.51, AUC: 0.765
+Clustering. Time: 1.04e+02s
+Epoch: 1, Time: 44.7s, Train Loss: 0.467, Validation Loss: 0.485, AUC: 0.792
+Clustering. Time: 65.4s
+Epoch: 2, Time: 47.0s, Train Loss: 0.445, Validation Loss: 0.476, AUC: 0.802
+Clustering. Time: 1.06e+02s
+Epoch: 3, Time: 48.5s, Train Loss: 0.429, Validation Loss: 0.474, AUC: 0.806
+Clustering. Time: 97.4s
+Epoch: 4, Time: 48.0s, Train Loss: 0.416, Validation Loss: 0.473, AUC: 0.808
+Clustering. Time: 63.6s
+Epoch: 5, Time: 85.7s, Train Loss: 0.405, Validation Loss: 0.475, AUC: 0.809
+Clustering. Time: 98.0s
+Epoch: 6, Time: 86.7s, Train Loss: 0.395, Validation Loss: 0.477, AUC: 0.81
+Clustering. Time: 83.5s
+Epoch: 7, Time: 85.4s, Train Loss: 0.387, Validation Loss: 0.48, AUC: 0.81
+Epoch: 8, Time: 90.2s, Train Loss: 0.38, Validation Loss: 0.484, AUC: 0.809
+Epoch: 9, Time: 87.1s, Train Loss: 0.376, Validation Loss: 0.487, AUC: 0.809
+
+Losses: [0.51, 0.485, 0.476, 0.474, 0.473, 0.475, 0.477, 0.48, 0.484, 0.487] AUCs: [0.765, 0.792, 0.802, 0.806, 0.808, 0.80
+9, 0.81, 0.81, 0.809, 0.809]
+Overall Progress:  81%|██████████████████████████████████▏       | 83/102 [38:52:08<6:10:18, 1169.38s/it]Running ppd=32768
+n_chunks=32
+100%|████████████████████████████████████████████████████████████████| 10/10 [6:17:09<00:00, 2262.96s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 1048576
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 89.0s, Train Loss: 0.557, Validation Loss: 0.507, AUC: 0.768
+Clustering. Time: 3.53e+03s
+Epoch: 1, Time: 50.6s, Train Loss: 0.468, Validation Loss: 0.484, AUC: 0.793
+Clustering. Time: 3.51e+03s
+Epoch: 2, Time: 68.2s, Train Loss: 0.447, Validation Loss: 0.477, AUC: 0.801
+Clustering. Time: 2.93e+03s
+Epoch: 3, Time: 1.14e+02s, Train Loss: 0.432, Validation Loss: 0.475, AUC: 0.805
+Clustering. Time: 2.86e+03s
+Epoch: 4, Time: 1.73e+02s, Train Loss: 0.419, Validation Loss: 0.475, AUC: 0.807
+Clustering. Time: 2.89e+03s
+Epoch: 5, Time: 1.68e+02s, Train Loss: 0.408, Validation Loss: 0.476, AUC: 0.808
+Clustering. Time: 2.94e+03s
+Epoch: 6, Time: 41.2s, Train Loss: 0.399, Validation Loss: 0.478, AUC: 0.809
+Clustering. Time: 2.99e+03s
+Epoch: 7, Time: 55.9s, Train Loss: 0.39, Validation Loss: 0.481, AUC: 0.809
+Epoch: 8, Time: 97.0s, Train Loss: 0.383, Validation Loss: 0.484, AUC: 0.808
+Epoch: 9, Time: 1.05e+02s, Train Loss: 0.379, Validation Loss: 0.486, AUC: 0.808
+
+Losses: [0.507, 0.484, 0.477, 0.475, 0.475, 0.476, 0.478, 0.481, 0.484, 0.486] AUCs: [0.768, 0.793, 0.801, 0.805, 0.807, 0.
+808, 0.809, 0.809, 0.808, 0.808]
+Overall Progress:  82%|█████████████████████████████████▊       | 84/102 [45:09:25<38:02:53, 7609.64s/it]Running ppd=65536
+n_chunks=1
+100%|███████████████████████████████████████████████████████████████████| 10/10 [35:32<00:00, 213.21s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 2097152
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.03e+02s, Train Loss: 0.569, Validation Loss: 0.545, AUC: 0.728
+Clustering. Time: 1.05e+02s
+Epoch: 1, Time: 97.4s, Train Loss: 0.481, Validation Loss: 0.517, AUC: 0.762
+Clustering. Time: 1.15e+02s
+Epoch: 2, Time: 1.13e+02s, Train Loss: 0.461, Validation Loss: 0.51, AUC: 0.772
+Clustering. Time: 1.16e+02s
+Epoch: 3, Time: 1.3e+02s, Train Loss: 0.45, Validation Loss: 0.51, AUC: 0.773
+Clustering. Time: 1.18e+02s
+Epoch: 4, Time: 1.3e+02s, Train Loss: 0.443, Validation Loss: 0.511, AUC: 0.774
+Clustering. Time: 1.16e+02s
+Epoch: 5, Time: 1.51e+02s, Train Loss: 0.438, Validation Loss: 0.514, AUC: 0.772
+Clustering. Time: 1.12e+02s
+Epoch: 6, Time: 1.53e+02s, Train Loss: 0.434, Validation Loss: 0.517, AUC: 0.771
+Clustering. Time: 1.06e+02s
+Epoch: 7, Time: 1.41e+02s, Train Loss: 0.432, Validation Loss: 0.52, AUC: 0.77
+Epoch: 8, Time: 1.52e+02s, Train Loss: 0.414, Validation Loss: 0.521, AUC: 0.773
+Epoch: 9, Time: 1.52e+02s, Train Loss: 0.405, Validation Loss: 0.525, AUC: 0.773
+
+Losses: [0.545, 0.517, 0.51, 0.51, 0.511, 0.514, 0.517, 0.52, 0.521, 0.525] AUCs: [0.728, 0.762, 0.772, 0.773, 0.774, 0.772
+, 0.771, 0.77, 0.773, 0.773]
+Overall Progress:  83%|██████████████████████████████████▏      | 85/102 [45:45:04<28:11:04, 5968.48s/it]Running ppd=65536
+n_chunks=2
+100%|███████████████████████████████████████████████████████████████████| 10/10 [27:19<00:00, 163.97s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 2097152
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.52e+02s, Train Loss: 0.556, Validation Loss: 0.52, AUC: 0.754
+Clustering. Time: 71.4s
+Epoch: 1, Time: 1.59e+02s, Train Loss: 0.466, Validation Loss: 0.492, AUC: 0.786
+Clustering. Time: 68.5s
+Epoch: 2, Time: 1.32e+02s, Train Loss: 0.444, Validation Loss: 0.483, AUC: 0.796
+Clustering. Time: 71.0s
+Epoch: 3, Time: 94.7s, Train Loss: 0.431, Validation Loss: 0.482, AUC: 0.799
+Clustering. Time: 80.6s
+Epoch: 4, Time: 94.7s, Train Loss: 0.422, Validation Loss: 0.484, AUC: 0.799
+Clustering. Time: 68.9s
+Epoch: 5, Time: 98.5s, Train Loss: 0.416, Validation Loss: 0.487, AUC: 0.798
+Clustering. Time: 73.8s
+Epoch: 6, Time: 94.1s, Train Loss: 0.412, Validation Loss: 0.489, AUC: 0.797
+Clustering. Time: 72.5s
+Epoch: 7, Time: 97.6s, Train Loss: 0.409, Validation Loss: 0.491, AUC: 0.797
+Epoch: 8, Time: 95.1s, Train Loss: 0.396, Validation Loss: 0.493, AUC: 0.799
+Epoch: 9, Time: 97.0s, Train Loss: 0.388, Validation Loss: 0.495, AUC: 0.799
+
+Losses: [0.52, 0.492, 0.483, 0.482, 0.484, 0.487, 0.489, 0.491, 0.493, 0.495] AUCs: [0.754, 0.786, 0.796, 0.799, 0.799, 0.7
+98, 0.797, 0.797, 0.799, 0.799]
+Overall Progress:  84%|██████████████████████████████████▌      | 86/102 [46:12:32<20:45:57, 4672.35s/it]Running ppd=65536
+n_chunks=4
+100%|███████████████████████████████████████████████████████████████████| 10/10 [25:42<00:00, 154.28s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 2097152
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 96.8s, Train Loss: 0.554, Validation Loss: 0.505, AUC: 0.77
+Clustering. Time: 76.9s
+Epoch: 1, Time: 92.8s, Train Loss: 0.459, Validation Loss: 0.479, AUC: 0.798
+Clustering. Time: 73.3s
+Epoch: 2, Time: 1.05e+02s, Train Loss: 0.433, Validation Loss: 0.47, AUC: 0.808
+Clustering. Time: 68.5s
+Epoch: 3, Time: 98.1s, Train Loss: 0.416, Validation Loss: 0.469, AUC: 0.811
+Clustering. Time: 67.9s
+Epoch: 4, Time: 1.02e+02s, Train Loss: 0.404, Validation Loss: 0.472, AUC: 0.811
+Clustering. Time: 68.6s
+Epoch: 5, Time: 1.05e+02s, Train Loss: 0.396, Validation Loss: 0.475, AUC: 0.811
+Clustering. Time: 66.2s
+Epoch: 6, Time: 1.07e+02s, Train Loss: 0.39, Validation Loss: 0.479, AUC: 0.81
+Clustering. Time: 72.5s
+Epoch: 7, Time: 1.09e+02s, Train Loss: 0.386, Validation Loss: 0.482, AUC: 0.809
+Epoch: 8, Time: 1.05e+02s, Train Loss: 0.376, Validation Loss: 0.486, AUC: 0.809
+Epoch: 9, Time: 1.11e+02s, Train Loss: 0.371, Validation Loss: 0.491, AUC: 0.808
+
+Losses: [0.505, 0.479, 0.47, 0.469, 0.472, 0.475, 0.479, 0.482, 0.486, 0.491] AUCs: [0.77, 0.798, 0.808, 0.811, 0.811, 0.81
+1, 0.81, 0.809, 0.809, 0.808]
+Overall Progress:  85%|██████████████████████████████████▉      | 87/102 [46:38:22<15:33:55, 3735.67s/it]Running ppd=65536
+n_chunks=8
+100%|███████████████████████████████████████████████████████████████████| 10/10 [23:37<00:00, 141.72s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 2097152
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 1.07e+02s, Train Loss: 0.551, Validation Loss: 0.495, AUC: 0.78
+Clustering. Time: 82.8s
+Epoch: 1, Time: 1.14e+02s, Train Loss: 0.455, Validation Loss: 0.472, AUC: 0.805
+Clustering. Time: 76.4s
+Epoch: 2, Time: 1.12e+02s, Train Loss: 0.429, Validation Loss: 0.467, AUC: 0.812
+Clustering. Time: 76.0s
+Epoch: 3, Time: 1.13e+02s, Train Loss: 0.408, Validation Loss: 0.467, AUC: 0.814
+Clustering. Time: 72.5s
+Epoch: 4, Time: 1.07e+02s, Train Loss: 0.393, Validation Loss: 0.47, AUC: 0.815
+Clustering. Time: 73.4s
+Epoch: 5, Time: 1e+02s, Train Loss: 0.381, Validation Loss: 0.475, AUC: 0.815
+Clustering. Time: 75.0s
+Epoch: 6, Time: 49.9s, Train Loss: 0.371, Validation Loss: 0.481, AUC: 0.814
+Clustering. Time: 75.3s
+Epoch: 7, Time: 56.4s, Train Loss: 0.363, Validation Loss: 0.487, AUC: 0.813
+Epoch: 8, Time: 54.5s, Train Loss: 0.354, Validation Loss: 0.493, AUC: 0.812
+Epoch: 9, Time: 57.2s, Train Loss: 0.35, Validation Loss: 0.499, AUC: 0.811
+
+Losses: [0.495, 0.472, 0.467, 0.467, 0.47, 0.475, 0.481, 0.487, 0.493, 0.499] AUCs: [0.78, 0.805, 0.812, 0.814, 0.815, 0.81
+5, 0.814, 0.813, 0.812, 0.811]
+Overall Progress:  86%|███████████████████████████████████▎     | 88/102 [47:02:07<11:49:55, 3042.55s/it]Running ppd=65536
+n_chunks=16
+100%|███████████████████████████████████████████████████████████████████| 10/10 [23:59<00:00, 143.99s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 2097152
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 51.2s, Train Loss: 0.552, Validation Loss: 0.493, AUC: 0.783
+Clustering. Time: 1.2e+02s
+Epoch: 1, Time: 51.2s, Train Loss: 0.455, Validation Loss: 0.472, AUC: 0.805
+Clustering. Time: 1.16e+02s
+Epoch: 2, Time: 49.5s, Train Loss: 0.429, Validation Loss: 0.467, AUC: 0.811
+Clustering. Time: 1.16e+02s
+Epoch: 3, Time: 54.6s, Train Loss: 0.409, Validation Loss: 0.468, AUC: 0.813
+Clustering. Time: 1.14e+02s
+Epoch: 4, Time: 57.4s, Train Loss: 0.394, Validation Loss: 0.472, AUC: 0.814
+Clustering. Time: 1.16e+02s
+Epoch: 5, Time: 65.0s, Train Loss: 0.381, Validation Loss: 0.477, AUC: 0.814
+Clustering. Time: 1.12e+02s
+Epoch: 6, Time: 78.1s, Train Loss: 0.37, Validation Loss: 0.483, AUC: 0.813
+Clustering. Time: 1.15e+02s
+Epoch: 7, Time: 77.8s, Train Loss: 0.361, Validation Loss: 0.489, AUC: 0.812
+Epoch: 8, Time: 80.2s, Train Loss: 0.353, Validation Loss: 0.496, AUC: 0.811
+Epoch: 9, Time: 54.4s, Train Loss: 0.348, Validation Loss: 0.501, AUC: 0.81
+
+Losses: [0.493, 0.472, 0.467, 0.468, 0.472, 0.477, 0.483, 0.489, 0.496, 0.501] AUCs: [0.783, 0.805, 0.811, 0.813, 0.814, 0.
+814, 0.813, 0.812, 0.811, 0.81]
+Overall Progress:  87%|████████████████████████████████████▋     | 89/102 [47:26:14<9:15:30, 2563.86s/it]Running ppd=65536
+n_chunks=32
+ 10%|██████                                                       | 1/10 [6:20:39<57:05:53, 22839.28s/it]
+100%|██████████████████████████████████████████████████████████████| 10/10 [42:34:04<00:00, 15324.45s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 2097152
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 86.6s, Train Loss: 0.55, Validation Loss: 0.492, AUC: 0.784
+Clustering. Time: 2.28e+04s
+Epoch: 1, Time: 1.15e+02s, Train Loss: 0.457, Validation Loss: 0.473, AUC: 0.804
+Clustering. Time: 2.19e+04s
+Epoch: 2, Time: 1.73e+02s, Train Loss: 0.432, Validation Loss: 0.469, AUC: 0.81
+Clustering. Time: 2.2e+04s
+Epoch: 3, Time: 1.21e+02s, Train Loss: 0.414, Validation Loss: 0.469, AUC: 0.812
+Clustering. Time: 2.18e+04s
+Epoch: 4, Time: 51.3s, Train Loss: 0.399, Validation Loss: 0.472, AUC: 0.813
+Clustering. Time: 2.22e+04s
+Epoch: 5, Time: 1.26e+02s, Train Loss: 0.386, Validation Loss: 0.477, AUC: 0.813
+Clustering. Time: 2.11e+04s
+Epoch: 6, Time: 94.3s, Train Loss: 0.376, Validation Loss: 0.482, AUC: 0.812
+Clustering. Time: 2.07e+04s
+Epoch: 7, Time: 27.4s, Train Loss: 0.367, Validation Loss: 0.488, AUC: 0.812
+Epoch: 8, Time: 27.3s, Train Loss: 0.358, Validation Loss: 0.493, AUC: 0.811
+Epoch: 9, Time: 27.3s, Train Loss: 0.353, Validation Loss: 0.497, AUC: 0.81
+
+Losses: [0.492, 0.473, 0.469, 0.469, 0.472, 0.477, 0.482, 0.488, 0.493, 0.497] AUCs: [0.784, 0.804, 0.81, 0.812, 0.813, 0.8
+13, 0.812, 0.812, 0.811, 0.81]
+Overall Progress:  88%|██████████████████████████████████▍    | 90/102 [90:00:26<159:14:03, 47770.31s/it]Running ppd=131072
+ n_chunks=1
+100%|████████████████████████████████████████████████████████████████████████████| 10/10 [20:48<00:00, 124.87s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 4194304
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 24.0s, Train Loss: 0.558, Validation Loss: 0.515, AUC: 0.76
+Clustering. Time: 1.32e+02s
+Epoch: 1, Time: 33.0s, Train Loss: 0.459, Validation Loss: 0.483, AUC: 0.796
+Clustering. Time: 1.4e+02s
+Epoch: 2, Time: 28.0s, Train Loss: 0.432, Validation Loss: 0.479, AUC: 0.802
+Clustering. Time: 1.44e+02s
+Epoch: 3, Time: 26.3s, Train Loss: 0.417, Validation Loss: 0.483, AUC: 0.802
+Clustering. Time: 1.52e+02s
+Epoch: 4, Time: 26.3s, Train Loss: 0.406, Validation Loss: 0.489, AUC: 0.8
+Clustering. Time: 1.35e+02s
+Epoch: 5, Time: 26.7s, Train Loss: 0.399, Validation Loss: 0.494, AUC: 0.798
+Clustering. Time: 1.35e+02s
+Epoch: 6, Time: 25.9s, Train Loss: 0.393, Validation Loss: 0.501, AUC: 0.796
+Clustering. Time: 1.39e+02s
+Epoch: 7, Time: 26.0s, Train Loss: 0.389, Validation Loss: 0.506, AUC: 0.794
+Epoch: 8, Time: 25.5s, Train Loss: 0.372, Validation Loss: 0.509, AUC: 0.796
+Epoch: 9, Time: 26.1s, Train Loss: 0.363, Validation Loss: 0.516, AUC: 0.797
+
+Losses: [0.515, 0.483, 0.479, 0.483, 0.489, 0.494, 0.501, 0.506, 0.509, 0.516] AUCs: [0.76, 0.796, 0.802, 0.802, 0.8, 0.798
+, 0.796, 0.794, 0.796, 0.797]
+Overall Progress:  89%|██████████████████████████████████▊    | 91/102 [90:21:21<103:19:31, 33815.63s/it]Running ppd=131072
+ n_chunks=2
+100%|█████████████████████████████████████████████████████████████████████████████| 10/10 [13:58<00:00, 83.81s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 4194304
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 26.7s, Train Loss: 0.553, Validation Loss: 0.496, AUC: 0.78
+Clustering. Time: 84.0s
+Epoch: 1, Time: 26.8s, Train Loss: 0.452, Validation Loss: 0.47, AUC: 0.808
+Clustering. Time: 84.1s
+Epoch: 2, Time: 26.7s, Train Loss: 0.423, Validation Loss: 0.465, AUC: 0.814
+Clustering. Time: 80.0s
+Epoch: 3, Time: 27.3s, Train Loss: 0.406, Validation Loss: 0.468, AUC: 0.815
+Clustering. Time: 78.3s
+Epoch: 4, Time: 29.1s, Train Loss: 0.394, Validation Loss: 0.474, AUC: 0.813
+Clustering. Time: 79.9s
+Epoch: 5, Time: 27.5s, Train Loss: 0.386, Validation Loss: 0.48, AUC: 0.812
+Clustering. Time: 86.9s
+Epoch: 6, Time: 28.2s, Train Loss: 0.38, Validation Loss: 0.486, AUC: 0.81
+Clustering. Time: 90.5s
+Epoch: 7, Time: 21.3s, Train Loss: 0.375, Validation Loss: 0.491, AUC: 0.809
+Epoch: 8, Time: 18.3s, Train Loss: 0.363, Validation Loss: 0.496, AUC: 0.809
+Epoch: 9, Time: 19.4s, Train Loss: 0.356, Validation Loss: 0.503, AUC: 0.809
+
+Losses: [0.496, 0.47, 0.465, 0.468, 0.474, 0.48, 0.486, 0.491, 0.496, 0.503] AUCs: [0.78, 0.808, 0.814, 0.815, 0.813, 0.812
+, 0.81, 0.809, 0.809, 0.809]
+Overall Progress:  90%|████████████████████████████████████    | 92/102 [90:35:25<66:27:21, 23924.14s/it]Running ppd=131072
+ n_chunks=4
+ 90%|██████████████████████████████████████████████████████████████████████▏       | 9/10 [12:59<01:26, 86.66s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 4194304
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 23.2s, Train Loss: 0.548, Validation Loss: 0.485, AUC: 0.791
+Clustering. Time: 78.0s
+Epoch: 1, Time: 18.6s, Train Loss: 0.448, Validation Loss: 0.464, AUC: 0.814
+Clustering. Time: 75.7s
+Epoch: 2, Time: 19.0s, Train Loss: 0.417, Validation Loss: 0.46, AUC: 0.82
+Clustering. Time: 78.8s
+Epoch: 3, Time: 30.5s, Train Loss: 0.397, Validation Loss: 0.463, AUC: 0.821
+Clustering. Time: 78.8s
+Epoch: 4, Time: 26.6s, Train Loss: 0.382, Validation Loss: 0.47, AUC: 0.819
+Clustering. Time: 77.3s
+Epoch: 5, Time: 25.7s, Train Loss: 0.372, Validation Loss: 0.477, AUC: 0.818
+Clustering. Time: 75.8s
+Epoch: 6, Time: 20.1s, Train Loss: 0.364, Validation Loss: 0.485, AUC: 0.816
+Clustering. Time: 75.3s
+Epoch: 7, Time: 25.9s, Train Loss: 0.358, Validation Loss: 0.492, AUC: 0.815
+Epoch: 8, Time: 26.5s, Train Loss: 0.349, Validation Loss: 0.5, AUC: 0.813
+Epoch: 9, Time: 20.7s, Train Loss: 0.343, Validation Loss: 0.509, AUC: 0.812
+Early stopping
+
+Losses: [0.485, 0.464, 0.46, 0.463, 0.47, 0.477, 0.485, 0.492, 0.5, 0.509] AUCs: [0.791, 0.814, 0.82, 0.821, 0.819, 0.818,
+0.816, 0.815, 0.813, 0.812]
+Overall Progress:  91%|████████████████████████████████████▍   | 93/102 [90:48:31<42:27:23, 16982.66s/it]Running ppd=131072
+ n_chunks=8
+100%|█████████████████████████████████████████████████████████████████████████████| 10/10 [14:34<00:00, 87.41s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 4194304
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 18.9s, Train Loss: 0.547, Validation Loss: 0.482, AUC: 0.795
+Clustering. Time: 87.6s
+Epoch: 1, Time: 19.7s, Train Loss: 0.449, Validation Loss: 0.463, AUC: 0.814
+Clustering. Time: 87.1s
+Epoch: 2, Time: 30.0s, Train Loss: 0.417, Validation Loss: 0.46, AUC: 0.819
+Clustering. Time: 86.7s
+Epoch: 3, Time: 32.0s, Train Loss: 0.393, Validation Loss: 0.465, AUC: 0.819
+Clustering. Time: 85.5s
+Epoch: 4, Time: 27.9s, Train Loss: 0.375, Validation Loss: 0.472, AUC: 0.819
+Clustering. Time: 84.8s
+Epoch: 5, Time: 30.1s, Train Loss: 0.362, Validation Loss: 0.481, AUC: 0.817
+Clustering. Time: 84.1s
+Epoch: 6, Time: 27.0s, Train Loss: 0.351, Validation Loss: 0.491, AUC: 0.816
+Clustering. Time: 85.0s
+Epoch: 7, Time: 27.8s, Train Loss: 0.343, Validation Loss: 0.501, AUC: 0.814
+Epoch: 8, Time: 28.8s, Train Loss: 0.334, Validation Loss: 0.511, AUC: 0.813
+Epoch: 9, Time: 27.5s, Train Loss: 0.329, Validation Loss: 0.52, AUC: 0.811
+
+Losses: [0.482, 0.463, 0.46, 0.465, 0.472, 0.481, 0.491, 0.501, 0.511, 0.52] AUCs: [0.795, 0.814, 0.819, 0.819, 0.819, 0.81
+7, 0.816, 0.814, 0.813, 0.811]
+Overall Progress:  92%|████████████████████████████████████▊   | 94/102 [91:03:11<27:00:15, 12151.91s/it]Running ppd=131072
+ n_chunks=16
+100%|████████████████████████████████████████████████████████████████████████████| 10/10 [19:25<00:00, 116.57s/it]
+Device: cuda:0
+Max user id: 162532, Max item id: 56061, #params: 4194304
+Unique users: torch.Size([162533]), Unique items: torch.Size([56062])
+1 ratios: 0.6179513778444778 0.7103370413210937
+Epoch: 0, Time: 21.6s, Train Loss: 0.547, Validation Loss: 0.479, AUC: 0.798
+Clustering. Time: 1.33e+02s
+Epoch: 1, Time: 22.9s, Train Loss: 0.448, Validation Loss: 0.462, AUC: 0.815
+Clustering. Time: 1.3e+02s
+Epoch: 2, Time: 18.4s, Train Loss: 0.417, Validation Loss: 0.46, AUC: 0.819
+Clustering. Time: 1.28e+02s
+Epoch: 3, Time: 27.1s, Train Loss: 0.394, Validation Loss: 0.464, AUC: 0.82
+Clustering. Time: 1.29e+02s
+Epoch: 4, Time: 27.1s, Train Loss: 0.376, Validation Loss: 0.472, AUC: 0.818
+Clustering. Time: 1.3e+02s
+Epoch: 5, Time: 27.2s, Train Loss: 0.362, Validation Loss: 0.481, AUC: 0.817
+Clustering. Time: 1.28e+02s
+Epoch: 6, Time: 27.1s, Train Loss: 0.351, Validation Loss: 0.491, AUC: 0.816
+Clustering. Time: 1.28e+02s
+Epoch: 7, Time: 29.8s, Train Loss: 0.342, Validation Loss: 0.501, AUC: 0.814
+Epoch: 8, Time: 27.9s, Train Loss: 0.333, Validation Loss: 0.511, AUC: 0.813
+Epoch: 9, Time: 27.4s, Train Loss: 0.328, Validation Loss: 0.52, AUC: 0.812
+
+Losses: [0.479, 0.462, 0.46, 0.464, 0.472, 0.481, 0.491, 0.501, 0.511, 0.52] AUCs: [0.798, 0.815, 0.819, 0.82, 0.818, 0.817
+, 0.816, 0.814, 0.813, 0.812]
+Overall Progress:  93%|██████████████████████████████████████▏  | 95/102 [91:22:43<17:13:24, 8857.86s/it]Running ppd=131072
+ n_chunks=32
+  0%|                                                                                      | 0/10 [00:00<?, ?it/s]
+
+ 20%|█████████████▌                                                      | 2/10 [50:04:44<201:50:16, 90827.01s/it^Overall P
+rogress:  93%|█████████████████████████████████████▎  | 95/102 [157:56:53<11:38:17, 5985.40s/it]
+Traceback (most recent call last):
+  File "/root/cce/examples/explore_chunks.py", line 51, in <module>
+    output = subprocess.check_output(cmd).decode('utf-8')
+  File "/opt/conda/lib/python3.10/subprocess.py", line 421, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+  File "/opt/conda/lib/python3.10/subprocess.py", line 505, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+  File "/opt/conda/lib/python3.10/subprocess.py", line 1141, in communicate
+    stdout = self.stdout.read()
+KeyboardInterrupt
+
+root@C.6803420:~/cce$ tmux save-buffer ~/my_file.txt
+no buffers
+root@C.6803420:~/cce$ tmux save-buffer ~/my_file.txt
+no buffers
+root@C.6803420:~/cce$ tmux capture-pane -S -5000 -p > ~/my_file.txt
+
