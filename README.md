@@ -55,12 +55,12 @@ You can also use `--method robe` to use the Robe method, or `ce` for composition
 ## Citation
 
 ```
-@article{tsang2022clustering,
+@inproceedings{tsang2023clustering,
   title={Clustering Embedding Tables, Without First Learning Them},
   author={Tsang, Henry Ling-Hei and Ahle, Thomas Dybdahl},
-  journal={arXiv preprint arXiv:2210.05974},
-  year={2022}
-}
+  booktitle={Advances in Neural Information Processing Systems (NeurIPS)},
+  year={2023}
+
 ```
 
 ## Other implemented algorithms
