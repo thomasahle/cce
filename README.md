@@ -27,6 +27,17 @@ class GMF(nn.Module):
 Instead of the Clustered Compositional Embedding, the library also contain many other compressed embedding methods, such as `cce.RobeEmbedding`, `cce.CompositionalEmbedding`, `cce.TensorTrainEmbedding` and `cce.DeepHashEmbedding`.
 See https://github.com/thomasahle/cce/blob/main/examples/movielens.py#L22 for examples on how to initialize them.
 
+## Key Takeaways
+- **Context:** Modern Recommendation Systems require large embedding tables, challenging to fit in memory during training.
+
+- **Solution:** CCE combines hashing/sketching methods with clustering during training, to learn an efficent sparse, data dependent hash function.
+
+- **Contributions:**
+  - CCE fills the gap between post-training compression (like Product Quantization) and during-training random mixing techniques (like Compositional Embeddings).
+  - CCE provably finds the optimal codebook with bounded iterations, at least for linear models.
+  - CCE experimentally outperforms all other methods for training large recommendation systems.
+  - We provide a large, standardized library of related methods available on GitHub.
+
 ## Install
 
 Install with
