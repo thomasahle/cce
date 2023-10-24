@@ -6,6 +6,7 @@ from .hash import PolyHash
 # Often refereced as "Bloom Embeddings" following https://arxiv.org/abs/1706.03993
 # See also https://thinc.ai/docs/api-layers#hashembed
 
+
 class BloomEmbedding(nn.Module):
     def __init__(
         self,

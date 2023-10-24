@@ -22,16 +22,10 @@ class LowDimensionalEmbedding(nn.Module):
     def reset_parameters(self):
         dim0, dim1 = self.upscale.weight.T.shape
         nn.init.uniform_(self.table.weight, -(dim0**-0.5), dim0**-0.5)
-        nn.init.uniform_(
-            self.upscale.weight, -((dim1 / dim0) ** (-0.5)), (dim1 / dim0) ** (-0.5)
-        )
+        nn.init.uniform_(self.upscale.weight, -((dim1 / dim0) ** (-0.5)), (dim1 / dim0) ** (-0.5))
 
     def size(self):
-        return (
-            self.upscale.weight.numel()
-            + (self.upscale.bias.numel() if self.bias else 0)
-            + self.table.weight.numel()
-        )
+        return self.upscale.weight.numel() + (self.upscale.bias.numel() if self.bias else 0) + self.table.weight.numel()
 
     def forward(self, x):
         return self.upscale(self.table(x))

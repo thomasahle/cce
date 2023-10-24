@@ -4,13 +4,13 @@ import os
 import time
 import numpy as np
 from torch.autograd import Function
-from sklearn.cluster import KMeans
-from .cce_robe import faiss_knn
+from ._tools import faiss_knn
 from .hash import PolyHash
 from itertools import count
 from tqdm import tqdm
 from ortools.linear_solver import pywraplp
 import random
+
 
 def omp(X, D, s):
     """
@@ -55,7 +55,7 @@ def k_svd(X, M, s, n_iter, max_time=None):
         # Dictionary Update, one row at a time
         for j in range(k):
             # Find which samples are currently assumed to be using the kth atom
-            mask = (ids == j)
+            mask = ids == j
             I = torch.any(mask, dim=1)
 
             if not torch.any(I):
@@ -93,6 +93,7 @@ def k_svd(X, M, s, n_iter, max_time=None):
 
     return M, ids, m
 
+
 def mini_ksvd(M, s, batch_maker, n_batches, n_iter, max_time=None):
     # Inspired by https://csaws.cs.technion.ac.il/~ronrubin/Publications/KSVD-OMP-v2.pdf
     assert n_iter >= 1
@@ -113,7 +114,7 @@ def mini_ksvd(M, s, batch_maker, n_batches, n_iter, max_time=None):
             ids, m = omp(X, new_M, s)
             # Find new dictionary
             for j in range(k):
-                mask = (ids == j)
+                mask = ids == j
                 I = torch.any(mask, dim=1)
                 if not torch.any(I):
                     continue
@@ -125,17 +126,17 @@ def mini_ksvd(M, s, batch_maker, n_batches, n_iter, max_time=None):
                 m[mask] = Sigma[0] * U[:, 0]
 
             # "Gradient" update
-            #M = (1-lr)*M + lr*new_M
-            #M = new_M
+            # M = (1-lr)*M + lr*new_M
+            # M = new_M
             new_Ms += new_M
             n += 1
 
             SM = (m.unsqueeze(1) @ M[ids]).squeeze(1)  # SM = S @ M
-            error += torch.norm(SM - X)**2
+            error += torch.norm(SM - X) ** 2
 
         M = new_Ms / n
 
-        error = error**.5
+        error = error**0.5
         if error < 1e-4:
             print("K-SVD: Stopping early because error is near 0.")
             break
@@ -153,15 +154,17 @@ def mini_ksvd(M, s, batch_maker, n_batches, n_iter, max_time=None):
 
     return M
 
+
 def randomized_round(tensor):
     """Perform randomized rounding on a tensor."""
     floor_val = torch.floor(tensor)
     prob = tensor - floor_val
     return floor_val + torch.bernoulli(prob).to(tensor.device)
 
+
 def quantize(tensor, num_bits=8):
-    qmin = -2**(num_bits - 1)
-    qmax = 2**(num_bits - 1) - 1
+    qmin = -(2 ** (num_bits - 1))
+    qmax = 2 ** (num_bits - 1) - 1
     min_val, max_val = tensor.min(), tensor.max()
 
     scale = (max_val - min_val) / (qmax - qmin)
@@ -173,20 +176,20 @@ def quantize(tensor, num_bits=8):
     q_tensor = q_value_rounded.clamp(qmin, qmax).char()  # Use torch.int8 for 8-bit
     return q_tensor, scale, zero_point
 
+
 def dequantize(q_tensor, scale, zero_point):
     return scale * (q_tensor.float() - zero_point)
 
 
 def solveAssignmentProblem(N, M, price_function):
-
     print(f"Making LP problem of size {N} times {M}...")
-    solver = pywraplp.Solver.CreateSolver('GLOP')  # Use 'GLOP' for LP
+    solver = pywraplp.Solver.CreateSolver("GLOP")  # Use 'GLOP' for LP
 
     # Create variables
     x = {}
     for i in range(N):
         for j in range(M):
-            x[i, j] = solver.BoolVar(f'x[{i}][{j}]')
+            x[i, j] = solver.BoolVar(f"x[{i}][{j}]")
 
     # Set objective
     objective = solver.Objective()
@@ -198,9 +201,9 @@ def solveAssignmentProblem(N, M, price_function):
     # Add constraints
     for i in range(N):
         solver.Add(sum(x[i, j] for j in range(M)) == 1)
-    
+
     for j in range(M):
-        solver.Add(sum(x[i, j] for i in range(N)) == N/M)
+        solver.Add(sum(x[i, j] for i in range(N)) == N / M)
 
     print("Running solver...")
     # Solve the model
@@ -214,7 +217,7 @@ def solveAssignmentProblem(N, M, price_function):
                     assignments.append(j)
     else:
         print("The problem does not have an optimal solution!")
-    
+
     return assignments
 
 
@@ -233,7 +236,7 @@ class SparseCodingEmbeddingFunction(Function):
 
         rows, dim = table.shape
         vocab, n_chunks = weights.shape
-        bs, = x.shape
+        (bs,) = x.shape
         assert h.shape == (vocab, n_chunks)
         assert hx.shape == (bs, n_chunks)
         assert grad_output.shape == (bs, dim)
@@ -242,7 +245,7 @@ class SparseCodingEmbeddingFunction(Function):
         if sparse:
             grad_table = grad_table.to_sparse()
         assert weights[x].shape == (bs, n_chunks)
-        wg = (weights[x].unsqueeze(2) @ grad_output.unsqueeze(1))
+        wg = weights[x].unsqueeze(2) @ grad_output.unsqueeze(1)
         assert wg.shape == (bs, n_chunks, dim)
 
         # The scatter code below is equivalent to the loop
@@ -260,7 +263,7 @@ class SparseCodingEmbeddingFunction(Function):
         if sparse:
             grad_weights = grad_weights.to_sparse()
         assert table[hx].shape == (bs, n_chunks, dim)
-        src = (table[hx] @ grad_output.unsqueeze(2)).squeeze(2) # (bs, 4)
+        src = (table[hx] @ grad_output.unsqueeze(2)).squeeze(2)  # (bs, 4)
         assert src.shape == (bs, n_chunks)
 
         # The scatter code below is equivalent to the loop:
@@ -285,7 +288,7 @@ class SparseCodingEmbedding(nn.Module):
         n_chunks: int,
         n_explore: int = 1,  # Number of random pointers per sample
         sparse: bool = False,
-        num_bits: int = 8, # Number of bits per weight, None for infinite
+        num_bits: int = 8,  # Number of bits per weight, None for infinite
         table_grad: bool = True,
     ):
         super().__init__()
@@ -329,7 +332,7 @@ class SparseCodingEmbedding(nn.Module):
 
         # We use a sub-sampling strategy, similar to CCE
         n_samples = sample_factor * rows
-        print(f'{vocab=}, {n_samples=}')
+        print(f"{vocab=}, {n_samples=}")
 
         if n_samples >= vocab:
             vecs = self.forward(torch.arange(vocab))
@@ -385,6 +388,7 @@ class SparseCodingEmbedding(nn.Module):
         # If I'm just going to put the least-squares (MOD style), I might as well do k-svd.
         # And if I'm already doing k-svd, why not do a couple more iterations?
 
+
 class SparseCodingEmbedding2(nn.Module):
     # Whemb verrsion of SparseCodingEmbedding.
     # Instead of using quantized weights, it simply "hashes" the weights to the
@@ -421,7 +425,7 @@ class SparseCodingEmbedding2(nn.Module):
     def forward(self, x):
         rows, dim = self.table.shape
         vecs = self.table[self.h0[x]]  # (batch_size, num_hashes, dim)
-        weights = self.table.flatten()[self.h1[x]].unsqueeze(1) * dim**.5 * self.n_chunks**-.5
+        weights = self.table.flatten()[self.h1[x]].unsqueeze(1) * dim**0.5 * self.n_chunks**-0.5
         # vecs = self.table[self.h0(x)]  # (batch_size, num_hashes, dim)
         # weights = self.table.flatten()[self.h1(x)].unsqueeze(1) * dim**.5 * self.n_chunks**-.5
         return (weights @ vecs).squeeze(1)  # (batch_size, dim)
@@ -431,21 +435,23 @@ class SparseCodingEmbedding2(nn.Module):
         last = np.inf
         print("Finding fastest batch size")
         for log_batch_size in count(5):
-            print(log_batch_size, '...')
+            print(log_batch_size, "...")
             batch_size = 2**log_batch_size
+
             def make_batch(j):
                 if j * batch_size >= vocab:
                     return None
                 x = torch.arange(j * batch_size, min((j + 1) * batch_size, vocab))
                 return self.forward(x)
+
             start = time.time()
-            _ = mini_ksvd(self.table, n_chunks, make_batch, vocab//batch_size+1, n_iter=1)
+            _ = mini_ksvd(self.table, n_chunks, make_batch, vocab // batch_size + 1, n_iter=1)
             elapsed = time.time() - start
             print(batch_size, elapsed)
             if elapsed > last:
                 break
             last = elapsed
-        return 2**(log_batch_size - 1)
+        return 2 ** (log_batch_size - 1)
 
     @torch.no_grad()
     def cluster(self, k_svd_iters=100, batch_size=None, verbose=False, max_time=None):
@@ -453,15 +459,15 @@ class SparseCodingEmbedding2(nn.Module):
         vocab, n_chunks = self.h0.shape
         n_atoms = self.table.numel()
 
-        #max_time *= 10
+        # max_time *= 10
 
         if batch_size is None:
-            #batch_size = 10**9 // rows
+            # batch_size = 10**9 // rows
             batch_size = 10**8 // rows
-            #batch_size = self._find_batch_size()
-            #batch_size = max(2 * rows, 4096*2)
+            # batch_size = self._find_batch_size()
+            # batch_size = max(2 * rows, 4096*2)
 
-        print(f'{batch_size=}, {vocab=}, {rows=}')
+        print(f"{batch_size=}, {vocab=}, {rows=}")
 
         if batch_size >= vocab:
             vecs = self.forward(torch.arange(vocab))
@@ -471,7 +477,7 @@ class SparseCodingEmbedding2(nn.Module):
             indices, values = omp(vecs, M, n_chunks)
             self.h0[:] = indices
 
-            labels = faiss_knn(values.reshape(-1, 1), M.reshape(-1, 1) * dim**.5)
+            labels = faiss_knn(values.reshape(-1, 1), M.reshape(-1, 1) * dim**0.5)
             self.h1[:] = labels.reshape(vocab, n_chunks).to(self.h1.device)
 
             cnts = torch.bincount(labels, minlength=n_atoms)
@@ -480,6 +486,7 @@ class SparseCodingEmbedding2(nn.Module):
             # Pick a random set of indices from the vocab and do k_svd on those
             # x = torch.from_numpy(np.random.choice(vocab, n_samples, replace=False))
             n_batches = vocab // batch_size + 1
+
             def make_batch(j):
                 if j * batch_size >= vocab:
                     return None
@@ -499,7 +506,7 @@ class SparseCodingEmbedding2(nn.Module):
                 self.h0[ids] = indices
 
                 flatvals = values.flatten()
-                flattabs = M.flatten() * dim**.5
+                flattabs = M.flatten() * dim**0.5
                 # def price_function(vi, tj):
                 #     return (flatvals[vi] - flattabs[vj])**2
                 # labels = solveAssignmentProblem(len(flatvals), len(flattabs), price_function)
@@ -508,31 +515,30 @@ class SparseCodingEmbedding2(nn.Module):
                 sorted_ = flattabs.sort()
                 # For each value, this finds the table element that's either higher or lower (index-1)
                 ind = torch.searchsorted(sorted_.values, flatvals)
-                high = torch.minimum(ind, torch.tensor([len(flattabs)-1]))
-                low = torch.maximum(ind-1, torch.tensor([0]))
+                high = torch.minimum(ind, torch.tensor([len(flattabs) - 1]))
+                low = torch.maximum(ind - 1, torch.tensor([0]))
                 labels = torch.stack([sorted_.indices[low], sorted_.indices[high]], dim=1)
-                choice = torch.argmin((flattabs[labels] - flatvals[:, None])**2, dim=1)
+                choice = torch.argmin((flattabs[labels] - flatvals[:, None]) ** 2, dim=1)
                 labels0 = labels[range(len(labels)), choice]
-                #print(time.time()-start)
+                # print(time.time()-start)
 
                 ps = (labels[:, 1] - flatvals) / (labels[:, 1] - labels[:, 0])
                 choice = torch.where(torch.rand(len(labels)) < ps, 1, 0)
                 labels1 = labels[range(len(labels)), choice]
 
                 start = time.time()
-                labels2 = faiss_knn(values.reshape(-1, 1), M.reshape(-1, 1) * dim**.5)
-                #print(time.time()-start)
+                labels2 = faiss_knn(values.reshape(-1, 1), M.reshape(-1, 1) * dim**0.5)
+                # print(time.time()-start)
 
                 # print(labels)
                 # print(labels1)
-                #for i in range(3):
-                    #print(flatvals[i], flattabs[labels0[i]], flattabs[labels1[i]], flattabs[labels2[i]])
+                # for i in range(3):
+                # print(flatvals[i], flattabs[labels0[i]], flattabs[labels1[i]], flattabs[labels2[i]])
 
                 labels = labels2
                 # 0: .789
                 # 1: .779
                 # 2: .79
-                
 
                 self.h1[ids] = labels.reshape(len(ids), n_chunks).to(self.h1.device)
 
@@ -540,8 +546,7 @@ class SparseCodingEmbedding2(nn.Module):
 
         # Measure whether weight pointers are well spread out
         ps = cnts / cnts.sum()
-        ent = (ps * torch.log(1/ps)).nansum().item()
-        uniform = torch.tensor([1/n_atoms] * n_atoms)
-        maxent = (uniform * torch.log(1/uniform)).nansum().item()
-        print(f'Value label entropy: {ent/maxent*100:.1f}% ({ent:.3} out of {maxent:.3})')
-
+        ent = (ps * torch.log(1 / ps)).nansum().item()
+        uniform = torch.tensor([1 / n_atoms] * n_atoms)
+        maxent = (uniform * torch.log(1 / uniform)).nansum().item()
+        print(f"Value label entropy: {ent/maxent*100:.1f}% ({ent:.3} out of {maxent:.3})")

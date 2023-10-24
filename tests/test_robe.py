@@ -63,8 +63,6 @@ def test_identity_hash_with_arange_table():
     # hash_values of 1 -> table[1], table[1+1], table[1+2]
     # hash_values of 2 -> table[2], table[2+1], table[2+2]
     # and so on for each hash value, and then repeated for num_chunks times.
-    expected_output = torch.tensor(
-        [[1, 2, 3, 1, 2, 3], [3, 4, 5, 3, 4, 5], [6, 7, 0, 6, 7, 0]]
-    )
+    expected_output = torch.tensor([[1, 2, 3, 1, 2, 3], [3, 4, 5, 3, 4, 5], [6, 7, 0, 6, 7, 0]])
 
     assert torch.equal(output, expected_output)

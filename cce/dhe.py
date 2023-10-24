@@ -13,7 +13,7 @@ class DeepHashEmbedding(nn.Module):
         rank: int,
         dim: int,
         n_hidden: int,
-        #activation=nn.Mish,
+        # activation=nn.Mish,
     ):
         super().__init__()
         assert n_hidden >= 1
@@ -32,21 +32,17 @@ class DeepHashEmbedding(nn.Module):
 
     def reset_parameters(self):
         for layer in self.layers:
-            nn.init.uniform_(layer.weight, -self.rank**(-.5), self.rank**(-.5))
+            nn.init.uniform_(layer.weight, -self.rank ** (-0.5), self.rank ** (-0.5))
 
     def size(self):
-        return sum(
-            lin.weight.numel() + lin.bias.numel()
-            for lin in self.layers
-            if isinstance(lin, nn.Linear)
-        )
+        return sum(lin.weight.numel() + lin.bias.numel() for lin in self.layers if isinstance(lin, nn.Linear))
 
     def forward(self, x):
         hs = self.hash(x) / self.hash.range  # [0, 1)
         hs = (2 * hs - 1) / self.hash.num_hashes**0.5  # Normalize to the usual
-        #hs = hs / self.hash.num_hashes**0.5  # Normalize to the usual
+        # hs = hs / self.hash.num_hashes**0.5  # Normalize to the usual
         for i, layer in enumerate(self.layers[:-1]):
-            #hs = (layer(torch.relu(hs)) + hs) / 2
+            # hs = (layer(torch.relu(hs)) + hs) / 2
             hs = torch.relu(layer(hs))
         hs = self.layers[-1](hs)
         return hs

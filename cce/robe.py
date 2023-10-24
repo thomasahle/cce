@@ -29,9 +29,7 @@ def get_slices(table, indices, chunk_size, sparse=False):
     rot_indices = (indices[..., None] + torch.arange(chunk_size, device=indices.device)) % len(table)
     old_shape = rot_indices.shape
     rot_indices = rot_indices.flatten()
-    gathered = torch.gather(
-        table, -1, rot_indices, sparse_grad=sparse
-    )
+    gathered = torch.gather(table, -1, rot_indices, sparse_grad=sparse)
     return gathered.reshape(old_shape)
 
 

@@ -26,6 +26,4 @@ class HashNetEmbedding(nn.Module):
         # return self.table[self.hash(x)]
         hs = self.hash(x)
         shape = hs.shape
-        return torch.gather(
-            self.table, 0, hs.flatten(), sparse_grad=self.sparse
-        ).reshape(shape)
+        return torch.gather(self.table, 0, hs.flatten(), sparse_grad=self.sparse).reshape(shape)

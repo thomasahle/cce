@@ -1,81 +1,21 @@
 import torch
 import torch.nn as nn
 import numpy as np
-
-use_sklearn = False
-
-
-def batch_nn(X, Y, bs=None):
-    if bs is None:
-        bs = max(10**8 // len(Y), 1)
-    nns = torch.zeros(len(X), dtype=torch.long, device=X.device)
-    for i in range(0, len(X), bs):
-        dists = torch.cdist(X[i : i + bs], Y)
-        nns[i : i + bs] = torch.argmin(dists, axis=1)
-    return nns
-
-
-class KMeans:
-    """ Simple wrapper for sklearn and faiss """
-
-    def __init__(self, n_clusters, n_iter, n_init, seed=None, verbose=False):
-        self.n_clusters = n_clusters
-        self.n_iter = n_iter
-        self.n_init = n_init
-        self.seed = seed
-        self.verbose = verbose
-
-    def fit(self, vecs):
-        n, dim = vecs.shape
-        if n <= self.n_clusters:
-            # If we have more clusters centers than vectors, we put the vectors in
-            # the first n rows, and put random points in the remaining rows.
-            self.centroids = (torch.randn(self.n_clusters, dim) / dim ** 0.5).to(vecs.device)
-            self.centroids[: n] = vecs
-        elif use_sklearn:
-            import sklearn.cluster
-            kmeans = sklearn.cluster.KMeans(
-                self.n_clusters,
-                max_iter=self.n_iter,
-                n_init=self.n_init,
-                verbose=self.verbose,
-                random_state=self.seed,
-            )
-            kmeans.fit(vecs.detach().cpu().numpy())
-            self.centroids = torch.from_numpy(kmeans.cluster_centers_).to(vecs.device)
-        else:
-            import faiss
-            kmeans = faiss.Kmeans(
-                dim,
-                self.n_clusters,
-                niter=self.n_iter,
-                nredo=self.n_init,
-                verbose=self.verbose,
-                seed=self.seed,
-                # Disable warnings related to the points to n_cluster ratio
-                min_points_per_centroid=1,
-                max_points_per_centroid=n,
-            )
-            kmeans.train(vecs.detach().cpu().numpy())
-            self.centroids = torch.from_numpy(kmeans.centroids).to(vecs.device)
-        return self.centroids
-
-    def find_nearest(self, bvecs):
-        return batch_nn(bvecs, self.centroids)
+from ._tools import KMeans
 
 
 class CCEmbedding(nn.Module):
     def __init__(
         self,
         vocab: int,
-        rows: int,
+        num_params: int,
         chunk_size: int,
         n_chunks: int,
-        seed: int = None,
     ):
         super().__init__()
-        self.seed = seed
         self.vocab = vocab
+        dimension = n_chunks * chunk_size
+        rows = num_params // dimension // 2
         self.table0 = nn.Parameter(torch.empty(rows, n_chunks, chunk_size))
         self.table1 = nn.Parameter(torch.empty(rows, n_chunks, chunk_size))
         self.reset_parameters()
@@ -86,12 +26,8 @@ class CCEmbedding(nn.Module):
         # Initializing match dlrm
         nn.init.uniform_(self.table0, -(dim**-0.5), dim**-0.5)
         nn.init.uniform_(self.table1, -(dim**-0.5), dim**-0.5)
-        self.h0 = nn.Parameter(
-            torch.randint(rows, size=(self.vocab, n_chunks)), requires_grad=False
-        )
-        self.h1 = nn.Parameter(
-            torch.randint(rows, size=(self.vocab, n_chunks)), requires_grad=False
-        )
+        self.h0 = nn.Parameter(torch.randint(rows, size=(self.vocab, n_chunks)), requires_grad=False)
+        self.h1 = nn.Parameter(torch.randint(rows, size=(self.vocab, n_chunks)), requires_grad=False)
 
     def forward(self, x):
         rows, n_chunks, chunk_size = self.table0.shape
@@ -107,7 +43,7 @@ class CCEmbedding(nn.Module):
         n_samples = sample_factor * rows
 
         with torch.no_grad():
-            kmeans = KMeans(rows, n_iter=niter, n_init=redo, verbose=verbose, seed=self.seed)
+            kmeans = KMeans(rows, n_iter=niter, n_init=redo, verbose=verbose)
 
             for i in range(n_chunks):
                 # We might as well do iid sampling for each column
@@ -129,10 +65,7 @@ class CCEmbedding(nn.Module):
                     ids = torch.arange(j, min(j + n_samples, vocab))
 
                     # Compute pre-clustering representation of batch
-                    bvecs = (
-                        self.table0[self.h0[ids, i], i]
-                        + self.table1[self.h1[ids, i], i]
-                    )
+                    bvecs = self.table0[self.h0[ids, i], i] + self.table1[self.h1[ids, i], i]
 
                     # Set the new h0 based on decoding he batch in the centroids
                     self.h0[ids, i] = kmeans.find_nearest(bvecs)

@@ -29,7 +29,7 @@
      and
      <a href="https://thomasahle.com/">Thomas Ahle</a>
     <p>
-Embedding tables are used by machine learning systems to work with categorical features. In modern Recommendation Systems, these tables can be very large, necessitating the development of new methods for fitting them in memory, even during training. We suggest Clustered Compositional Embeddings (CCE) which combines clustering-based compression like quantization to codebooks with dynamic methods like The Hashing Trick and Compositional Embeddings [Shi et al., 2020]. Experimentally CCE achieves the best of both worlds: The high compression rate of codebook-based quantization, but dynamically like hashing-based methods, so it can be used during training. Theoretically, we prove that CCE is guaranteed to converge to the optimal codebook and give a tight bound for the number of iterations required.
+    Embedding tables are used by machine learning systems to work with categorical features. In modern Recommendation Systems, these tables can be very large, necessitating the development of new methods for fitting them in memory, even during training. We suggest <b>Clustered Compositional Embeddings (CCE)</b> which combines clustering-based compression like quantization to codebooks with dynamic methods like <a href="https://arxiv.org/abs/0902.2206">The Hashing Trick</a> and <a href="https://arxiv.org/abs/1909.02107">Compositional Embeddings</a>. Experimentally CCE achieves the best of both worlds: The high compression rate of codebook-based quantization, but dynamically like hashing-based methods, so it can be used during training. Theoretically, we prove that CCE is guaranteed to converge to the optimal codebook and give a tight bound for the number of iterations required.
 
 </p>
 
@@ -52,7 +52,11 @@ Embedding tables are used by machine learning systems to work with categorical f
    </code></pre>
 
    <p>
-   Instead of the Clustered Compositional Embedding, the library also contain many other compressed embedding methods, such as <code>cce.RobeEmbedding</code>, <code>cce.CompositionalEmbedding</code>, <code>cce.TensorTrainEmbedding</code> and <code>cce.DeepHashEmbedding</code>.
+   Other than the Clustered Compositional Embedding, the library also contain many other compressed embedding methods, such as
+   <code><a href="https://github.com/thomasahle/cce/blob/main/cce/robe.py">ce.RobeEmbedding</a></code>,
+   <code><a href="https://github.com/thomasahle/cce/blob/main/cce/ce.py">ce.CompositionalEmbedding</a></code>,
+   <code><a href="https://github.com/thomasahle/cce/blob/main/cce/tt.py">ce.TensorTrainEmbedding</a></code> and
+   <code><a href="https://github.com/thomasahle/cce/blob/main/cce/dhe.py">ce.DeepHashEmbedding</a></code>.
    </p>
 
    <h2>Results</h2>
@@ -65,16 +69,16 @@ Even reducing the number of parameters by a factor 8,500, we were able to get th
     <h2>Method</h2>
     <img src="flowchart.png" style="width: 50%; float:right">
     <p>
-      (a) Single iteration of CCE:
+      Single iteration of CCE:
     </p>
-    <ul>
-       <li>(a) Starting from a random embedding table, each ID is hashed to a vector in each of 2 small tables.
-       </li><li> (b) During training, the embedding of an ID is taken to be the mean of the two referenced code words.
+    <ol>
+       <li>Starting from a random embedding table, each ID is hashed to a vector in each of 2 small tables.
+       </li><li>During training, the embedding of an ID is taken to be the mean of the two referenced code words.
        </li><li>
-          (c) After training for an epoch, the vectors for all (or a sample of) the IDs are computed and clustered. This leaves a new small table in which similar IDs are represented by the same vector.
+          After training for an epoch, the vectors for all (or a sample of) the IDs are computed and clustered. This leaves a new small table in which similar IDs are represented by the same vector.
        </li><li>
-          (d) We can choose to combine the cluster centers with a new random table (and new hash function), after which the process can be repeated for an increasingly better understanding of which ID should be combined.
-    </ul>
+          We can choose to combine the cluster centers with a new random table (and new hash function), after which the process can be repeated for an increasingly better understanding of which ID should be combined.
+    </ol>
 
     <p>
     For more details, see

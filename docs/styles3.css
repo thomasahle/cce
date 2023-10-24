@@ -43,3 +43,16 @@ pre {
     background-color: #35475E;
     color: #E9E9E9;
 }
+
+ol {
+   list-style-type: none; /* Remove the default numbering */
+   counter-reset: item;  /* Initialize a counter named 'item' */
+}
+ol > li {
+   /* Each time this rule applies, the counter is increased */
+   counter-increment: item; 
+}
+ol > li::before {
+   /* Use the counter as a lowercase letter, and wrap it in parentheses */
+   content: "(" counter(item, lower-alpha) ") "; 
+}

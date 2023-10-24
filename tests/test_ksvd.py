@@ -22,6 +22,7 @@ def generate_synthetic_data(n_samples, n_features, n_atoms, s):
 
     return X, D_true, S_true
 
+
 def test_omp():
     n_samples, n_features, n_atoms, s = 100, 50, 20, 5
     X, D_true, S_true = generate_synthetic_data(n_samples, n_features, n_atoms, s)
@@ -29,6 +30,7 @@ def test_omp():
     SM = (m.unsqueeze(1) @ D_true[ids]).squeeze(1)
     error = torch.norm(SM - X)
     assert error < 1e-2, "OMP reconstruction error is too high"
+
 
 def old_omp(X, D, s):
     """
@@ -94,9 +96,10 @@ def old_k_svd(X, M, s, n_iter=50):
             M[j, :] = Vt[0, :]
             # We also update S, which is how k-svd can have an advantage over MOD
             S[I, j] = Sigma[0] * U[:, 0]
-        print(f'K-SVD error at {iter}:', np.linalg.norm(S @ M - X))
+        print(f"K-SVD error at {iter}:", np.linalg.norm(S @ M - X))
 
     return torch.from_numpy(M), torch.from_numpy(S)
+
 
 def test_k_svd():
     n_samples, n_features, n_atoms, s = 100, 20, 50, 5
@@ -111,7 +114,7 @@ def test_k_svd():
     initial_error = torch.norm(SM_initial - X)
 
     M_learned, _, _ = sparse.k_svd(X, M_init, s, n_iter=10)
-    #M_learned, _ = old_k_svd(X, M_init, s, n_iter=10)
+    # M_learned, _ = old_k_svd(X, M_init, s, n_iter=10)
 
     ids_learned, m_learned = sparse.omp(X, M_learned, s)
     SM_learned = (m_learned.unsqueeze(1) @ M_learned[ids_learned]).squeeze(1)
@@ -121,6 +124,7 @@ def test_k_svd():
     print(learned_error)
 
     assert learned_error < initial_error, "K-SVD didn't reduce the reconstruction error"
+
 
 def test_backprop():
     # Initialize inputs
