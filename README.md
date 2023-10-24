@@ -62,13 +62,38 @@ You can also use `--method robe` to use the Robe method, or `ce` for composition
 
 ## Results
 
+### Criteo and DLRM
 We adapted the [Deep Learning Recommendation Model](https://github.com/facebookresearch/dlrm) (DLRM) model to use CCE.
 Even reducing the number of parameters by a factor 8,500, we were able to get the same test loss (Binary cross entropy) as the full DLRM model.
 
-| Criteo Kaggle | Criteo Terabyte |
-| --- | --- |
-| <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/criteo2.png" alt="Criteo Kaggle" width="100%"/> | <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/terabyte.png" alt="Criteo Kaggle" width="100%"/> |
+<table>
+  <tr>
+    <th width="50%">Criteo Kaggle</th>
+    <th width="50%">Criteo Terabyte</th>
+  </tr>
+  <tr>
+    <td>
+      <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/criteo2.png" alt="Criteo Kaggle" width="100%"/>
+    </td>
+    <td>
+      <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/terabyte.png" alt="Criteo Terabyte" width="100%"/>
+    </td>
+  </tr>
+  <tr>
+      <td>
+                  <p>We trained DLRM on the <a href="https://www.kaggle.com/competitions/criteo-display-ad-challenge">Criteo Kaggle dataset</a> with
+different compression algorithms. Each of 27 categorical features was given its own embedding table, where we
+limited the number of parameters in the largest table as shown in the x-axis.
+        See more details in the paper.</p>
+      </td>
+      <td>
+                  <p>The <a href="https://ailab.criteo.com/download-criteo-1tb-click-logs-dataset/">Download Criteo 1TB Click Logs dataset</a> is the largest publicly available recommendation dataset.
+        We trained for 10 epochs using the CCE method, as well as hashing, but only one repetition as the dataset is massive.</p>
+      </td>
+  </tr>
+</table>
 
+### Movielens and GMF
 In examples/movielens.py we implemented a Generalized Matrix Factorization model, as in the example code above.
 We then ran each method in the library on the different MovieLens datasets, ML-1m, ML-20m and ML-25m.
 We also created a synthetic dataset, using random embeddings and the GMF model to generate interaction data.
@@ -81,7 +106,7 @@ We also created a synthetic dataset, using random embeddings and the GMF model t
 | 25M | <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/ml-25-auc.png" width="100%"/> | <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/syn-25-auc.png" width="100%"/> |
 | 100M |  | <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/syn-100-auc.png" width="100%"/> |
 
-All models use a 32 dimensional embedidng tables of the given method.
+All models use 32 dimensional embedidng tables of the given method.
 
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/clustering-embedding-tables-without-first/click-through-rate-prediction-on-criteo)](https://paperswithcode.com/sota/click-through-rate-prediction-on-criteo?p=clustering-embedding-tables-without-first)
 
