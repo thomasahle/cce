@@ -25,7 +25,7 @@ class GMF(nn.Module):
 ```
 
 Instead of the Clustered Compositional Embedding, the library also contain many other compressed embedding methods, such as `cce.RobeEmbedding`, `cce.CompositionalEmbedding`, `cce.TensorTrainEmbedding` and `cce.DeepHashEmbedding`.
-See https://github.com/thomasahle/cce/blob/main/examples/movielens.py#L22 for examples on how to initialize them.
+See [cce/\_\_init\_\_.py](https://github.com/thomasahle/cce/blob/main/cce/__init__.py) for examples on how to initialize them.
 
 ## Key Takeaways
 - **Context:** Modern Recommendation Systems require large embedding tables, challenging to fit in memory during training.
