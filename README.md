@@ -60,7 +60,7 @@ You can also use `--method robe` to use the Robe method, or `ce` for composition
   author={Tsang, Henry Ling-Hei and Ahle, Thomas Dybdahl},
   booktitle={Advances in Neural Information Processing Systems (NeurIPS)},
   year={2023}
-
+}
 ```
 
 ## Other implemented algorithms
