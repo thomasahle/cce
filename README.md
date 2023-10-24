@@ -6,7 +6,7 @@ Embedding tables are used by machine learning systems to work with categorical f
 
 ## Example code
 
-```
+```python
 import cce
 
 class GMF(nn.Module):
@@ -28,12 +28,12 @@ See https://github.com/thomasahle/cce/blob/main/examples/movielens.py#L22 for ex
 ## Install
 
 Install with
-```
+```bash
 pip install -e .
 ```
 
 Then run
-```
+```bash
 python examples/movielens.py --method cce
 ```
 To test run CCE on a simple movielens 100K dataset.
