@@ -18,6 +18,7 @@
 
 <div class="container mt-5">
     <img src="banner.png" alt="Banner Image" style="width: 100%; max-height: auto;">
+    <p style="text-align:center; font-style:italic">We train embedding tables with fewer parameters by iteratively combining sketches.</p>
     <h1>Clustered Compositional Embeddings</h1>
     <p>
     <a href="https://github.com/thomasahle/cce">GitHub Repository</a>
@@ -42,8 +43,8 @@
        """ A simple Generalized Matrix Factorization model """
        def __init__(self, n_users, n_items, dim, num_params):
            super().__init__()
-           self.user_embedding = cce.CCEmbedding(vocab=n_users, rows=num_params // dim // 2, chunk_size=dim // 4, n_chunks=4)
-           self.item_embedding = cce.CCEmbedding(vocab=n_users, rows=num_params // dim // 2, chunk_size=dim // 4, n_chunks=4)
+           self.user_embedding = cce.make_embedding(n_users, num_params, dim, 'cce', n_chunks=4)
+           self.item_embedding = cce.make_embedding(n_items, num_params, dim, 'cce', n_chunks=4)
 
        def forward(self, user, item):
            user_emb = self.user_embedding(user)
@@ -58,6 +59,7 @@
    <code><a href="https://github.com/thomasahle/cce/blob/main/cce/tt.py">ce.TensorTrainEmbedding</a></code> and
    <code><a href="https://github.com/thomasahle/cce/blob/main/cce/dhe.py">ce.DeepHashEmbedding</a></code>.
    </p>
+
 
    <h2>Results</h2>
    <p>
@@ -84,6 +86,25 @@ Even reducing the number of parameters by a factor 8,500, we were able to get th
     For more details, see
     <a href="https://github.com/thomasahle/cce/blob/main/cce/cce.py">cce/cce.py</a> in the Github repository.
     </p>
+
+   <h2>Key Takeaways</h2>
+   <ul><li>
+      <b>Context:</b> Modern Recommendation Systems require large embedding tables, challenging to fit in memory during training.
+      </li><li>
+         <b>Solution:</b> CCE combines hashing/sketching methods with clustering during training, to learn an efficent sparse, data dependent hash function.
+      </li><li>
+         <b>Contributions:</b>
+         <ul><li>
+               CCE fills the gap between post-training compression (like Product Quantization) and during-training random mixing techniques (like Compositional Embeddings).
+         </li><li>
+              CCE provably finds the optimal codebook with bounded iterations, at least for linear models.
+         </li><li>
+              CCE experimentally outperforms all other methods for training large recommendation systems.
+         </li><li>
+              We provide a large, standardized library of related methods available on GitHub.
+         </li></ul>
+      </li>
+   </ul>
 
 
     <h2 style="clear:right">Citation</h2>
