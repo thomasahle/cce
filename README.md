@@ -62,7 +62,16 @@ You can also use `--method robe` to use the Robe method, or `ce` for composition
 
 ## Results
 
-For a simple 32 dim model, varying the number of parameters:
+We adapted the [Deep Learning Recommendation Model](https://github.com/facebookresearch/dlrm) (DLRM) model to use CCE.
+Even reducing the number of parameters by a factor 8,500, we were able to get the same test loss (Binary cross entropy) as the full DLRM model.
+
+| Criteo Kaggle | Criteo Terabyte |
+| --- | --- |
+| <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/criteo2.png" alt="Criteo Kaggle" width="100%"/> | <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/terabyte.png" alt="Criteo Kaggle" width="100%"/> |
+
+In examples/movielens.py we implemented a Generalized Matrix Factorization model, as in the example code above.
+We then ran each method in the library on the different MovieLens datasets, ML-1m, ML-20m and ML-25m.
+We also created a synthetic dataset, using random embeddings and the GMF model to generate interaction data.
 
 | Size | MovieLens | Synthetic |
 | --- | --- | --- |
@@ -72,9 +81,7 @@ For a simple 32 dim model, varying the number of parameters:
 | 25M | <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/ml-25-auc.png" width="100%"/> | <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/syn-25-auc.png" width="100%"/> |
 | 100M |  | <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/syn-100-auc.png" width="100%"/> |
 
-
-Similarly a 16 dimensional model on Criteo Kaggle:
-<img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/criteo2.png" alt="Criteo Kaggle" width="70%"/>
+All models use a 32 dimensional embedidng tables of the given method.
 
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/clustering-embedding-tables-without-first/click-through-rate-prediction-on-criteo)](https://paperswithcode.com/sota/click-through-rate-prediction-on-criteo?p=clustering-embedding-tables-without-first)
 
