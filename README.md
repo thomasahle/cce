@@ -4,6 +4,27 @@ This repository contains the code for the paper ["Clustering the Sketch: Dynamic
 ## Abstract
 Embedding tables are used by machine learning systems to work with categorical features. In modern Recommendation Systems, these tables can be very large, necessitating the development of new methods for fitting them in memory, even during training. We suggest Clustered Compositional Embeddings (CCE) which combines clustering-based compression like quantization to codebooks with dynamic methods like The Hashing Trick and Compositional Embeddings [Shi et al., 2020]. Experimentally CCE achieves the best of both worlds: The high compression rate of codebook-based quantization, but dynamically like hashing-based methods, so it can be used during training. Theoretically, we prove that CCE is guaranteed to converge to the optimal codebook and give a tight bound for the number of iterations required.
 
+## Example code
+
+```
+import cce
+
+class GMF(nn.Module):
+    """ A simple Generalized Matrix Factorization model """
+    def __init__(self, n_users, n_items, dim, num_params):
+        super().__init__()
+        self.user_embedding = cce.CCEmbedding(vocab=n_users, rows=num_params // dim // 2, chunk_size=dim // 4, n_chunks=4)
+        self.item_embedding = cce.CCEmbedding(vocab=n_users, rows=num_params // dim // 2, chunk_size=dim // 4, n_chunks=4)
+
+    def forward(self, user, item):
+        user_emb = self.user_embedding(user)
+        item_emb = self.item_embedding(item)
+        return torch.sigmoid((user_emb * item_emb).sum(-1))
+```
+
+Instead of the Clustered Compositional Embedding, the library also contain many other compressed embedding methods, such as cce.RobeEmbedding, cce.CompositionalEmbedding, cce.TensorTrainEmbedding and cce.DeepHashEmbedding.
+See https://github.com/thomasahle/cce/blob/main/examples/movielens.py#L22 for examples on how to initialize them.
+
 ## Install
 
 Install with
