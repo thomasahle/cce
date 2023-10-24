@@ -15,8 +15,8 @@ class GMF(nn.Module):
     """ A simple Generalized Matrix Factorization model """
     def __init__(self, n_users, n_items, dim, num_params):
         super().__init__()
-        self.user_embedding = cce.CCEmbedding(vocab=n_users, rows=num_params // dim // 2, chunk_size=dim // 4, n_chunks=4)
-        self.item_embedding = cce.CCEmbedding(vocab=n_users, rows=num_params // dim // 2, chunk_size=dim // 4, n_chunks=4)
+        self.user_embedding = cce.make_embedding(n_users, num_params, dim, 'cce', n_chunks=4)
+        self.item_embedding = cce.make_embedding(n_items, num_params, dim, 'cce', n_chunks=4)
 
     def forward(self, user, item):
         user_emb = self.user_embedding(user)
