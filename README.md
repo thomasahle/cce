@@ -22,7 +22,7 @@ class GMF(nn.Module):
         return torch.sigmoid((user_emb * item_emb).sum(-1))
 ```
 
-Instead of the Clustered Compositional Embedding, the library also contain many other compressed embedding methods, such as cce.RobeEmbedding, cce.CompositionalEmbedding, cce.TensorTrainEmbedding and cce.DeepHashEmbedding.
+Instead of the Clustered Compositional Embedding, the library also contain many other compressed embedding methods, such as `cce.RobeEmbedding`, `cce.CompositionalEmbedding`, `cce.TensorTrainEmbedding` and `cce.DeepHashEmbedding`.
 See https://github.com/thomasahle/cce/blob/main/examples/movielens.py#L22 for examples on how to initialize them.
 
 ## Install
