@@ -66,7 +66,14 @@
    We adapted the <a href="https://github.com/facebookresearch/dlrm">Deep Learning Recommendation Model</a> (DLRM) model to use CCE.
 Even reducing the number of parameters by a factor 8,500, we were able to get the same test loss (Binary cross entropy) as the full DLRM model.
    </p>
-<img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/criteo2.png" alt="Criteo Kaggle" width="80%" style="border: 15px solid #35475E; border-radius:5px; display:block; margin:10px auto;"/>
+   <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/criteo2.png" alt="Criteo Kaggle" width="80%" style="border: 15px solid #35475E; border-radius:5px; display:block; margin:10px auto;"/>
+   <p>
+   Note how previous compressed training methods were not significantly better than just using the hashing trick.
+   Also note that most compressed embeddings actually achieve better loss than the full embedding table of the baseline.
+   This indicates the reduced number of parameters is useful as regularization.
+   However, post-training compression methods, like Product Quantization, are unable to take advantae of this.
+   </p>
+
 
     <h2>Method</h2>
     <img src="flowchart.png" style="width: 50%; float:right">
