@@ -5,45 +5,91 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clustered Compositional Embeddings</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="styles2.css">
-</head>
+    <link rel="stylesheet" href="styles3.css">
+
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+   <!-- and it's easy to individually load additional languages -->
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
+
+   <script>hljs.highlightAll();</script>
 <body>
 
 <div class="container mt-5">
+    <img src="banner.png" alt="Banner Image" style="width: 100%; max-height: auto;">
     <h1>Clustered Compositional Embeddings</h1>
-    <p>This repository contains the code for the paper <a href="https://openreview.net/forum?id=C4rRqkXFyC">"Clustering the Sketch: Dynamic Compression for Embedding Tables"</a>.</p>
+    <p>
+    <a href="https://github.com/thomasahle/cce">GitHub Repository</a>
+    -
+    <a href="https://arxiv.org/abs/2210.05974">ArXiv Paper</a>
+    -
+    by
+     <a href="https://scholars.croucher.org.hk/scholars/ling-hei-tsang">Henry Tsang</a>
+     and
+     <a href="https://thomasahle.com/">Thomas Ahle</a>
+    <p>
+Embedding tables are used by machine learning systems to work with categorical features. In modern Recommendation Systems, these tables can be very large, necessitating the development of new methods for fitting them in memory, even during training. We suggest Clustered Compositional Embeddings (CCE) which combines clustering-based compression like quantization to codebooks with dynamic methods like The Hashing Trick and Compositional Embeddings [Shi et al., 2020]. Experimentally CCE achieves the best of both worlds: The high compression rate of codebook-based quantization, but dynamically like hashing-based methods, so it can be used during training. Theoretically, we prove that CCE is guaranteed to converge to the optimal codebook and give a tight bound for the number of iterations required.
 
-    <h2>Abstract</h2>
-    <p>Embedding tables are used by machine learning systems to work with categorical features... [trimmed for brevity]</p>
+</p>
 
-    <h2>Install</h2>
-    <p>Install with</p>
-    <pre><code>pip install -e .</code></pre>
-    <p>Then run</p>
-    <pre><code>python examples/movielens.py --method cce</code></pre>
-    <p>To test run CCE on a simple movielens 100K dataset... [trimmed for brevity]</p>
+    <h2>Example Code</h2>
 
-    <h2>Citation</h2>
-    <pre>
-    @article{tsang2022clustering,
-      title={... [trimmed for brevity]}
-    </pre>
+    <pre><code class="python">
+   import cce
 
-    <h2>Other implemented algorithms</h2>
+   class GMF(nn.Module):
+       """ A simple Generalized Matrix Factorization model """
+       def __init__(self, n_users, n_items, dim, num_params):
+           super().__init__()
+           self.user_embedding = cce.CCEmbedding(vocab=n_users, rows=num_params // dim // 2, chunk_size=dim // 4, n_chunks=4)
+           self.item_embedding = cce.CCEmbedding(vocab=n_users, rows=num_params // dim // 2, chunk_size=dim // 4, n_chunks=4)
+
+       def forward(self, user, item):
+           user_emb = self.user_embedding(user)
+           item_emb = self.item_embedding(item)
+           return torch.sigmoid((user_emb * item_emb).sum(-1))
+   </code></pre>
+
+   <p>
+   Instead of the Clustered Compositional Embedding, the library also contain many other compressed embedding methods, such as <code>cce.RobeEmbedding</code>, <code>cce.CompositionalEmbedding</code>, <code>cce.TensorTrainEmbedding</code> and <code>cce.DeepHashEmbedding</code>.
+   </p>
+
+   <h2>Results</h2>
+   <p>
+   We adapted the <a href="https://github.com/facebookresearch/dlrm">Deep Learning Recommendation Model</a> (DLRM) model to use CCE.
+Even reducing the number of parameters by a factor 8,500, we were able to get the same test loss (Binary cross entropy) as the full DLRM model.
+   </p>
+<img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/criteo2.png" alt="Criteo Kaggle" width="80%" style="border: 15px solid #35475E; border-radius:5px; display:block; margin:10px auto;"/>
+
+    <h2>Method</h2>
+    <img src="flowchart.png" style="width: 50%; float:right">
+    <p>
+      (a) Single iteration of CCE:
+    </p>
     <ul>
-        <!-- Links to other implemented algorithms -->
-        ... [trimmed for brevity]
+       <li>(a) Starting from a random embedding table, each ID is hashed to a vector in each of 2 small tables.
+       </li><li> (b) During training, the embedding of an ID is taken to be the mean of the two referenced code words.
+       </li><li>
+          (c) After training for an epoch, the vectors for all (or a sample of) the IDs are computed and clustered. This leaves a new small table in which similar IDs are represented by the same vector.
+       </li><li>
+          (d) We can choose to combine the cluster centers with a new random table (and new hash function), after which the process can be repeated for an increasingly better understanding of which ID should be combined.
     </ul>
 
-    <h2>Results</h2>
-    <table class="table table-bordered">
-        <!-- Table with results -->
-        ... [trimmed for brevity]
-    </table>
+    <p>
+    For more details, see
+    <a href="https://github.com/thomasahle/cce/blob/main/cce/cce.py">cce/cce.py</a> in the Github repository.
+    </p>
 
-    <h2>Parameters</h2>
-    <p>Many of the methods which utilize hashing allow a <code>n_chunks</code> parameter... [trimmed for brevity]</p>
-</div>
+
+    <h2 style="clear:right">Citation</h2>
+    <pre>
+@inproceedings{tsang2023clustering,
+  title={Clustering Embedding Tables, Without First Learning Them},
+  author={Tsang, Henry Ling-Hei and Ahle, Thomas Dybdahl},
+  booktitle={Advances in Neural Information Processing Systems (NeurIPS)},
+  year={2023}
+}</pre>
 
 </body>
 </html>
