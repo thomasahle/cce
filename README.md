@@ -1,3 +1,5 @@
+![Banner](https://raw.githubusercontent.com/thomasahle/cce/main/docs/banner.png)
+
 # Clustered Compositional Embeddings
 This repository contains the code for the paper ["Clustering the Sketch: Dynamic Compression for Embedding Tables"](https://arxiv.org/abs/2210.05974).
 
