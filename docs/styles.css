@@ -1,0 +1,52 @@
+
+body {
+    font-family: 'Roboto', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f4f4f4;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2, h3 {
+    font-family: 'Montserrat', sans-serif;
+    margin-top: 20px;
+}
+
+a {
+    color: [Your Primary Color];
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: [Your Secondary Color];
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th {
+    background-color: [Your Primary Color];
+    color: #fff;
+}
+
+.table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+button, pre {
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+@media only screen and (max-width: 768px) {
+    /* Adjustments for tablet and mobile views */
+}
