@@ -121,8 +121,6 @@ We also created a synthetic dataset, using random embeddings and the GMF model t
 
 All models use 32 dimensional embedidng tables of the given method.
 
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/clustering-embedding-tables-without-first/click-through-rate-prediction-on-criteo)](https://paperswithcode.com/sota/click-through-rate-prediction-on-criteo?p=clustering-embedding-tables-without-first)
-
 ## Parameters
 
 Many of the methods which utilize hashing allow a `n_chunks` parameter, which defines how many sub-vectors are combined to get the final embedding.
