@@ -22,6 +22,10 @@ class GMF(nn.Module):
         user_emb = self.user_embedding(user)
         item_emb = self.item_embedding(item)
         return torch.sigmoid((user_emb * item_emb).sum(-1))
+
+    def epoch_end(self):
+        self.user_embedding.cluster()
+        self.item_embedding.cluster()
 ```
 
 Instead of the Clustered Compositional Embedding, the library also contain many other compressed embedding methods, such as `cce.RobeEmbedding`, `cce.CompositionalEmbedding`, `cce.TensorTrainEmbedding` and `cce.DeepHashEmbedding`.
