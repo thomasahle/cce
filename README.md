@@ -1,6 +1,6 @@
 <p align="center" margin="0">
     <img src="https://raw.githubusercontent.com/thomasahle/cce/main/docs/banner.png" />
-We train embedding tables with fewer parameters by combining multiple sketches of the same data.</p>
+<i>We train embedding tables with fewer parameters by combining multiple sketches of the same data, iteratively.</i></p>
 
 # Clustered Compositional Embeddings
 This repository contains the code for the paper ["Clustering the Sketch: Dynamic Compression for Embedding Tables"](https://arxiv.org/abs/2210.05974).
