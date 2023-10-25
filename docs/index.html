@@ -50,6 +50,10 @@
            user_emb = self.user_embedding(user)
            item_emb = self.item_embedding(item)
            return torch.sigmoid((user_emb * item_emb).sum(-1))
+
+       def epoch_end(self):
+           self.user_embedding.cluster()
+           self.item_embedding.cluster()
    </code></pre>
 
    <p>
