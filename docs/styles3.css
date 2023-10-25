@@ -2,6 +2,10 @@ body {
     font-family: 'Lato', sans-serif;
     background-color: #fbebce;
     color: #222222;
+    hyphens: auto;
+}
+div.narrow {
+   max-width: 100ch;
 }
 
 h1, h2 {
@@ -57,3 +61,44 @@ ol > li::before {
    /* Use the counter as a lowercase letter, and wrap it in parentheses */
    content: "(" counter(item, lower-alpha) ") "; 
 }
+.banner {
+   width: 100%;
+   margin-top: -35px;
+}
+.tagline {
+   text-align:center;
+   font-style:italic;
+   display: none;
+}
+.float-image {
+  width: 90%;
+  margin: 0 auto 10px auto;
+  text-align:center;
+}
+
+@media (min-width: 768px) {
+  .float-image {
+      width: 50%;
+      float:right;
+  }
+  .tagline {
+     display:block;
+  }
+}
+ol {
+   padding-left: 0;
+}
+.result-image {
+   border: 5px solid #35475E;
+   border-radius:5px;
+   display:block;
+   margin:10px auto;
+   width: 100%;
+}
+@media (min-width: 768px) {
+   .result-image {
+      border-width: 15px;
+      width: 80%;
+   }
+}
+

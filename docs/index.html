@@ -1,131 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clustered Compositional Embeddings</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="styles3.css">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Clustered Compositional Embeddings</title>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+      <link rel="stylesheet" href="styles3.css">
 
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
-   <!-- and it's easy to individually load additional languages -->
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
+      <!-- and it's easy to individually load additional languages -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
 
-   <script>hljs.highlightAll();</script>
-<body>
+      <script>hljs.highlightAll();</script>
+      <body>
 
-<div class="container mt-5">
-    <img src="banner.png" alt="Banner Image" style="width: 100%; max-height: auto;">
-    <p style="text-align:center; font-style:italic">We train embedding tables with fewer parameters by iteratively combining sketches.</p>
-    <h1>Clustering the Sketch: Dynamic Compression for Embedding Tables</h1>
-    <p>
-    <a href="https://github.com/thomasahle/cce">GitHub Repository</a>
-    -
-    <a href="https://arxiv.org/abs/2210.05974">ArXiv Paper</a>
-    -
-    by
-     <a href="https://scholars.croucher.org.hk/scholars/ling-hei-tsang">Henry Tsang</a>
-     and
-     <a href="https://thomasahle.com/">Thomas Ahle</a>
-    <p>
-    Embedding tables are used by machine learning systems to work with categorical features. In modern Recommendation Systems, these tables can be very large, necessitating the development of new methods for fitting them in memory, even during training. We suggest <b>Clustered Compositional Embeddings (CCE)</b> which combines clustering-based compression like quantization to codebooks with dynamic methods like <a href="https://arxiv.org/abs/0902.2206">The Hashing Trick</a> and <a href="https://arxiv.org/abs/1909.02107">Compositional Embeddings</a>. Experimentally CCE achieves the best of both worlds: The high compression rate of codebook-based quantization, but dynamically like hashing-based methods, so it can be used during training. Theoretically, we prove that CCE is guaranteed to converge to the optimal codebook and give a tight bound for the number of iterations required.
+         <div class="container mt-5">
+            <img src="banner.png" alt="Banner Image" class="banner">
+            <div class="container narrow">
 
-</p>
+               <p class="tagline">We train embedding tables with fewer parameters by combining multiple sketches of the same data.</p>
+               <h1>Clustering the Sketch: Dynamic Compression for Embedding Tables</h1>
+               <p>
+               <a href="https://github.com/thomasahle/cce">GitHub Repository</a>
+               -
+               <a href="https://arxiv.org/abs/2210.05974">ArXiv Paper</a>
+               -
+               by
+               <a href="https://scholars.croucher.org.hk/scholars/ling-hei-tsang">Henry Tsang</a>
+               and
+               <a href="https://thomasahle.com/">Thomas Ahle</a>
+               <p>
+               Embedding tables are used by machine learning systems to work with categorical features. In modern Recommendation Systems, these tables can be very large, necessitating the development of new methods for fitting them in memory, even during training. We suggest <b>Clustered Compositional Embeddings (CCE)</b> which combines clustering-based compression like quantization to codebooks with dynamic methods like <a href="https://arxiv.org/abs/0902.2206">The Hashing Trick</a> and <a href="https://arxiv.org/abs/1909.02107">Compositional Embeddings</a>. Experimentally CCE achieves the best of both worlds: The high compression rate of codebook-based quantization, but dynamically like hashing-based methods, so it can be used during training. Theoretically, we prove that CCE is guaranteed to converge to the optimal codebook and give a tight bound for the number of iterations required.
 
-    <h2>Example Code</h2>
+               </p>
 
-    <pre><code class="python">
-   import cce
+               <h2>Example Code</h2>
 
-   class GMF(nn.Module):
-       """ A simple Generalized Matrix Factorization model """
-       def __init__(self, n_users, n_items, dim, num_params):
-           super().__init__()
-           self.user_embedding = cce.make_embedding(n_users, num_params, dim, 'cce', n_chunks=4)
-           self.item_embedding = cce.make_embedding(n_items, num_params, dim, 'cce', n_chunks=4)
+               <pre><code class="python">import torch, cce
 
-       def forward(self, user, item):
-           user_emb = self.user_embedding(user)
-           item_emb = self.item_embedding(item)
-           return torch.sigmoid((user_emb * item_emb).sum(-1))
+class GMF(torch.nn.Module):
+    """ A simple Generalized Matrix Factorization model """
+    def __init__(self, n_users, n_items, dim, num_params):
+        super().__init__()
+        self.user_embedding = cce.make_embedding(n_users, num_params, dim, 'cce', n_chunks=4)
+        self.item_embedding = cce.make_embedding(n_items, num_params, dim, 'cce', n_chunks=4)
 
-       def epoch_end(self):
-           self.user_embedding.cluster()
-           self.item_embedding.cluster()
-   </code></pre>
+    def forward(self, user, item):
+        user_emb = self.user_embedding(user)
+        item_emb = self.item_embedding(item)
+        return torch.sigmoid((user_emb * item_emb).sum(-1))
 
-   <p>
-   Other than the Clustered Compositional Embedding, the library also contain many other compressed embedding methods, such as
-   <code><a href="https://github.com/thomasahle/cce/blob/main/cce/robe.py">ce.RobeEmbedding</a></code>,
-   <code><a href="https://github.com/thomasahle/cce/blob/main/cce/ce.py">ce.CompositionalEmbedding</a></code>,
-   <code><a href="https://github.com/thomasahle/cce/blob/main/cce/tt.py">ce.TensorTrainEmbedding</a></code> and
-   <code><a href="https://github.com/thomasahle/cce/blob/main/cce/dhe.py">ce.DeepHashEmbedding</a></code>.
-   </p>
+    def epoch_end(self):
+        self.user_embedding.cluster()
+        self.item_embedding.cluster()</code></pre>
 
-
-   <h2>Results</h2>
-   <p>
-   We adapted the <a href="https://github.com/facebookresearch/dlrm">Deep Learning Recommendation Model</a> (DLRM) model to use CCE.
-Even reducing the number of parameters by a factor 8,500, we were able to get the same test loss (Binary cross entropy) as the full DLRM model.
-   </p>
-   <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/criteo2.png" alt="Criteo Kaggle" width="80%" style="border: 15px solid #35475E; border-radius:5px; display:block; margin:10px auto;"/>
-   <p>
-   Note how previous compressed training methods were not significantly better than just using the hashing trick.
-   Also note that most compressed embeddings actually achieve better loss than the full embedding table of the baseline.
-   This indicates the reduced number of parameters is useful as regularization.
-   However, post-training compression methods, like Product Quantization, are unable to take advantae of this.
-   </p>
+               <p>
+               Other than the Clustered Compositional Embedding, the library also contain many other compressed embedding methods, such as
+               <code><a href="https://github.com/thomasahle/cce/blob/main/cce/robe.py">ce.RobeEmbedding</a></code>,
+               <code><a href="https://github.com/thomasahle/cce/blob/main/cce/ce.py">ce.CompositionalEmbedding</a></code>,
+               <code><a href="https://github.com/thomasahle/cce/blob/main/cce/tt.py">ce.TensorTrainEmbedding</a></code> and
+               <code><a href="https://github.com/thomasahle/cce/blob/main/cce/dhe.py">ce.DeepHashEmbedding</a></code>.
+               </p>
 
 
-    <h2>Method</h2>
-    <img src="flowchart.png" style="width: 50%; float:right">
-    <p>
-      Single iteration of CCE:
-    </p>
-    <ol>
-       <li>Starting from a random embedding table, each ID is hashed to a vector in each of 2 small tables.
-       </li><li>During training, the embedding of an ID is taken to be the mean of the two referenced code words.
-       </li><li>
-          After training for an epoch, the vectors for all (or a sample of) the IDs are computed and clustered. This leaves a new small table in which similar IDs are represented by the same vector.
-       </li><li>
-          We can choose to combine the cluster centers with a new random table (and new hash function), after which the process can be repeated for an increasingly better understanding of which ID should be combined.
-    </ol>
-
-    <p>
-    For more details, see
-    <a href="https://github.com/thomasahle/cce/blob/main/cce/cce.py">cce/cce.py</a> in the Github repository.
-    </p>
-
-   <h2>Key Takeaways</h2>
-   <ul><li>
-      <b>Context:</b> Modern Recommendation Systems require large embedding tables, challenging to fit in memory during training.
-      </li><li>
-         <b>Solution:</b> CCE combines hashing/sketching methods with clustering during training, to learn an efficent sparse, data dependent hash function.
-      </li><li>
-         <b>Contributions:</b>
-         <ul><li>
-               CCE fills the gap between post-training compression (like Product Quantization) and during-training random mixing techniques (like Compositional Embeddings).
-         </li><li>
-              CCE provably finds the optimal codebook with bounded iterations, at least for linear models.
-         </li><li>
-              CCE experimentally outperforms all other methods for training large recommendation systems.
-         </li><li>
-              We provide a large, standardized library of related methods available on GitHub.
-         </li></ul>
-      </li>
-   </ul>
+               <h2>Results</h2>
+               <p>
+               We adapted the <a href="https://github.com/facebookresearch/dlrm">Deep Learning Recommendation Model</a> (DLRM) model to use CCE.
+               Even reducing the number of parameters by a factor 8,500, we were able to get the same test loss (Binary cross entropy) as the full DLRM model.
+               </p>
+               <img src="https://raw.githubusercontent.com/thomasahle/cce/main/results/criteo2.png" alt="Criteo Kaggle" class="result-image" />
+               <p>
+               Note how previous compressed training methods were not significantly better than just using the hashing trick.
+               Also note that most compressed embeddings actually achieve better loss than the full embedding table of the baseline.
+               This indicates the reduced number of parameters is useful as regularization.
+               However, post-training compression methods, like Product Quantization, are unable to take advantae of this.
+               </p>
 
 
-    <h2 style="clear:right">Citation</h2>
-    <pre>
+               <h2>Method</h2>
+               <img src="flowchart.png" class="float-image">
+               <p>
+               Single iteration of CCE:
+               </p>
+               <ol>
+                  <li>
+                     Starting from a random embedding table, each ID is hashed to a vector in each of 2 small tables.
+                  </li><li>
+                     During training, the embedding of an ID is taken to be the mean of the two referenced code words.
+                  </li><li>
+                     After training for an epoch, the vectors for all (or a sample of) the IDs are computed and clustered. This leaves a new small table in which similar IDs are represented by the same vector.
+                  </li><li>
+                     We can choose to combine the cluster centers with a new random table (and new hash function), after which the process can be repeated for an increasingly better understanding of which ID should be combined.
+                  </li>
+               </ol>
+
+               <p>
+               For more details, see
+               <a href="https://github.com/thomasahle/cce/blob/main/cce/cce.py">cce/cce.py</a> in the Github repository.
+               </p>
+
+               <h2>Key Takeaways</h2>
+               <p><b>Context:</b> Modern Recommendation Systems require large embedding tables, challenging to fit in memory during training.
+               </p>
+               <p><b>Solution:</b> CCE combines hashing/sketching methods with clustering during training, to learn an efficent sparse, data dependent hash function.
+               </p>
+               <p><b>Contributions:</b>
+               <ul>
+                  <li>
+                     CCE fills the gap between post-training compression (like Product Quantization) and during-training random mixing techniques (like Compositional Embeddings).
+                  </li><li>
+                     CCE provably finds the optimal codebook with bounded iterations, at least for linear models.
+                  </li><li>
+                     CCE experimentally outperforms all other methods for training large recommendation systems.
+                  </li><li>
+                     We provide a large, standardized library of related methods available on GitHub.
+                  </li>
+               </ul>
+               </p>
+
+
+               <h2 style="clear:right">Citation</h2>
+               <pre>
 @inproceedings{tsang2023clustering,
   title={Clustering Embedding Tables, Without First Learning Them},
   author={Tsang, Henry Ling-Hei and Ahle, Thomas Dybdahl},
   booktitle={Advances in Neural Information Processing Systems (NeurIPS)},
   year={2023}
 }</pre>
+            </div>
+         </div>
 
-</body>
+      </body>
 </html>
