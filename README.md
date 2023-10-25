@@ -1,4 +1,5 @@
 ![Banner](https://raw.githubusercontent.com/thomasahle/cce/main/docs/banner.png)
+We train embedding tables with fewer parameters by combining multiple sketches of the same data.
 
 # Clustered Compositional Embeddings
 This repository contains the code for the paper ["Clustering the Sketch: Dynamic Compression for Embedding Tables"](https://arxiv.org/abs/2210.05974).
@@ -9,9 +10,9 @@ Embedding tables are used by machine learning systems to work with categorical f
 ## Example code
 
 ```python
-import cce
+import torch, cce
 
-class GMF(nn.Module):
+class GMF(torch.nn.Module):
     """ A simple Generalized Matrix Factorization model """
     def __init__(self, n_users, n_items, dim, num_params):
         super().__init__()
