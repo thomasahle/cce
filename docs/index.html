@@ -10,8 +10,8 @@
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
       <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
-      <!-- and it's easy to individually load additional languages -->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
+      <script src="https://kit.fontawesome.com/98fc595cf0.js" crossorigin="anonymous"></script>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
 
       <script>hljs.highlightAll();</script>
       <body>
@@ -22,16 +22,24 @@
 
                <p class="tagline">We train embedding tables with fewer parameters by combining multiple sketches of the same data, iteratively.</p>
                <h1>Clustering the Sketch: Dynamic Compression for Embedding Tables</h1>
-               <p>
-               <a href="https://github.com/thomasahle/cce">GitHub Repository</a>
-               -
-               <a href="https://arxiv.org/abs/2210.05974">ArXiv Paper</a>
-               -
-               by
-               <a href="https://scholars.croucher.org.hk/scholars/ling-hei-tsang">Henry Tsang</a>
-               and
-               <a href="https://thomasahle.com/">Thomas Ahle</a>
-               <p>
+
+<p class="publication-links mb-r" style="margin-top:-.7rem">
+   <a href="https://scholars.croucher.org.hk/scholars/ling-hei-tsang">Henry Tsang</a>
+   and
+   <a href="https://thomasahle.com/">Thomas Ahle</a>
+    <span style="margin-left: 2ch"></span>
+    <a href="https://arxiv.org/abs/2210.05974" class="btn btn-primary">
+        <i class="ai ai-arxiv"></i> ArXiv
+    </a>
+    <a href="https://thomasahle.com/papers/cqr.pdf" class="btn btn-danger">
+        <i class="fas fa-file-pdf"></i> PDF
+    </a>
+    <a href="https://github.com/thomasahle/cce" class="btn btn-dark">
+        <i class="fab fa-github"></i> GitHub Repository
+    </a>
+</p>
+<p>
+
                Embedding tables are used by machine learning systems to work with categorical features. In modern Recommendation Systems, these tables can be very large, necessitating the development of new methods for fitting them in memory, even during training. We suggest <b>Clustered Compositional Embeddings (CCE)</b> which combines clustering-based compression like quantization to codebooks with dynamic methods like <a href="https://arxiv.org/abs/0902.2206">The Hashing Trick</a> and <a href="https://arxiv.org/abs/1909.02107">Compositional Embeddings</a>. Experimentally CCE achieves the best of both worlds: The high compression rate of codebook-based quantization, but dynamically like hashing-based methods, so it can be used during training. Theoretically, we prove that CCE is guaranteed to converge to the optimal codebook and give a tight bound for the number of iterations required.
 
                </p>
